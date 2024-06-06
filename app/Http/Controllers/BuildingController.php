@@ -42,6 +42,13 @@ class BuildingController extends Controller
     {
         $buildings = Building::all();
 
-        return view('building-list', compact('buildings'));
+        return view('buildings.index', compact('buildings'));
+    }
+
+    public function building_list()
+    {
+        $buildings = Building::all();
+
+        return view('pages.building-list', compact('buildings'));
     }
 }

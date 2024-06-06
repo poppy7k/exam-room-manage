@@ -1,5 +1,5 @@
 <div class="z-40 sidebar">
-    <aside class="bg-gradient-to-br from-gray-800 to-gray-900 z-50 h-screen w-72 transition-transform duration-300 hidden lg:block col-start-1 col-span-1">
+    <aside class="fixed bg-gradient-to-br from-gray-800 to-gray-900 z-50 h-screen w-72 transition-transform duration-300 hidden lg:block col-start-1 col-span-1">
         <!-- Title -->
         <div class="relative border-b border-white/20">
             <div class="grid grid-cols-4 gap-2 py-6 pl-8">

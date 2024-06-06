@@ -8,6 +8,8 @@ Route::get('/', function () {
     return view('pages.building-list');
 });
 
+Route::get('/', [BuildingController::class, 'building_list'])->name('building-list');
+
 Route::get('/buildings/add', function () {
     return view('buildings.addbuilding');
 })->name('buildings.addbuilding');

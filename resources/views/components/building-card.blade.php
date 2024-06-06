@@ -13,19 +13,19 @@
             </p>
             <img
             class="rounded-t-lg w-72 h-48 object-fill"
-            src="{{ $building_image }}"
+            src="https://images.unsplash.com/photo-1554629947-334ff61d85dc?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1024&h=1280&q=80"
             alt="{{ $building_th . 'building_image'}}" 
             />
         </div>
         <div class="p-4 text-surface text-black">
-            <p class="mb-0 text-xl font-bold leading-tight">
+            <p class="mb-0 text-xl font-bold leading-tight truncate">
                 {{ $building_th }}
             </p>
-            <p class="mb-4 text-base">
+            <p class="mb-4 text-base truncate">
                 {{ $building_en }}
             </p>
             <div class="pt-1">
-                <button type="button" class="group inline-block rounded px-14 py-1 bg-green-500 border-2  border-green-500 transition duration-500 ease-in-out hover:scale-105">
+                <button type="button" class="group inline-block rounded px-12 py-1 bg-green-500 border-2  border-green-500 transition duration-500 ease-in-out hover:scale-105">
                     <p class="text-white">
                         เลือก
                     </p>
