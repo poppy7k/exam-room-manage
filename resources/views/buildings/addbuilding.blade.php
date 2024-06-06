@@ -16,5 +16,5 @@
         <input type="file" id="building_image" name="building_image" accept="image/*" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px;">
     </div>
 
-    <button type="submit" style="background-color: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">Submit</button>
+    <button type="submit" style="background-color: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">Next</button>
 </form>
