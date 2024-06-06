@@ -8,6 +8,10 @@
     "devDependencies": {
         "axios": "^1.6.4",
         "laravel-vite-plugin": "^1.0",
-        "vite": "^5.0"
+        "rollup": "^4.18.0",
+        "vite": "^5.2.12"
+    },
+    "resolutions": {
+        "@rollup/rollup-linux-arm64-gnu": "replace_with_compatible_version"
     }
 }
