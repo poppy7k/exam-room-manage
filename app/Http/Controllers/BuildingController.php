@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Building;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class BuildingController extends Controller
 {
@@ -16,18 +17,26 @@ class BuildingController extends Controller
         ]);
     
         if ($request->hasFile('building_image')) {
-            $imagePath = $request->file('building_image')->store('building_images', 'public');
+            $fileName = $validatedData['building_en'] . '.' . $request->file('building_image')->getClientOriginalExtension();
+            $imagePath = $request->file('building_image')->storeAs('building_images', $fileName, 'public');
+            $imageFilename = basename($imagePath);
         } else {
-            
-            $imagePath = null; 
+            $imageFilename = null; 
         }
     
         Building::create([
             'building_th' => $validatedData['building_th'],
             'building_en' => $validatedData['building_en'],
-            'building_image' => $imagePath,
+            'building_image' => $imageFilename,
         ]);
     
-        return redirect()->back()->with('success', 'Building information has been saved.');
+        return redirect()->route('buildings.index')->with('success', 'Building information has been saved.');
+    }
+
+    public function index()
+    {
+        $buildings = Building::all();
+
+        return view('buildings.index', compact('buildings'));
     }
 }
