@@ -30,13 +30,13 @@ class BuildingController extends Controller
             'building_image' => $imageFilename,
         ]);
     
-        return redirect()->route('buildings.index')->with('success', 'Building information has been saved.');
+        return redirect()->route('building-list')->with('success', 'Building information has been saved.');
     }
 
     public function index()
     {
         $buildings = Building::all();
 
-        return view('buildings.index', compact('buildings'));
+        return view('building-list', compact('buildings'));
     }
 }

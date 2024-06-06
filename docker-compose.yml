@@ -50,6 +50,7 @@ services:
     phpmyadmin:
         image: phpmyadmin/phpmyadmin
         container_name: phpmyadmin
+        platform: linux/amd64
         environment:
             PMA_HOST: mysql
             MYSQL_ROOT_PASSWORD: ''

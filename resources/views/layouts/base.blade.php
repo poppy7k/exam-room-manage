@@ -10,11 +10,13 @@
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,600&display=swap" rel="stylesheet" />
 
+        <!-- Complied css -->
         @vite('resources/css/app.css')
+
+        <!-- Script -->
+        <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     </head>
-    <body class="font-sans antialias">
-        <h1 class="text-3xl font-bold">
-            HelloWorld
-        </h1>
+    <body class="flex min-h-screen">
+        @yield('body')
     </body>
 </html>
