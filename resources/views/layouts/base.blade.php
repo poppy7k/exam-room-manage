@@ -16,7 +16,7 @@
         <!-- Script -->
         <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     </head>
-    <body class="flex min-h-screen">
+    <body class="flex min-h-screen bg-gray-200">
         @yield('body')
     </body>
 </html>

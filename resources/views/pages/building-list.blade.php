@@ -1,7 +1,7 @@
 @extends('layouts.main')
 
 @section('content')
-<div class="flex flex-col divide-y z-20 container mt-24 ml-8 mb-24 lg:ml-80 w-full">
+<div class="flex flex-col divide-y-2 divide-gray-300">
     <div class="flex justify-between items-center">
         <p class="font-semibold text-2xl justify-start">
             อาคารสอบทั้งหมด

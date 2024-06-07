@@ -6,7 +6,7 @@ use App\Http\Controllers\ExamRoomInformationController;
 
 Route::get('/', function () {
     return view('pages.building-list');
-});
+})->name('home');
 
 Route::get('/', [BuildingController::class, 'building_list'])->name('building-list');
 
