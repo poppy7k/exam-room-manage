@@ -3,6 +3,7 @@
     'building_image',
     'building_en',
     'building_th',
+    'building_id'
 ])
 
 <div class="relative flex flex-col bg-clip-border w-[260px] rounded-lg bg-white shadow-md mt-6 transition-all duration-500 hover:scale-105  hover:shadow-lg">
@@ -48,3 +49,25 @@
           </div>
     </a>
 </div>
+
+<script>
+    function deleteBuilding(buildingId) {
+        if (confirm('Are you sure you want to delete this building?')) {
+            fetch(`/buildings/${buildingId}`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert('Building deleted successfully.');
+                    location.reload();
+                } else {
+                    alert('Failed to delete the building.');
+                }
+            });
+        }
+    }
+</script>
