@@ -40,7 +40,7 @@ class BuildingSeeder extends Seeder
         $building = new Building();
         $building->building_th = "ศูนย์กิจกรรมนิสิต";
         $building->building_en = "Student Activity Center";
-        $building->building_image = ""; 
+        $building->building_image = NULL; 
         $building->save(); 
 
         $building = new Building();

@@ -142,7 +142,7 @@ class ExamRoomInfomationSeeder extends Seeder
         $examroominfo = new ExamRoomInformation();
         $examroominfo->building_name = "ศร.4";
         $examroominfo->building_code = "3";
-        $examroominfo->floor = "";
+        $examroominfo->floor = NULL;
         $examroominfo->room = "902";
         $examroominfo->valid_seat = 144;
         $examroominfo->total_seat = 150;
@@ -151,7 +151,7 @@ class ExamRoomInfomationSeeder extends Seeder
         $examroominfo = new ExamRoomInformation();
         $examroominfo->building_name = "ศร.4";
         $examroominfo->building_code = "3";
-        $examroominfo->floor = "";
+        $examroominfo->floor = NULL;
         $examroominfo->room = "1002";
         $examroominfo->valid_seat = 144;
         $examroominfo->total_seat = 150;
@@ -161,7 +161,7 @@ class ExamRoomInfomationSeeder extends Seeder
         $examroominfo->building_name = "เทพฯ";
         $examroominfo->building_code = "4";
         $examroominfo->floor = "4";
-        $examroominfo->room = "";
+        $examroominfo->room = NULL;
         $examroominfo->valid_seat = 292;
         $examroominfo->total_seat = 300;
         $examroominfo->save();
@@ -169,7 +169,7 @@ class ExamRoomInfomationSeeder extends Seeder
         $examroominfo = new ExamRoomInformation();
         $examroominfo->building_name = "กิจกรรมนิสิต";
         $examroominfo->building_code = "5";
-        $examroominfo->floor = "";
+        $examroominfo->floor = NULL;
         $examroominfo->room = "ศูนย์กิจกรรมนิสิต";
         $examroominfo->valid_seat = 124;
         $examroominfo->total_seat = 100;
@@ -178,7 +178,7 @@ class ExamRoomInfomationSeeder extends Seeder
         $examroominfo = new ExamRoomInformation();
         $examroominfo->building_name = "50ปี";
         $examroominfo->building_code = "6";
-        $examroominfo->floor = "";
+        $examroominfo->floor = NULL;
         $examroominfo->room = "สุธรรม";
         $examroominfo->valid_seat = 301;
         $examroominfo->total_seat = 300;
