@@ -11,6 +11,7 @@
                 :building_image="file_exists('storage/' . $building->building_image) ? asset('storage/' . $building->building_image) : $building->building_image"
                 :building_th="$building->building_th"
                 :building_en="$building->building_en"
+                :building_id="$building->id"
             />
         @endforeach
     </div>

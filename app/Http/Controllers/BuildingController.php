@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Building;
+use App\Models\ExamRoomInformation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -50,5 +51,22 @@ class BuildingController extends Controller
         $buildings = Building::all();
 
         return view('pages.building-list', compact('buildings'));
+    }
+
+    public function destroy($buildingId)
+    {
+
+        $building = Building::find($buildingId);
+
+        if ($building) {
+
+            ExamRoomInformation::where('building_code', $buildingId)->delete();
+
+            $building->delete();
+
+            return response()->json(['success' => true, 'message' => 'Building and associated exam room information deleted successfully.']);
+        } else {
+            return response()->json(['success' => false, 'message' => 'Building not found.'], 404);
+        }
     }
 }
