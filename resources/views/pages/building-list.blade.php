@@ -7,11 +7,15 @@
     </p>
     <div class="grid 2xl:grid-cols-4 xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-3 sm:grid-cols-2 gap-4 mt-2">
         @foreach ($buildings as $building)
+            @php
+                $totalValidSeats = $building->examRoomInformation->sum('valid_seat');
+            @endphp
             <x-building-card
                 :building_image="file_exists('storage/' . $building->building_image) ? asset('storage/' . $building->building_image) : $building->building_image"
                 :building_th="$building->building_th"
                 :building_en="$building->building_en"
                 :building_id="$building->id"
+                :valid_seat="$totalValidSeats"
             />
         @endforeach
     </div>
