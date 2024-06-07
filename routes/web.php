@@ -11,8 +11,8 @@ Route::get('/', function () {
 Route::get('/', [BuildingController::class, 'building_list'])->name('building-list');
 
 Route::get('/buildings/add', function () {
-    return view('buildings.addbuilding');
-})->name('buildings.addbuilding');
+    return view('pages.building-create');
+})->name('pages.building-create');
 
 Route::get('/buildings', [BuildingController::class, 'index'])->name('buildings.index');
 Route::get('/buildings/create', [BuildingController::class, 'create'])->name('buildings.create');
