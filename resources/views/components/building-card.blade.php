@@ -3,14 +3,15 @@
     'building_image',
     'building_en',
     'building_th',
-    'building_id'
+    'building_id',
+    'valid_seat'
 ])
 
-<div class="relative flex flex-col bg-clip-border w-[260px] rounded-lg bg-white shadow-md mt-6 transition-all duration-500 hover:scale-105  hover:shadow-lg">
+<div class="relative flex flex-col bg-clip-border w-[260px] rounded-lg bg-white shadow-md mt-6 transition-all duration-500 hover:scale-105 hover:shadow-lg">
     <a href="{{ $href }}">
         <div class="flex justify-end">
             <p class="absolute mx-3 my-3 px-2 py-2 bg-gradient-to-tr from-green-600 to-green-400 rounded-lg text-sm text-white shadow-md">
-                คงเหลือ 999 ที่นั่ง
+                {{ $valid_seat }} ที่นั่ง
             </p>
             <img
             class="rounded-t-lg w-full h-48 object-fill"
@@ -37,8 +38,8 @@
                         เลือก
                     </p>
                 </button>
-                <x-buttons.icon-info type="submit" class="px-1 py-1">
-                    <svg xmlns="http://www.w3.org/2000/svg"  class="" id="Outline" viewBox="0 0 24 24" width="20" height="20"><path d="M22.853,1.148a3.626,3.626,0,0,0-5.124,0L1.465,17.412A4.968,4.968,0,0,0,0,20.947V23a1,1,0,0,0,1,1H3.053a4.966,4.966,0,0,0,3.535-1.464L22.853,6.271A3.626,3.626,0,0,0,22.853,1.148ZM5.174,21.122A3.022,3.022,0,0,1,3.053,22H2V20.947a2.98,2.98,0,0,1,.879-2.121L15.222,6.483l2.3,2.3ZM21.438,4.857,18.932,7.364l-2.3-2.295,2.507-2.507a1.623,1.623,0,1,1,2.295,2.3Z"/></svg>
+                <x-buttons.icon-info type="submit" onclick="window.location.href='/buildings/{{ $building_id }}/edit'" class="px-1 py-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="" id="Outline" viewBox="0 0 24 24" width="20" height="20"><path d="M22.853,1.148a3.626,3.626,0,0,0-5.124,0L1.465,17.412A4.968,4.968,0,0,0,0,20.947V23a1,1,0,0,0,1,1H3.053a4.966,4.966,0,0,0,3.535-1.464L22.853,6.271A3.626,3.626,0,0,0,22.853,1.148ZM5.174,21.122A3.022,3.022,0,0,1,3.053,22H2V20.947a2.98,2.98,0,0,1,.879-2.121L15.222,6.483l2.3,2.3ZM21.438,4.857,18.932,7.364l-2.3-2.295,2.507-2.507a1.623,1.623,0,1,1,2.295,2.3Z"/></svg>
                     <x-tooltip title="แก้ไขข้อมูล" class="group-hover:-translate-x-6"></x-tooltip>
                 </x-buttons.icon-info>
                 <x-buttons.icon-danger type="delete" onclick="deleteBuilding('{{ $building_id }}')" class="px-1 py-1">
@@ -46,7 +47,7 @@
                     <x-tooltip title="ลบอาคาร" class="group-hover:-translate-x-5"></x-tooltip>
                 </x-buttons.icon-danger>
             </div>
-          </div>
+        </div>
     </a>
 </div>
 
