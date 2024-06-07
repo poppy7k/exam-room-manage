@@ -13,7 +13,7 @@
     </div>
 
     <div class="add-building" style="margin-bottom: 20px; width: 80%; max-width: 600px; display: flex; justify-content: flex-end;">
-        <a href="{{ route('page.building-create') }}" style="background-color: #4CAF50; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; transition: background-color 0.3s ease;">Add Building</a>
+        <a href="{{ route('pages.building-create') }}" style="background-color: #4CAF50; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; transition: background-color 0.3s ease;">Add Building</a>
     </div>
 
     <ul id="building-list" style="list-style-type: none; padding: 0; width: 80%; max-width: 600px; margin: 0;">

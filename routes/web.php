@@ -9,10 +9,7 @@ Route::get('/', function () {
 })->name('home');
 
 Route::get('/', [BuildingController::class, 'building_list'])->name('building-list');
-
-Route::get('/buildings/add', function () {
-    return view('pages.building-create');
-})->name('pages.building-create');
+Route::get('/buildings/add', [BuildingController::class, 'create'])->name('pages.building-create');
 
 Route::get('/buildings', [BuildingController::class, 'index'])->name('buildings.index');
 Route::get('/buildings/create', [BuildingController::class, 'create'])->name('buildings.create');

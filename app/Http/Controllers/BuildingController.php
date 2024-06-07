@@ -11,7 +11,12 @@ class BuildingController extends Controller
 {
     public function create()
     {
-        return view('buildings.addbuilding');
+        $breadcrumbs = [
+            ['url' => '/', 'title' => 'หน้าหลัก'],
+            ['url' => '/buildings/add', 'title' => 'สร้างอาคารสอบ'],
+        ];
+
+        return view('pages.building-create', compact('breadcrumbs'));
     }
 
     public function store(Request $request)
@@ -49,8 +54,11 @@ class BuildingController extends Controller
     public function building_list()
     {
         $buildings = Building::all();
+        $breadcrumbs = [
+            ['url' => '/', 'title' => 'หน้าหลัก'],
+        ];
 
-        return view('pages.building-list', compact('buildings'));
+        return view('pages.building-list', compact('breadcrumbs', 'buildings'));
     }
 
     public function destroy($buildingId)
@@ -77,7 +85,13 @@ class BuildingController extends Controller
             return redirect()->route('buildings.index')->with('error', 'Building not found.');
         }
 
-        return view('buildings.edit', compact('building'));
+        $breadcrumbs = [
+            ['url' => '/', 'title' => 'หน้าหลัก'],
+            ['url' => '/buildings/'.$buildingId, 'title' => ''.$building->building_th], 
+            ['url' => '/buildings/'.$buildingId.'/edit', 'title' => 'แก้ไขข้อมูล'],
+        ];
+
+        return view('buildings.edit', compact('building', 'breadcrumbs'));
     }
 
     public function update(Request $request, $buildingId)

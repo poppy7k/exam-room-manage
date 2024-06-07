@@ -37,6 +37,7 @@
     function openSidebar() {
       document.querySelector(".sidebar").classList.toggle("-translate-x-56");
       document.querySelector("#content").classList.toggle("-translate-x-56");
+      document.querySelector(".breadcrumb").classList.toggle("-translate-x-56");
       document.querySelector("#collapse-arrow").classList.toggle("rotate-180");
     }
 </script>
