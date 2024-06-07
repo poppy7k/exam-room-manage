@@ -13,11 +13,15 @@
     </div>
     <div class="grid 2xl:grid-cols-5 xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-3 sm:grid-cols-2 gap-4 mt-2">
         @foreach ($buildings as $building)
+            @php
+                $totalValidSeats = $building->examRoomInformation->sum('valid_seat');
+            @endphp
             <x-building-card
                 :building_image="'https://images.unsplash.com/photo-1554629947-334ff61d85dc?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1024&h=1280&q=80'"
                 :building_th="$building->building_th"
                 :building_en="$building->building_en"
                 :building_id="$building->id"
+                :valid_seat="$totalValidSeats"
             />
         @endforeach
     </div>

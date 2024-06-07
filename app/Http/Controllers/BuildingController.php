@@ -69,4 +69,40 @@ class BuildingController extends Controller
             return response()->json(['success' => false, 'message' => 'Building not found.'], 404);
         }
     }
+
+    public function edit($buildingId)
+    {
+        $building = Building::with('examRoomInformation')->find($buildingId);
+        if (!$building) {
+            return redirect()->route('buildings.index')->with('error', 'Building not found.');
+        }
+
+        return view('buildings.edit', compact('building'));
+    }
+
+    public function update(Request $request, $buildingId)
+    {
+        $request->validate([
+            'building_th' => 'required|string|max:255',
+            'building_en' => 'required|string|max:255',
+            // Add validation for other fields as needed
+        ]);
+
+        $building = Building::find($buildingId);
+        if (!$building) {
+            return redirect()->route('buildings.index')->with('error', 'Building not found.');
+        }
+
+        $building->update($request->all());
+
+        // Update or create exam room information
+        foreach ($request->exam_rooms as $examRoom) {
+            ExamRoomInformation::updateOrCreate(
+                ['building_code' => $buildingId, 'room' => $examRoom['room']],
+                $examRoom
+            );
+        }
+
+        return redirect()->route('building-list')->with('success', 'Building updated successfully.');
+    }
 }

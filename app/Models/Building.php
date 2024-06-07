@@ -15,4 +15,9 @@ class Building extends Model
         'building_en',
         'building_image',
     ];
+
+    public function examRoomInformation()
+    {
+        return $this->hasMany(ExamRoomInformation::class, 'building_code', 'id');
+    }
 }

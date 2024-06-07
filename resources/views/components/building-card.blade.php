@@ -3,14 +3,15 @@
     'building_image',
     'building_en',
     'building_th',
-    'building_id'
+    'building_id',
+    'valid_seat'
 ])
 
 <div class="relative flex flex-col bg-clip-border w-[260px] rounded-lg bg-white shadow-md mt-6 transition-all duration-500 hover:scale-105  hover:shadow-lg">
     <a href="{{ $href }}">
         <div class="flex justify-end">
             <p class="absolute mx-3 my-3 px-2 py-2 bg-gradient-to-tr from-green-600 to-green-400 rounded-lg text-sm text-white shadow-md">
-                คงเหลือ 999 ที่นั่ง
+                {{ $valid_seat }} ที่นั่ง
             </p>
             <img
             class="rounded-t-lg w-full h-48 object-fill"
