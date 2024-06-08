@@ -25,3 +25,7 @@ Route::delete('/buildings/{buildingId}', [BuildingController::class, 'destroy'])
 
 Route::get('/buildings/{buildingId}/edit', [BuildingController::class, 'edit'])->name('buildings.edit');
 Route::put('/buildings/{buildingId}', [BuildingController::class, 'update'])->name('buildings.update');
+
+
+Route::get('/buildings/{buildingId}/addinfo', [ExamRoomInformationController::class, 'create'])->name('buildings.addinfo');
+Route::post('/examroominfo/store', [ExamRoomInformationController::class, 'store'])->name('examroominfo.store');

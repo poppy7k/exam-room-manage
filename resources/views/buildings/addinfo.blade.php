@@ -1,6 +1,9 @@
 <form method="POST" action="{{ route('examroominfo.store') }}" style="max-width: 400px; margin: 0 auto; padding: 20px; border: 1px solid #ccc; border-radius: 5px;" onsubmit="return validateForm()">
     @csrf
 
+    <input type="hidden" name="building_th" value="{{ $buildingData['building_th'] }}">
+    <input type="hidden" name="building_en" value="{{ $buildingData['building_en'] }}">
+    <input type="hidden" name="building_image" value="{{ $buildingData['building_image'] }}">
     <input type="hidden" name="building_code" value="{{ $buildingId }}">
 
     <div id="room-container">

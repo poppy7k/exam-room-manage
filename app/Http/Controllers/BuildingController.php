@@ -19,6 +19,31 @@ class BuildingController extends Controller
         return view('pages.building-create', compact('breadcrumbs'));
     }
 
+    // public function store(Request $request)
+    // {
+    //     $validatedData = $request->validate([
+    //         'building_th' => 'required|string',
+    //         'building_en' => 'required|string',
+    //         'building_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+    //     ]);
+    
+    //     if ($request->hasFile('building_image')) {
+    //         $fileName = $validatedData['building_en'] . '.' . $request->file('building_image')->getClientOriginalExtension();
+    //         $imagePath = $request->file('building_image')->storeAs('building_images', $fileName, 'public');
+    //         $imageFilename = basename($imagePath);
+    //     } else {
+    //         $imageFilename = null; 
+    //     }
+    
+    //     $building = Building::create([
+    //         'building_th' => $validatedData['building_th'],
+    //         'building_en' => $validatedData['building_en'],
+    //         'building_image' => $imageFilename,
+    //     ]);
+    
+    //     return redirect()->route('buildings.addinfo', ['buildingId' => $building->id]);
+    // }
+
     public function store(Request $request)
     {
         $validatedData = $request->validate([
@@ -32,16 +57,20 @@ class BuildingController extends Controller
             $imagePath = $request->file('building_image')->storeAs('building_images', $fileName, 'public');
             $imageFilename = basename($imagePath);
         } else {
-            $imageFilename = null; 
+            $imageFilename = null;
         }
     
-        $building = Building::create([
+        // Simulate a building ID for the session (this could be a temporary value)
+        $temporaryBuildingId = time(); // or any unique value
+    
+        $buildingData = [
             'building_th' => $validatedData['building_th'],
             'building_en' => $validatedData['building_en'],
             'building_image' => $imageFilename,
-        ]);
+        ];
     
-        return redirect()->route('buildings.addinfo', ['buildingId' => $building->id]);
+        return redirect()->route('buildings.addinfo', ['buildingId' => $temporaryBuildingId])
+                         ->with('buildingData', $buildingData);
     }
 
     public function index()
