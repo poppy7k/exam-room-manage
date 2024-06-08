@@ -26,6 +26,7 @@
 
     <button type="button" onclick="addRoom()" style="background-color: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; margin-top: 10px;">Add</button>
     <button type="submit" style="background-color: #0000FF; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; margin-top: 10px;">Submit</button>
+    <a href="{{ route('pages.building-create') }}" style="background-color: #f44336; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; margin-top: 10px; text-decoration: none;">Back</a>
 </form>
 
 <script>
@@ -99,4 +100,14 @@
 
         return isValid;
     }
+
+//     window.onload = function() {
+//     // Populate building information if available in session storage
+//     const buildingTh = sessionStorage.getItem('building_th');
+//     const buildingEn = sessionStorage.getItem('building_en');
+//     if (buildingTh && buildingEn) {
+//         document.getElementById('building_th').value = buildingTh;
+//         document.getElementById('building_en').value = buildingEn;
+//     }
+// };
 </script>

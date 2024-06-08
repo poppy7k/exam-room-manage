@@ -37,6 +37,7 @@ class BuildingController extends Controller
         ]);
     
         return redirect()->route('buildings.addinfo', ['buildingId' => $building->id]);
+        // return view('buildings.addinfo')->with('buildingData', $validatedData);
     }
 
     public function index()
@@ -105,4 +106,11 @@ class BuildingController extends Controller
 
         return redirect()->route('building-list')->with('success', 'Building updated successfully.');
     }
+
+    // public function addInfo($buildingId)
+    // {
+    //     $building = Building::findOrFail($buildingId);
+    
+    //     return view('buildings.addinfo', compact('building'));
+    // }
 }

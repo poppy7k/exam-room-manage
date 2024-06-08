@@ -2,6 +2,7 @@
 
 @section('content')
     <form method="POST" class="bg-white shadow-lg w-[400px] p-20 border-1 rounded" action="{{ route('buildings.store') }}" enctype="multipart/form-data" onsubmit="return validateForm()">
+    {{-- <form method="POST" action="{{ route('buildings.addinfo.store', ['buildingId' => $buildingId]) }}" style="max-width: 400px; margin: 0 auto; padding: 20px; border: 1px solid #ccc; border-radius: 5px;" onsubmit="return validateForm()"> --}}
         @csrf
 
         <div style="margin-bottom: 20px;">
@@ -22,6 +23,7 @@
         </div>
 
         <button type="submit" style="background-color: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">Next</button>
+        {{-- <button type="button" onclick="saveBuildingInfoAndNavigate()" style="background-color: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">Next</button> --}}
     </form>
 
 
@@ -54,6 +56,19 @@ function validateForm() {
 
     return isValid;
 }
+
+// function saveBuildingInfoAndNavigate() {
+//     // Get building information
+//     var buildingTh = document.getElementById('building_th').value;
+//     var buildingEn = document.getElementById('building_en').value;
+
+//     // Store building information in session storage
+//     sessionStorage.setItem('building_th', buildingTh);
+//     sessionStorage.setItem('building_en', buildingEn);
+
+//     // Navigate to addinfo page
+//     window.location.href = 'http://localhost/buildings/addinfo';
+// }
 </script>
 
 @endsection

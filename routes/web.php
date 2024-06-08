@@ -28,3 +28,6 @@ Route::delete('/buildings/{buildingId}', [BuildingController::class, 'destroy'])
 
 Route::get('/buildings/{buildingId}/edit', [BuildingController::class, 'edit'])->name('buildings.edit');
 Route::put('/buildings/{buildingId}', [BuildingController::class, 'update'])->name('buildings.update');
+
+// Route::get('/buildings/{buildingId}/addinfo', [BuildingController::class, 'addInfo'])->name('buildings.addinfo');
+
