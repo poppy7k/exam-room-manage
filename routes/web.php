@@ -33,3 +33,8 @@ Route::post('/examroominfo/store', [ExamRoomInformationController::class, 'store
 Route::put('/buildings/{buildingId}/ajax', [BuildingController::class, 'updateAjax'])->name('buildings.updateAjax');
 
 Route::get('/buildings/{buildingId}/room-list', [BuildingController::class, 'showRoomList'])->name('buildings.room-list');
+
+// Route::get('/add-seat', 'ExamRoomInformationController@addSeat')->name('examroominfo.addseat');
+// Route::get('/buildings/{buildingId}/addinfo/add-seat', 'ExamRoomInformationController@addSeat')->name('examroominfo.addseat');
+//Route::get('/buildings/{buildingId}/addinfo/{room_id}/add-seat', 'ExamRoomInformationController@addSeat')->name('examroominfo.addseat');
+Route::get('/buildings/{buildingId}/addinfo/{roomId}/addseat', [ExamRoomInformationController::class, 'addSeat'])->name('addseat');
