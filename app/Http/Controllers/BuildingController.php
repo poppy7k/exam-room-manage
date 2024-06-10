@@ -120,4 +120,31 @@ class BuildingController extends Controller
 
         return redirect()->route('building-list')->with('success', 'Building updated successfully.');
     }
+
+    public function updateAjax(Request $request, $buildingId)
+    {
+        $request->validate([
+            'building_th' => 'required|string|max:255',
+            'building_en' => 'required|string|max:255',
+            'building_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+    
+        $building = Building::find($buildingId);
+        if (!$building) {
+            return response()->json(['error' => 'Building not found.'], 404);
+        }
+    
+        $building->building_th = $request->building_th;
+        $building->building_en = $request->building_en;
+    
+        if ($request->hasFile('building_image')) {
+            $fileName = $request->building_en . '.' . $request->file('building_image')->getClientOriginalExtension();
+            $imagePath = $request->file('building_image')->storeAs('building_images', $fileName, 'public');
+            $building->building_image = basename($imagePath);
+        }
+    
+        $building->save();
+    
+        return response()->json(['success' => 'Building updated successfully.']);
+    }
 }

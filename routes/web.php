@@ -29,3 +29,5 @@ Route::put('/buildings/{buildingId}', [BuildingController::class, 'update'])->na
 
 Route::get('/buildings/{buildingId}/addinfo', [ExamRoomInformationController::class, 'create'])->name('buildings.addinfo');
 Route::post('/examroominfo/store', [ExamRoomInformationController::class, 'store'])->name('examroominfo.store');
+
+Route::put('/buildings/{buildingId}/ajax', [BuildingController::class, 'updateAjax'])->name('buildings.updateAjax');
