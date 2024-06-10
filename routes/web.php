@@ -31,3 +31,5 @@ Route::get('/buildings/{buildingId}/addinfo', [ExamRoomInformationController::cl
 Route::post('/examroominfo/store', [ExamRoomInformationController::class, 'store'])->name('examroominfo.store');
 
 Route::put('/buildings/{buildingId}/ajax', [BuildingController::class, 'updateAjax'])->name('buildings.updateAjax');
+
+Route::get('/buildings/{buildingId}/room-list', [BuildingController::class, 'showRoomList'])->name('buildings.room-list');

@@ -147,4 +147,17 @@ class BuildingController extends Controller
     
         return response()->json(['success' => 'Building updated successfully.']);
     }
+
+    public function showRoomList($buildingId)
+    {
+        $building = Building::findOrFail($buildingId);
+        $rooms = $building->examRoomInformation()->get();
+        $breadcrumbs = [
+            ['url' => '/', 'title' => 'หน้าหลัก'],
+            ['url' => '/buildings/'.$buildingId.'/room-list', 'title' => 'รายการห้องสอบ'],
+        ];
+    
+        return view('buildings.room-list', compact('building', 'rooms', 'breadcrumbs'));
+    }
+
 }

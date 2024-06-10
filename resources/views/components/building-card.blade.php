@@ -33,7 +33,7 @@
                 </p>
             </div>
             <div class="flex justify-between pt-1">
-                <button type="button" class="group inline-block py-1 rounded bg-gradient-to-tr from-green-600 to-green-400 shadow-md shadow-green-500/20 hover:shadow-lg hover:shadow-green-500/40 transition duration-500 ease-in-out hover:scale-105 px-12">
+                <button type="button" onclick="window.location.href = '{{ route('buildings.room-list', ['buildingId' => $building_id]) }}'" class="group inline-block py-1 rounded bg-gradient-to-tr from-green-600 to-green-400 shadow-md shadow-green-500/20 hover:shadow-lg hover:shadow-green-500/40 transition duration-500 ease-in-out hover:scale-105 px-12">
                     <p class="text-white">
                         เลือก
                     </p>

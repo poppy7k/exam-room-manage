@@ -85,10 +85,6 @@
         document.getElementById('editModal').classList.remove('hidden');
     }
 
-    function closeModal() {
-        document.getElementById('editModal').classList.add('hidden');
-    }
-
     document.getElementById('editForm').addEventListener('submit', function(event) {
         event.preventDefault();
         var formData = new FormData(this);
