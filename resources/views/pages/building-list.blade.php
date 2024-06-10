@@ -51,41 +51,6 @@
 </div>
 
 <script>
-    function openModal(building) {
-        document.getElementById('editForm').action = `/buildings/${building.id}/ajax`;
-        document.getElementById('building_th').value = building.building_th;
-        document.getElementById('building_en').value = building.building_en;
-        document.getElementById('editModal').classList.remove('hidden');
-    }
-    function closeModal() {
-        document.getElementById('editModal').classList.add('hidden');
-    }
-
-    document.getElementById('editForm').addEventListener('submit', function(event) {
-        event.preventDefault();
-        var formData = new FormData(this);
-        var action = this.action;
-
-        fetch(action, {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                'Accept': 'application/json',
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert(data.success);
-                location.reload();
-            } else {
-                alert(data.error || 'Failed to update the building.');
-            }
-        })
-        .catch(error => console.error('Error:', error));
-    });
-
     document.getElementById('search-input').addEventListener('input', function() {
         var searchQuery = this.value.toLowerCase();
         var buildingItems = document.getElementsByClassName('building-item');
