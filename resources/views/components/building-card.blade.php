@@ -17,6 +17,8 @@
             class="rounded-t-lg w-full h-48 object-fill"
             src="{{ $building_image }}"
             alt="{{ $building_th . 'building_image'}}" 
+            {{-- src="{{ asset('storage/' . $building->building_image) }}"
+            alt="{{ $building->building_th }}" --}}
             />
         </div>
         <div class="p-4 text-surface text-black">

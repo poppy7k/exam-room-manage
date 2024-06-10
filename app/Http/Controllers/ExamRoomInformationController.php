@@ -16,11 +16,20 @@ class ExamRoomInformationController extends Controller
             return redirect()->route('buildings.create')->with('error', 'No building data found. Please create a building first.');
         }
     
-        return view('buildings.addinfo', ['buildingData' => $buildingData, 'buildingId' => $buildingId]);
+        return view('pages.addinfo', ['buildingData' => $buildingData, 'buildingId' => $buildingId]);
     }
 
-    public function store(Request $request)
+    public function store(Request $request, $buildingId)
     {
+        $breadcrumbs = [
+            ['url' => '/', 'title' => 'หน้าหลัก'],
+            ['url' => '/buildings', 'title' => 'อาคารสอบ'],
+            ['url' => "/buildings/add", 'title' => 'สร้างอาคารสอบ'],
+            ['url' => "/buildings/{$buildingId}/addinfo", 'title' => "ข้อมูลอาคาร {$buildingId}"]
+        ];
+    
+        session(['breadcrumbs' => $breadcrumbs]);
+    
         $validatedData = $request->validate([
             'building_th' => 'required|string',
             'building_en' => 'required|string',
@@ -50,4 +59,39 @@ class ExamRoomInformationController extends Controller
     
         return redirect()->route('building-list')->with('success', 'Building and exam room information have been saved.');
     }
+
+    public function addSeat($buildingId, $roomId)
+    {
+        $breadcrumbs = [
+            ['url' => '/', 'title' => 'หน้าหลัก'],
+            ['url' => '/buildings', 'title' => 'อาคารสอบ'],
+            ['url' => "/buildings/add", 'title' => 'สร้างอาคารสอบ'],
+            ['url' => "/buildings/{$buildingId}/addinfo", 'title' => "ข้อมูลอาคาร {$buildingId}"],
+            ['url' => '', 'title' => "เพิ่มที่นั่งในห้อง {$roomId}"]
+        ];
+    
+        return view('buildings.add-seat', [
+            'buildingId' => $buildingId,
+            'roomId' => $roomId,
+            'breadcrumbs' => $breadcrumbs
+        ]);
+    }
+    // public function addSeat($buildingId, $roomId)
+    // {
+    //     $building = Building::findOrFail($buildingId);
+    //     $breadcrumbs = [
+    //         ['url' => '/', 'title' => 'หน้าหลัก'],
+    //         ['url' => '/buildings', 'title' => 'อาคารสอบ'],
+    //         ['url' => "/buildings/add", 'title' => 'สร้างอาคารสอบ'],
+    //         ['url' => "/buildings/{$buildingId}/addinfo", 'title' => "ข้อมูลอาคาร {$building->$buildingId}"],
+    //         ['url' => '', 'title' => "เพิ่มที่นั่งในห้อง {$roomId}"]
+    //     ];
+    
+    //     return view('buildings.add-seat', [
+    //         'buildingId' => $buildingId,
+    //         'roomId' => $roomId,
+    //         'breadcrumbs' => $breadcrumbs
+    //     ]);
+    // }
+    
 }
