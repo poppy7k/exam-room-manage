@@ -154,10 +154,11 @@ class BuildingController extends Controller
         $rooms = $building->examRoomInformation()->get();
         $breadcrumbs = [
             ['url' => '/', 'title' => 'หน้าหลัก'],
-            ['url' => '/buildings/'.$buildingId.'/room-list', 'title' => 'รายการห้องสอบ'],
+            ['url' => '/buildings/'.$buildingId.'/room-list', 'title' => ''.$building->building_th],
+            ['url' => '/buildings/'.$buildingId.'/room-list', 'title' => 'รายการห้องสอบ'], 
         ];
     
-        return view('buildings.room-list', compact('building', 'rooms', 'breadcrumbs'));
+        return view('pages.room-list', compact('building', 'rooms', 'breadcrumbs'));
     }
 
 }

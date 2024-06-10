@@ -1,4 +1,4 @@
-<div class="z-40 sidebar transition-transform ease-in-out duration-500 fixed">
+<div class="z-40 sidebar transition-all ease-in-out duration-500 fixed">
     <aside class="bg-gradient-to-br from-gray-800 to-gray-900 z-50 h-screen w-72 transition-transform duration-300 hidden lg:block col-start-1 col-span-1">
         <!-- Title -->
         <div class="relative border-b border-white/20">
@@ -17,14 +17,16 @@
         <!-- Menu Lists -->
         <div class="px-6 py-6">
             <ul class="mb-4 flex flex-col gap-1">
-                <li>
+                <li id="sidebar-menu-list" class="transition-all duration-500">
                     <a aria-current="page" class="active" href="{{ route('building-list') }}">
-                        <x-buttons.primary type="button" class="w-full py-3 rounded-lg" onclick="">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" class="w-5 h-5 text-inherit">
+                        <x-buttons.primary id="sidebar-menu-button" type="button" class="w-full py-3 rounded-lg pl-10 justify-center h-12" onclick="">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" id="sidebar-menu-icon" aria-hidden="true" class="w-5 h-5 text-inherit transition-all duration-500 ease-in-out">
                                 <path d="M11.47 3.84a.75.75 0 011.06 0l8.69 8.69a.75.75 0 101.06-1.06l-8.689-8.69a2.25 2.25 0 00-3.182 0l-8.69 8.69a.75.75 0 001.061 1.06l8.69-8.69z"></path>
                                 <path d="M12 5.432l8.159 8.159c.03.03.06.058.091.086v6.198c0 1.035-.84 1.875-1.875 1.875H15a.75.75 0 01-.75-.75v-4.5a.75.75 0 00-.75-.75h-3a.75.75 0 00-.75.75V21a.75.75 0 01-.75.75H5.625a1.875 1.875 0 01-1.875-1.875v-6.198a2.29 2.29 0 00.091-.086L12 5.43z"></path>
                             </svg>
-                            หน้าแรก
+                            <p id="sidebar-menu-label" class="">
+                                หน้าแรก
+                            </p>
                         </x-buttons.primary>
                     </a>
                 </li>
@@ -36,8 +38,16 @@
 <script type="text/javascript">
     function openSidebar() {
       document.querySelector(".sidebar").classList.toggle("-translate-x-56");
-      document.querySelector("#content").classList.toggle("pl-52");
-      document.querySelector(".breadcrumb").classList.toggle("-translate-x-52");
+      document.querySelector("#content").classList.toggle("lg:pl-52");
+      document.querySelector(".breadcrumb").classList.toggle("-translate-x-44");
       document.querySelector("#collapse-arrow").classList.toggle("rotate-180");
+
+      //for collapse button
+      document.querySelector("#sidebar-menu-list").classList.toggle("translate-x-4");
+      document.querySelector("#sidebar-menu-button").classList.toggle("justify-center");
+      document.querySelector("#sidebar-menu-button").classList.toggle("justify-end");
+      document.querySelector("#sidebar-menu-icon").classList.toggle("translate-x-8");
+      document.querySelector("#sidebar-menu-icon").classList.toggle("scale-110");
+      document.querySelector("#sidebar-menu-label").classList.toggle("hidden");
     }
 </script>

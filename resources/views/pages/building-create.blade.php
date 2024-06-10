@@ -1,7 +1,7 @@
 @extends('layouts.main')
 
 @section('content')
-<div class="bg-white shadow-lg px-16 py-10 border-1 rounded divide-y-2">
+<div class="bg-white shadow-lg px-16 py-10 my-3 border-1 rounded divide-y-2">
     <p class ="pb-2 text-2xl font-bold">
         สร้างอาคารสอบ
     </p>
@@ -23,7 +23,7 @@
             <label for="building_image" class="block font-semibold">อัปโหลดรูปภาพของอาคาร</label>
             <input type="file" id="building_image" name="building_image" accept="image/*" class="w-full my-2 px-3 py-2 rounded ring-1 shadow-sm ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-green-600 transition-all duration-300 outline-none">
         </div>
-        <x-buttons.primary type="submit" class="py-2 w-full hover:scale-105" onclick="">
+        <x-buttons.primary type="submit" class="py-2 w-full hover:scale-105 justify-center" onclick="">
             สร้างอาคารสอบ
         </x-buttons.primary>
     </form>

@@ -5,7 +5,7 @@
     <div class="flex justify-between items-center">
         <div class="flex"> 
             <p class="font-semibold text-2xl justify-start">
-            อาคารสอบทั้งหมด
+                อาคารสอบทั้งหมด
             </p>
             <p class="font-normal text-md px-3 mt-1.5">
                 -

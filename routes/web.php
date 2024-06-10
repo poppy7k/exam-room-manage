@@ -32,4 +32,4 @@ Route::post('/examroominfo/store', [ExamRoomInformationController::class, 'store
 
 Route::put('/buildings/{buildingId}/ajax', [BuildingController::class, 'updateAjax'])->name('buildings.updateAjax');
 
-Route::get('/buildings/{buildingId}/room-list', [BuildingController::class, 'showRoomList'])->name('buildings.room-list');
+Route::get('/buildings/{buildingId}/room-list', [BuildingController::class, 'showRoomList'])->name('pages.room-list');
