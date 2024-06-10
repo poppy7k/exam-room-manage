@@ -19,7 +19,7 @@
             <span id="building_en_error" class="error-message" style="color: red; display: none;">* Building Name (English) can only contain English alphabet and numbers.</span>
         </div>
 
-        <div class="mb-4">
+        <div class="mb-6">
             <label for="building_image" class="block font-semibold">อัปโหลดรูปภาพของอาคาร</label>
             <input type="file" id="building_image" name="building_image" accept="image/*" class="w-full my-2 px-3 py-2 rounded ring-1 shadow-sm ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-green-600 transition-all duration-300 outline-none">
         </div>
