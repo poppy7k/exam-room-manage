@@ -5,7 +5,7 @@
     @include('layouts.navbar')
     <main class="flex flex-grow">
         @include('layouts.sidebar')
-        <div id="content" class="flex flex-col z-20 container mt-24 ml-8 mb-24 lg:ml-80 w-full transition-transform duration-500">
+        <div id="content" class="flex flex-col z-20 container mt-24 pl-52 mb-24 w-screen transition-all ease-in-out duration-500 translate-x-28">
             @yield('content')
         </div>
     </main>
