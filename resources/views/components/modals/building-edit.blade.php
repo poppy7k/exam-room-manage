@@ -10,32 +10,35 @@
                 @method('PUT')
                 <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                     <div class="sm:flex sm:items-start">
-                        <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-                            <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">Edit Building</h3>
-                            <div class="mt-2">
-                                <div class="mb-4">
-                                    <label for="building_th" class="block text-gray-700">Building TH:</label>
+                        <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left divide-y-2 w-full mr-4">
+                            <h3 class="text-2xl leading-6 font-medium text-gray-900" id="modal-title">แก้ไขข้อมูลอาคารสอบ</h3>
+                            <div class="mt-4">
+                                <div class="mb-4 mt-4">
+                                    <label for="building_th" class="block text-gray-700 font-semibold">ชื่ออาคารสอบ (ภาษาไทย)</label>
                                     <input type="text" name="building_th" id="building_th" class="w-full px-3 py-2 border border-gray-300 rounded-md">
                                 </div>
                                 <div class="mb-4">
-                                    <label for="building_en" class="block text-gray-700">Building EN:</label>
+                                    <label for="building_en" class="block text-gray-700 font-semibold">ชื่ออาคารสอบ (English)</label>
                                     <input type="text" name="building_en" id="building_en" class="w-full px-3 py-2 border border-gray-300 rounded-md">
                                 </div>
                                 <div class="mb-4">
-                                    <label for="building_image" class="block text-gray-700">Building Image:</label>
+                                    <label for="building_image" class="block text-gray-700 font-semibold">รูปภาพของอาคารสอบ</label>
                                     <input type="file" name="building_image" id="building_image" class="w-full px-3 py-2 border border-gray-300 rounded-md">
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                    <button type="submit" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:ml-3 sm:w-auto sm:text-sm">
-                        Save
-                    </button>
-                    <button type="button" onclick="closeModal()" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:w-auto sm:text-sm">
-                        Cancel
-                    </button>
+                <div class="bg-gray-200 px-4 pb-4 sm:px-6 sm:flex sm:flex-row-reverse">
+                    <div class="flex pt-4 pr-4 gap-4">
+                        <x-buttons.secondary type="button" class="hover:scale-105 py-2 w-12" onclick="closeModal()">
+                            Cancel
+                        </x-buttons.secondary>
+                        <x-buttons.primary type="submit" class="hover:scale-105 py-2 w-12" onclick="">
+                            Save
+                        </x-buttons.primary>
+                        
+                    </div>
                 </div>
             </form>
         </div>
@@ -48,6 +51,11 @@ function openModal(building) {
         document.getElementById('building_th').value = building.building_th;
         document.getElementById('building_en').value = building.building_en;
         document.getElementById('editModal').classList.remove('hidden');
+        setTimeout(() => {
+            modalCl.remove('opacity-0')
+            modalCl.remove('-translate-y-10')
+            modalCl.remove('scale-150')
+        }, 100);
     }
     function closeModal() {
         document.getElementById('editModal').classList.add('hidden');
