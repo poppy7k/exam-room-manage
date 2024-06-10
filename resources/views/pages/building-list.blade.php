@@ -50,10 +50,10 @@
     </div>
 
 <!-- Edit Modal -->
-<div id="editModal" class="fixed z-10 inset-0 overflow-y-auto hidden">
+<div id="editModal" class="fixed z-10 inset-0 hidden">
     <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
         <div class="fixed inset-0 transition-opacity" aria-hidden="true">
-            <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+            <div class="absolute inset-0 bg-gray-500 opacity-75 w-screen h-screen"></div>
         </div>
         <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
         <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
@@ -130,15 +130,18 @@
     document.getElementById('search-input').addEventListener('input', function() {
         var searchQuery = this.value.toLowerCase();
         var buildingItems = document.getElementsByClassName('building-item');
+        var hasVisibleItems = false;
 
         Array.from(buildingItems).forEach(function(item) {
             var buildingName = item.textContent.toLowerCase();
             if (buildingName.includes(searchQuery)) {
                 item.style.display = 'block';
+                hasVisibleItems = true
             } else {
                 item.style.display = 'none';
             }
         });
+        document.getElementById('empty-state').style.display = hasVisibleItems ? 'none' : 'block';s
     });
 </script>
 @endsection
