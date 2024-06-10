@@ -2,6 +2,10 @@
 
 @section('body')
 <div class="flex flex-col min-h-screen">
+    <!-- Pop-up -->
+    <div id="popup">
+        @include('components.building-edit-popup')
+    </div>
     @include('layouts.navbar')
     <main class="flex flex-grow h-full">
         @include('layouts.sidebar')
