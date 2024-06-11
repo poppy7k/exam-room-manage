@@ -111,6 +111,7 @@ class BuildingController extends Controller
 
     public function building_list()
     {
+        $buildings = Building::paginate(8);
         $breadcrumbs = [
             ['url' => '/', 'title' => 'หน้าหลัก'],
         ];
