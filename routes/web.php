@@ -40,3 +40,4 @@ Route::get('/buildings/{buildingId}/room-list', [BuildingController::class, 'sho
 Route::get('/buildings/{buildingId}/addinfo/{roomId}/addseat', [ExamRoomInformationController::class, 'addSeat'])->name('addseat');
 
 Route::put('/rooms/{roomId}/update', [ExamRoomInformationController::class, 'updateRoom'])->name('examroominfo.update');
+Route::get('/test/alert', [BuildingController::class, 'testAlert'])->name('test.alert');
