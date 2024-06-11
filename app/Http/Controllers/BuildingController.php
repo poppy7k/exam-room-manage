@@ -19,33 +19,30 @@ class BuildingController extends Controller
         return view('pages.building-create', compact('breadcrumbs'));
     }
 
-    public function store(Request $request)
-    {
-        $validatedData = $request->validate([
-            'building_th' => 'required|string',
-            'building_en' => 'required|string',
-            'building_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
+    // public function store(Request $request)
+    // {
+    //     $validatedData = $request->validate([
+    //         'building_th' => 'required|string',
+    //         'building_en' => 'required|string',
+    //         'building_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+    //     ]);
     
-        if ($request->hasFile('building_image')) {
-            $fileName = $validatedData['building_en'] . '.' . $request->file('building_image')->getClientOriginalExtension();
-            $imagePath = $request->file('building_image')->storeAs('building_images', $fileName, 'public');
-            $imageFilename = basename($imagePath);
-        } else {
-            $imageFilename = null;
-        }
+    //     // Process building image (if provided)
+    //     $imageFilename = null;
+    //     if ($request->hasFile('building_image')) {
+    //         $imageFilename = $request->file('building_image')->store('building_images', 'public');
+    //     }
     
-        $temporaryBuildingId = time();
+    //     // Create a new building record
+    //     $building = Building::create([
+    //         'building_th' => $validatedData['building_th'],
+    //         'building_en' => $validatedData['building_en'],
+    //         'building_image' => $imageFilename,
+    //     ]);
     
-        $buildingData = [
-            'building_th' => $validatedData['building_th'],
-            'building_en' => $validatedData['building_en'],
-            'building_image' => $imageFilename,
-        ];
-    
-        return redirect()->route('buildings.addinfo', ['buildingId' => $temporaryBuildingId])
-                         ->with('buildingData', $buildingData);
-    }
+    //     // Redirect to room creation page for this building
+    //     return redirect()->route('pages.room-list', ['buildingId' => $building->id]);
+    // }
 
     // public function store(Request $request)
     // {
@@ -63,15 +60,43 @@ class BuildingController extends Controller
     //         $imageFilename = null;
     //     }
     
-    //     $building = Building::create([
+    //     $temporaryBuildingId = time();
+    
+    //     $buildingData = [
     //         'building_th' => $validatedData['building_th'],
     //         'building_en' => $validatedData['building_en'],
     //         'building_image' => $imageFilename,
-    //     ]);
+    //     ];
     
-    //     return redirect()->route('buildings.addinfo', ['buildingId' => $building->id])
-    //                      ->with('buildingData', $building->toArray());
+    //     return redirect()->route('buildings.addinfo', ['buildingId' => $temporaryBuildingId])
+    //                      ->with('buildingData', $buildingData);
     // }
+
+    public function store(Request $request)
+    {
+        $validatedData = $request->validate([
+            'building_th' => 'required|string',
+            'building_en' => 'required|string',
+            'building_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+    
+        if ($request->hasFile('building_image')) {
+            $fileName = $validatedData['building_en'] . '.' . $request->file('building_image')->getClientOriginalExtension();
+            $imagePath = $request->file('building_image')->storeAs('building_images', $fileName, 'public');
+            $imageFilename = basename($imagePath);
+        } else {
+            $imageFilename = null;
+        }
+    
+        $building = Building::create([
+            'building_th' => $validatedData['building_th'],
+            'building_en' => $validatedData['building_en'],
+            'building_image' => $imageFilename,
+        ]);
+    
+        return redirect()->route('pages.room-list', ['buildingId' => $building->id])
+                         ->with('buildingData', $building->toArray());
+    }
 
     public function index()
     {
