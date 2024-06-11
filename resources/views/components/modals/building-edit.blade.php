@@ -14,16 +14,16 @@
                             <h3 class="text-2xl leading-6 font-medium text-gray-900" id="modal-title">แก้ไขข้อมูลอาคารสอบ</h3>
                             <div class="mt-4">
                                 <div class="mb-4 mt-4">
-                                    <label for="building_th" class="block text-gray-700 font-semibold">ชื่ออาคารสอบ (ภาษาไทย)</label>
-                                    <input type="text" name="building_th" id="building_th" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                                    <label for="building_th_edit" class="block text-gray-700 font-semibold">ชื่ออาคารสอบ (ภาษาไทย)</label>
+                                    <input type="text" name="building_th_edit" id="building_th_edit" class="w-full px-3 py-2 border border-gray-300 rounded-md">
                                 </div>
                                 <div class="mb-4">
-                                    <label for="building_en" class="block text-gray-700 font-semibold">ชื่ออาคารสอบ (English)</label>
-                                    <input type="text" name="building_en" id="building_en" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                                    <label for="building_en_edit" class="block text-gray-700 font-semibold">ชื่ออาคารสอบ (English)</label>
+                                    <input type="text" name="building_en_edit" id="building_en_edit" class="w-full px-3 py-2 border border-gray-300 rounded-md">
                                 </div>
                                 <div class="mb-4">
-                                    <label for="building_image" class="block text-gray-700 font-semibold">รูปภาพของอาคารสอบ</label>
-                                    <input type="file" name="building_image" id="building_image" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                                    <label for="building_image_edit" class="block text-gray-700 font-semibold">รูปภาพของอาคารสอบ</label>
+                                    <input type="file" name="building_image_edit" id="building_image_edit" class="w-full px-3 py-2 border border-gray-300 rounded-md">
                                 </div>
                             </div>
                         </div>
@@ -48,8 +48,8 @@
 <script>
 function openModal(building) {
         document.getElementById('editForm').action = `/buildings/${building.id}/ajax`;
-        document.getElementById('building_th').value = building.building_th;
-        document.getElementById('building_en').value = building.building_en;
+        document.getElementById('building_th_edit').value = building.building_th;
+        document.getElementById('building_en_edit').value = building.building_en;
         document.getElementById('editModal').classList.remove('hidden');
         setTimeout(() => {
             modalCl.remove('opacity-0')

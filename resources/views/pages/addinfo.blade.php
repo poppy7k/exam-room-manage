@@ -120,7 +120,7 @@
 
 {{-- @endsection --}}
 
-<form method="POST" action="{{ route('examroominfo.store') }}" style="max-width: 400px; margin: 0 auto; padding: 20px; border: 1px solid #ccc; border-radius: 5px;" onsubmit="return validateForm()">
+<form method="POST" action="{{ route('examroominfo.store') }}" style="max-width: 400px; margin: 0 auto; padding: 20px; border: 1px solid #ccc; border-radius: 5px;" onsubmit="return validateRoomForm()">
     @csrf
 
     <input type="hidden" name="building_th" value="{{ $buildingData['building_th'] }}">
@@ -189,7 +189,7 @@
         button.parentElement.remove();
     }
 
-    function validateForm() {
+    function validateRoomForm() {
         let isValid = true;
         const roomGroups = document.querySelectorAll('.room-group');
 
