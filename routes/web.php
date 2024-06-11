@@ -38,3 +38,5 @@ Route::get('/buildings/{buildingId}/room-list', [BuildingController::class, 'sho
 // Route::get('/buildings/{buildingId}/addinfo/add-seat', 'ExamRoomInformationController@addSeat')->name('examroominfo.addseat');
 //Route::get('/buildings/{buildingId}/addinfo/{room_id}/add-seat', 'ExamRoomInformationController@addSeat')->name('examroominfo.addseat');
 Route::get('/buildings/{buildingId}/addinfo/{roomId}/addseat', [ExamRoomInformationController::class, 'addSeat'])->name('addseat');
+
+Route::put('/rooms/{roomId}/update', [ExamRoomInformationController::class, 'updateRoom'])->name('examroominfo.update');

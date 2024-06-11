@@ -1,11 +1,11 @@
-<div id="editModal" class="fixed z-30 inset-0 hidden">
+<div id="editBuildingModal" class="fixed z-30 inset-0 hidden">
     <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
         <div class="fixed inset-0 transition-opacity" aria-hidden="true">
             <div class="absolute inset-0 bg-gray-500 opacity-75 w-screen h-screen"></div>
         </div>
         <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
         <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-            <form id="editForm" method="POST" enctype="multipart/form-data">
+            <form id="editBuildingForm" method="POST" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
                 <div class="bg-white px-4 pb-4 sm:p-6 sm:pb-4">
@@ -31,7 +31,7 @@
                 </div>
                 <div class="bg-gray-200 px-4 pb-4 sm:px-6 sm:flex sm:flex-row-reverse">
                     <div class="flex pt-4 pr-4 gap-4">
-                        <x-buttons.secondary type="button" class="hover:scale-105 py-2 w-12" onclick="closeModal()">
+                        <x-buttons.secondary type="button" class="hover:scale-105 py-2 w-12" onclick="closeBuildingModal()">
                             Cancel
                         </x-buttons.secondary>
                         <x-buttons.primary type="submit" class="hover:scale-105 py-2 w-12 justify-center" onclick="">
@@ -46,22 +46,18 @@
 </div>
 
 <script>
-function openModal(building) {
-        document.getElementById('editForm').action = `/buildings/${building.id}/ajax`;
+    function openBuildingEditModal(building) {
+        document.getElementById('editBuildingForm').action = `/buildings/${building.id}/ajax`;
         document.getElementById('building_th_edit').value = building.building_th;
         document.getElementById('building_en_edit').value = building.building_en;
-        document.getElementById('editModal').classList.remove('hidden');
-        setTimeout(() => {
-            modalCl.remove('opacity-0')
-            modalCl.remove('-translate-y-10')
-            modalCl.remove('scale-150')
-        }, 100);
-    }
-    function closeModal() {
-        document.getElementById('editModal').classList.add('hidden');
+        document.getElementById('editBuildingModal').classList.remove('hidden');
     }
 
-    document.getElementById('editForm').addEventListener('submit', function(event) {
+    function closeBuildingModal() {
+        document.getElementById('editBuildingModal').classList.add('hidden');
+    }
+
+    document.getElementById('editBuildingForm').addEventListener('submit', function(event) {
         event.preventDefault();
         var formData = new FormData(this);
         var action = this.action;

@@ -53,6 +53,6 @@
         }
         return isValid;
     }
-    </script>
+</script>
 
 @endsection

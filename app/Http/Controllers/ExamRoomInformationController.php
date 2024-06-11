@@ -93,5 +93,23 @@ class ExamRoomInformationController extends Controller
     //         'breadcrumbs' => $breadcrumbs
     //     ]);
     // }
+    public function updateRoom(Request $request, $roomId)
+    {
+        $request->validate([
+            'floor' => 'required|string|max:255',
+            'room' => 'required|string|max:255',
+        ]);
     
+        $room = ExamRoomInformation::find($roomId);
+        if (!$room) {
+            return response()->json(['error' => 'Room not found.'], 404);
+        }
+    
+        $room->floor = $request->floor;
+        $room->room = $request->room;
+        $room->save();
+    
+        return response()->json(['success' => 'Room updated successfully.']);
+    }
 }
+
