@@ -57,6 +57,9 @@
                 ไม่พบอาคารสอบ
             </p>
         </div>
+        <div class="mt-4 col-span-4 mx-auto">
+            {{ $buildings->links('pagination::bootstrap-4') }}
+        </div>
     </div>
 </div>
 <script>

@@ -51,6 +51,9 @@
                     ไม่พบห้องสอบ
                 </p>
             </div>
+            <div class="mt-4 col-span-4 mx-auto">
+                {{ $rooms->links('pagination::bootstrap-4') }}
+            </div>
         </div>
     </div>
 

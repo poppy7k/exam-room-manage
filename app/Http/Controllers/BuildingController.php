@@ -111,7 +111,6 @@ class BuildingController extends Controller
 
     public function building_list()
     {
-        $buildings = Building::all();
         $breadcrumbs = [
             ['url' => '/', 'title' => 'หน้าหลัก'],
         ];
@@ -206,7 +205,7 @@ class BuildingController extends Controller
     public function showRoomList($buildingId)
     {
         $building = Building::findOrFail($buildingId);
-        $rooms = $building->examRoomInformation()->get();
+        $rooms = $building->examRoomInformation()->paginate(12);
         $breadcrumbs = [
             ['url' => '/', 'title' => 'หน้าหลัก'],
             ['url' => '/buildings/'.$buildingId.'/room-list', 'title' => ''.$building->building_th],
