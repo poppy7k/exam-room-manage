@@ -14,6 +14,7 @@ Route::get('/buildings/add', [BuildingController::class, 'create'])->name('pages
 Route::get('/buildings', [BuildingController::class, 'index'])->name('buildings.index');
 Route::get('/buildings/create', [BuildingController::class, 'create'])->name('buildings.create');
 Route::post('/buildings/store', [BuildingController::class, 'store'])->name('buildings.store');
+
 Route::get('/buildings/{buildingId}/addinfo', function($buildingId) {
     return view('buildings.addinfo', ['buildingId' => $buildingId]);
 })->name('buildings.addinfo');
@@ -26,17 +27,9 @@ Route::delete('/buildings/{buildingId}', [BuildingController::class, 'destroy'])
 Route::get('/buildings/{buildingId}/edit', [BuildingController::class, 'edit'])->name('buildings.edit');
 Route::put('/buildings/{buildingId}', [BuildingController::class, 'update'])->name('buildings.update');
 
-
-Route::get('/buildings/{buildingId}/addinfo', [ExamRoomInformationController::class, 'create'])->name('buildings.addinfo');
-Route::post('/examroominfo/store', [ExamRoomInformationController::class, 'store'])->name('examroominfo.store');
-
 Route::put('/buildings/{buildingId}/ajax', [BuildingController::class, 'updateAjax'])->name('buildings.updateAjax');
 
 Route::get('/buildings/{buildingId}/room-list', [BuildingController::class, 'showRoomList'])->name('pages.room-list');
 
-// Route::get('/add-seat', 'ExamRoomInformationController@addSeat')->name('examroominfo.addseat');
-// Route::get('/buildings/{buildingId}/addinfo/add-seat', 'ExamRoomInformationController@addSeat')->name('examroominfo.addseat');
-//Route::get('/buildings/{buildingId}/addinfo/{room_id}/add-seat', 'ExamRoomInformationController@addSeat')->name('examroominfo.addseat');
 Route::get('/buildings/{buildingId}/addinfo/{roomId}/addseat', [ExamRoomInformationController::class, 'addSeat'])->name('addseat');
-
 Route::put('/rooms/{roomId}/update', [ExamRoomInformationController::class, 'updateRoom'])->name('examroominfo.update');
