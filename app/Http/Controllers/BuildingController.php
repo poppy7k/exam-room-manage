@@ -93,6 +93,10 @@ class BuildingController extends Controller
             'building_en' => $validatedData['building_en'],
             'building_image' => $imageFilename,
         ]);
+
+        // alerts-box
+        session()->flash('status', 'success');
+        session()->flash('message', 'สร้างอาคารสอบสำเร็จ!');
     
         return redirect()->route('pages.room-list', ['buildingId' => $building->id])
                          ->with('buildingData', $building->toArray());
@@ -208,13 +212,11 @@ class BuildingController extends Controller
             ['url' => '/buildings/'.$buildingId.'/room-list', 'title' => ''.$building->building_th],
             ['url' => '/buildings/'.$buildingId.'/room-list', 'title' => 'รายการห้องสอบ'], 
         ];
-        session()->flash('status', 'success');
-        session()->flash('message', 'ทดสอบ ทดสอบ ทดสอบ ทดสอบ ทดสอบ ทดสอบ ทดสอบ');
     
         return view('pages.room-list', compact('building', 'rooms', 'breadcrumbs'));
     }
 
-    public function testAlert()
+    public function alert()
     {
         return back()->with('status', 'Task status updated successfully!');
     }

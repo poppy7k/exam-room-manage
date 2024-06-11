@@ -40,7 +40,7 @@
         @empty
             <div class="col-span-4 text-center py-32 my-3">
                 <!--<svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 my-10 mx-auto" id="Outline" viewBox="0 0 24 24" width="512" height="512"><path d="M23.707,22.293l-5.969-5.969a10.016,10.016,0,1,0-1.414,1.414l5.969,5.969a1,1,0,0,0,1.414-1.414ZM10,18a8,8,0,1,1,8-8A8.009,8.009,0,0,1,10,18Z"/></svg> -->
-                <p class="text-gray-500 mb-5 mt-10">ไม่พบอาคารสอบ<br>กรุณาสร้างอาคารสอบเพิ่มที่ปุ่มด้านล่างนี้</p>
+                <p class="text-gray-500 mb-5 mt-10">ไม่พบอาคารสอบ<br>สามารถสร้างอาคารสอบได้ที่ปุ่มด้านล่างนี้</p>
                 <x-buttons.primary type="submit" onclick="window.location.href = '{{ route('pages.building-create') }}'" class="px-1 py-3 z-40 mx-auto">
                     <svg xmlns="http://www.w3.org/2000/svg" class="mt-1 fill-white" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Capa_1" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve" width="16" height="16"><g><path d="M480,224H288V32c0-17.673-14.327-32-32-32s-32,14.327-32,32v192H32c-17.673,0-32,14.327-32,32s14.327,32,32,32h192v192   c0,17.673,14.327,32,32,32s32-14.327,32-32V288h192c17.673,0,32-14.327,32-32S497.673,224,480,224z"/></g>/</svg>
                     สร้างอาคารสอบ

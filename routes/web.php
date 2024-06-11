@@ -12,7 +12,6 @@ Route::get('/', [BuildingController::class, 'building_list'])->name('building-li
 Route::get('/buildings/add', [BuildingController::class, 'create'])->name('pages.building-create');
 
 Route::get('/buildings', [BuildingController::class, 'index'])->name('buildings.index');
-Route::get('/buildings/create', [BuildingController::class, 'create'])->name('buildings.create');
 Route::post('/buildings/store', [BuildingController::class, 'store'])->name('buildings.store');
 
 Route::get('/buildings/{buildingId}/addinfo', function($buildingId) {
@@ -33,4 +32,4 @@ Route::get('/buildings/{buildingId}/room-list', [BuildingController::class, 'sho
 
 Route::get('/buildings/{buildingId}/addinfo/{roomId}/addseat', [ExamRoomInformationController::class, 'addSeat'])->name('addseat');
 Route::put('/rooms/{roomId}/update', [ExamRoomInformationController::class, 'updateRoom'])->name('examroominfo.update');
-Route::get('/test/alert', [BuildingController::class, 'testAlert'])->name('test.alert');
+Route::get('/components/alert', [BuildingController::class, 'alert'])->name('components.alert');
