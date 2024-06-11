@@ -1,7 +1,7 @@
 @extends('layouts.main')
 
 @section('content')
-<div class="bg-white shadow-lg px-16 py-10 my-3 border-1 rounded divide-y-2">
+<div class="bg-white shadow-lg px-16 py-10 my-3 border-1 rounded-lg divide-y-2">
     <p class ="pb-2 text-2xl font-bold">
         สร้างอาคารสอบ
     </p>
