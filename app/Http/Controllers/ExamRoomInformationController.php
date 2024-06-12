@@ -9,10 +9,10 @@ use Illuminate\Http\Request;
 class ExamRoomInformationController extends Controller
 {
 
-    public function create($buildingId, $roomId)
+    public function create($buildingId)
     {
         $building = Building::findOrFail($buildingId);
-        $room = ExamRoomInformation::findOrFail($roomId);
+        // $room = ExamRoomInformation::findOrFail($roomId);
         $breadcrumbs = [
             ['url' => '/', 'title' => 'หน้าหลัก'],
             ['url' => '/buildings/'.$buildingId.'/room-list', 'title' => ''.$building->building_th],
@@ -20,7 +20,7 @@ class ExamRoomInformationController extends Controller
             ['url' => '/buildings/'.$buildingId.'/room-list'.'/add', 'title' => 'เพิ่มห้องสอบ'],  
         ];
 
-        return view('pages.room-create', compact('building', 'room','breadcrumbs'));
+        return view('pages.room-create', compact('building','breadcrumbs'));
     }
 
     public function store(Request $request, $buildingId , $roomId)

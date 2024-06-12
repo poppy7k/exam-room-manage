@@ -137,7 +137,7 @@ class BuildingController extends Controller
     public function showRoomList($buildingId)
     {
         $building = Building::findOrFail($buildingId);
-        $nextRoomId = ExamRoomInformation::where('building_code', $buildingId)->latest()->first();
+        // $nextRoomId = ExamRoomInformation::where('building_code', $buildingId)->latest()->first();
         // $latestRoomId = ExamRoomInformation::where('building_code', $buildingId)->max('id');
         // $nextRoomId = $latestRoomId + 1;
         $rooms = $building->examRoomInformation()->paginate(12);
@@ -147,7 +147,7 @@ class BuildingController extends Controller
             ['url' => '/buildings/'.$buildingId.'/room-list', 'title' => 'รายการห้องสอบ'], 
         ];
     
-        return view('pages.room-list', compact('building', 'rooms','nextRoomId', 'breadcrumbs'));
+        return view('pages.room-list', compact('building', 'rooms','breadcrumbs'));
     }
 
     public function alert()
