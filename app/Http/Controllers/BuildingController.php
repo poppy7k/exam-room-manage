@@ -83,22 +83,6 @@ class BuildingController extends Controller
         }
     }
 
-    public function edit($buildingId)
-    {
-        $building = Building::with('examRoomInformation')->find($buildingId);
-        if (!$building) {
-            return redirect()->route('buildings.index')->with('error', 'Building not found.');
-        }
-
-        $breadcrumbs = [
-            ['url' => '/', 'title' => 'หน้าหลัก'],
-            ['url' => '/buildings/'.$buildingId, 'title' => ''.$building->building_th], 
-            ['url' => '/buildings/'.$buildingId.'/edit', 'title' => 'แก้ไขข้อมูล'],
-        ];
-
-        return view('buildings.edit', compact('building', 'breadcrumbs'));
-    }
-
     public function update(Request $request, $buildingId)
     {
         $request->validate([

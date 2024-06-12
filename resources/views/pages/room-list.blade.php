@@ -40,9 +40,9 @@
                 />
             @empty
                 <div class="col-span-4 text-center">
-                    <x-buttons.icon-primary type="submit" onclick="window.location.href = '{{ route('pages.building-create') }}'" class="px-1 py-1 z-40">
+                    <x-buttons.icon-primary type="submit" onclick="window.location.href = '{{ route('pages.room-create', ['buildingId' => $building->id, 'roomId' => $nextRoomId->id]) }}'" class="px-1 py-1 z-40">
                         <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Capa_1" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve" width="16" height="16"><g><path d="M480,224H288V32c0-17.673-14.327-32-32-32s-32,14.327-32,32v192H32c-17.673,0-32,14.327-32,32s14.327,32,32,32h192v192   c0,17.673,14.327,32,32,32s32-14.327,32-32V288h192c17.673,0,32-14.327,32-32S497.673,224,480,224z"/></g>/</svg>
-                        <x-tooltip title="สร้างอาคารสอบ" class="group-hover:-translate-x-12"></x-tooltip>
+                        <x-tooltip title="สร้างห้องสอบ" class="group-hover:-translate-x-12"></x-tooltip>
                     </x-buttons.icon-primary>
                 </div>
             @endforelse
