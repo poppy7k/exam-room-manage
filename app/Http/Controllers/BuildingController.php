@@ -19,59 +19,6 @@ class BuildingController extends Controller
         return view('pages.building-create', compact('breadcrumbs'));
     }
 
-    // public function store(Request $request)
-    // {
-    //     $validatedData = $request->validate([
-    //         'building_th' => 'required|string',
-    //         'building_en' => 'required|string',
-    //         'building_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-    //     ]);
-    
-    //     // Process building image (if provided)
-    //     $imageFilename = null;
-    //     if ($request->hasFile('building_image')) {
-    //         $imageFilename = $request->file('building_image')->store('building_images', 'public');
-    //     }
-    
-    //     // Create a new building record
-    //     $building = Building::create([
-    //         'building_th' => $validatedData['building_th'],
-    //         'building_en' => $validatedData['building_en'],
-    //         'building_image' => $imageFilename,
-    //     ]);
-    
-    //     // Redirect to room creation page for this building
-    //     return redirect()->route('pages.room-list', ['buildingId' => $building->id]);
-    // }
-
-    // public function store(Request $request)
-    // {
-    //     $validatedData = $request->validate([
-    //         'building_th' => 'required|string',
-    //         'building_en' => 'required|string',
-    //         'building_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-    //     ]);
-    
-    //     if ($request->hasFile('building_image')) {
-    //         $fileName = $validatedData['building_en'] . '.' . $request->file('building_image')->getClientOriginalExtension();
-    //         $imagePath = $request->file('building_image')->storeAs('building_images', $fileName, 'public');
-    //         $imageFilename = basename($imagePath);
-    //     } else {
-    //         $imageFilename = null;
-    //     }
-    
-    //     $temporaryBuildingId = time();
-    
-    //     $buildingData = [
-    //         'building_th' => $validatedData['building_th'],
-    //         'building_en' => $validatedData['building_en'],
-    //         'building_image' => $imageFilename,
-    //     ];
-    
-    //     return redirect()->route('buildings.addinfo', ['buildingId' => $temporaryBuildingId])
-    //                      ->with('buildingData', $buildingData);
-    // }
-
     public function store(Request $request)
     {
         $validatedData = $request->validate([
@@ -102,12 +49,12 @@ class BuildingController extends Controller
                          ->with('buildingData', $building->toArray());
     }
 
-    public function index()
-    {
-        $buildings = Building::all();
+    // public function index()
+    // {
+    //     $buildings = Building::all();
 
-        return view('buildings.index', compact('buildings'));
-    }
+    //     return view('buildings.index', compact('buildings'));
+    // }
 
     public function building_list()
     {
@@ -206,6 +153,9 @@ class BuildingController extends Controller
     public function showRoomList($buildingId)
     {
         $building = Building::findOrFail($buildingId);
+        $nextRoomId = ExamRoomInformation::where('building_code', $buildingId)->latest()->first();
+        // $latestRoomId = ExamRoomInformation::where('building_code', $buildingId)->max('id');
+        // $nextRoomId = $latestRoomId + 1;
         $rooms = $building->examRoomInformation()->paginate(12);
         $breadcrumbs = [
             ['url' => '/', 'title' => 'หน้าหลัก'],
@@ -213,7 +163,7 @@ class BuildingController extends Controller
             ['url' => '/buildings/'.$buildingId.'/room-list', 'title' => 'รายการห้องสอบ'], 
         ];
     
-        return view('pages.room-list', compact('building', 'rooms', 'breadcrumbs'));
+        return view('pages.room-list', compact('building', 'rooms','nextRoomId', 'breadcrumbs'));
     }
 
     public function alert()
