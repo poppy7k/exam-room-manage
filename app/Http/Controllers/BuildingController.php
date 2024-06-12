@@ -49,13 +49,6 @@ class BuildingController extends Controller
                          ->with('buildingData', $building->toArray());
     }
 
-    // public function index()
-    // {
-    //     $buildings = Building::all();
-
-    //     return view('buildings.index', compact('buildings'));
-    // }
-
     public function building_list()
     {
         $buildings = Building::paginate(8);
@@ -83,45 +76,45 @@ class BuildingController extends Controller
         }
     }
 
-    public function edit($buildingId)
-    {
-        $building = Building::with('examRoomInformation')->find($buildingId);
-        if (!$building) {
-            return redirect()->route('buildings.index')->with('error', 'Building not found.');
-        }
+    // public function edit($buildingId)
+    // {
+    //     $building = Building::with('examRoomInformation')->find($buildingId);
+    //     if (!$building) {
+    //         return redirect()->route('buildings.index')->with('error', 'Building not found.');
+    //     }
 
-        $breadcrumbs = [
-            ['url' => '/', 'title' => 'หน้าหลัก'],
-            ['url' => '/buildings/'.$buildingId, 'title' => ''.$building->building_th], 
-            ['url' => '/buildings/'.$buildingId.'/edit', 'title' => 'แก้ไขข้อมูล'],
-        ];
+    //     $breadcrumbs = [
+    //         ['url' => '/', 'title' => 'หน้าหลัก'],
+    //         ['url' => '/buildings/'.$buildingId, 'title' => ''.$building->building_th], 
+    //         ['url' => '/buildings/'.$buildingId.'/edit', 'title' => 'แก้ไขข้อมูล'],
+    //     ];
 
-        return view('buildings.edit', compact('building', 'breadcrumbs'));
-    }
+    //     return view('buildings.edit', compact('building', 'breadcrumbs'));
+    // }
 
-    public function update(Request $request, $buildingId)
-    {
-        $request->validate([
-            'building_th' => 'required|string|max:255',
-            'building_en' => 'required|string|max:255',
-        ]);
+    // public function update(Request $request, $buildingId)
+    // {
+    //     $request->validate([
+    //         'building_th' => 'required|string|max:255',
+    //         'building_en' => 'required|string|max:255',
+    //     ]);
 
-        $building = Building::find($buildingId);
-        if (!$building) {
-            return redirect()->route('buildings.index')->with('error', 'Building not found.');
-        }
+    //     $building = Building::find($buildingId);
+    //     if (!$building) {
+    //         return redirect()->route('buildings.index')->with('error', 'Building not found.');
+    //     }
 
-        $building->update($request->all());
+    //     $building->update($request->all());
 
-        foreach ($request->exam_rooms as $examRoom) {
-            ExamRoomInformation::updateOrCreate(
-                ['building_code' => $buildingId, 'room' => $examRoom['room']],
-                $examRoom
-            );
-        }
+    //     foreach ($request->exam_rooms as $examRoom) {
+    //         ExamRoomInformation::updateOrCreate(
+    //             ['building_code' => $buildingId, 'room' => $examRoom['room']],
+    //             $examRoom
+    //         );
+    //     }
 
-        return redirect()->route('building-list')->with('success', 'Building updated successfully.');
-    }
+    //     return redirect()->route('building-list')->with('success', 'Building updated successfully.');
+    // }
 
     public function updateAjax(Request $request, $buildingId)
     {
@@ -153,9 +146,6 @@ class BuildingController extends Controller
     public function showRoomList($buildingId)
     {
         $building = Building::findOrFail($buildingId);
-        // $nextRoomId = ExamRoomInformation::where('building_code', $buildingId)->latest()->first();
-        // $latestRoomId = ExamRoomInformation::where('building_code', $buildingId)->max('id');
-        // $nextRoomId = $latestRoomId + 1;
         $rooms = $building->examRoomInformation()->paginate(12);
         $breadcrumbs = [
             ['url' => '/', 'title' => 'หน้าหลัก'],
