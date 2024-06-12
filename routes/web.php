@@ -34,5 +34,5 @@ Route::get('/buildings/{buildingId}/addinfo/{roomId}/addseat', [ExamRoomInformat
 Route::put('/rooms/{roomId}/update', [ExamRoomInformationController::class, 'updateRoom'])->name('examroominfo.update');
 Route::get('/components/alert', [BuildingController::class, 'alert'])->name('components.alert');
 
-Route::get('/buildings/{buildingId}/room-list/{roomId}/add', [ExamRoomInformationController::class, 'create'])->name('pages.room-create');
-Route::post('/buildings/{buildingId}/room-list/{roomId}/store', [ExamRoomInformationController::class, 'store'])->name('examroominfo.store');
+Route::get('/buildings/{buildingId}/room-list/add', [ExamRoomInformationController::class, 'create'])->name('pages.room-create');
+Route::post('/buildings/{buildingId}/room-list/store', [ExamRoomInformationController::class, 'store'])->name('examroominfo.store');
