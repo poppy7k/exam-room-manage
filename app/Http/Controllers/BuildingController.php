@@ -6,6 +6,7 @@ use App\Models\Building;
 use App\Models\ExamRoomInformation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 
 class BuildingController extends Controller
 {
@@ -99,31 +100,56 @@ class BuildingController extends Controller
     //     return redirect()->route('building-list')->with('success', 'Building updated successfully.');
     // }
 
+    // public function updateAjax(Request $request, $buildingId)
+    // {
+    //     $request->validate([
+    //         'building_th_edit' => 'required|string|max:255',
+    //         'building_en_edit' => 'required|string|max:255',
+    //         'building_image_edit' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+    //     ]);
+    
+    //     $building = Building::find($buildingId);
+    //     if (!$building) {
+    //         return response()->json(['error' => 'Building not found.'], 404);
+    //     }
+    
+    //     $building->building_th = $request->building_th_edit;
+    //     $building->building_en = $request->building_en;
+    
+    //     if ($request->hasFile('building_image_edit')) {
+    //         $fileName = $request->building_en . '.' . $request->file('building_image_edit')->getClientOriginalExtension();
+    //         $imagePath = $request->file('building_image_edit')->storeAs('building_image_edit', $fileName, 'public');
+    //         $building->building_image = basename($imagePath);
+    //     }
+    
+    //     $building->save();
+    
+    //     return response()->json(['success' => 'Building updated successfully.']);
+    // }
+
     public function updateAjax(Request $request, $buildingId)
     {
-        $request->validate([
-            'building_th_edit' => 'required|string|max:255',
-            'building_en_edit' => 'required|string|max:255',
-            'building_image_edit' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
-    
-        $building = Building::find($buildingId);
-        if (!$building) {
-            return response()->json(['error' => 'Building not found.'], 404);
+        try {
+            Log::info('Update Building Request Data:', $request->all());
+
+            $building = Building::findOrFail($buildingId);
+            $building->building_th = $request->input('building_th_edit');
+            $building->building_en = $request->input('building_en_edit');
+
+            Log::info('Building EN:', ['building_en' => $request->input('building_en_edit')]);
+
+            if ($request->hasFile('building_image_edit')) {
+                $path = $request->file('building_image_edit')->store('building_images', 'public');
+                $building->image_path = $path;
+            }
+
+            $building->save();
+
+            return response()->json(['success' => 'Building updated successfully.']);
+        } catch (\Exception $e) {
+            Log::error('Failed to update building:', ['error' => $e->getMessage()]);
+            return response()->json(['error' => 'Failed to update the building.'], 500);
         }
-    
-        $building->building_th = $request->building_th_edit;
-        $building->building_en = $request->building_en;
-    
-        if ($request->hasFile('building_image_edit')) {
-            $fileName = $request->building_en . '.' . $request->file('building_image_edit')->getClientOriginalExtension();
-            $imagePath = $request->file('building_image_edit')->storeAs('building_image_edit', $fileName, 'public');
-            $building->building_image = basename($imagePath);
-        }
-    
-        $building->save();
-    
-        return response()->json(['success' => 'Building updated successfully.']);
     }
 
     public function showRoomList($buildingId)
