@@ -96,16 +96,15 @@ class BuildingController extends Controller
     //             $examRoom
     //         );
     //     }
-
     //     return redirect()->route('building-list')->with('success', 'Building updated successfully.');
     // }
 
     public function updateAjax(Request $request, $buildingId)
     {
         $request->validate([
-            'building_th' => 'required|string|max:255',
-            'building_en' => 'required|string|max:255',
-            'building_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'building_th_edit' => 'required|string|max:255',
+            'building_en_edit' => 'required|string|max:255',
+            'building_image_edit' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
     
         $building = Building::find($buildingId);
@@ -113,12 +112,12 @@ class BuildingController extends Controller
             return response()->json(['error' => 'Building not found.'], 404);
         }
     
-        $building->building_th = $request->building_th;
+        $building->building_th = $request->building_th_edit;
         $building->building_en = $request->building_en;
     
-        if ($request->hasFile('building_image')) {
-            $fileName = $request->building_en . '.' . $request->file('building_image')->getClientOriginalExtension();
-            $imagePath = $request->file('building_image')->storeAs('building_images', $fileName, 'public');
+        if ($request->hasFile('building_image_edit')) {
+            $fileName = $request->building_en . '.' . $request->file('building_image_edit')->getClientOriginalExtension();
+            $imagePath = $request->file('building_image_edit')->storeAs('building_image_edit', $fileName, 'public');
             $building->building_image = basename($imagePath);
         }
     
@@ -130,6 +129,9 @@ class BuildingController extends Controller
     public function showRoomList($buildingId)
     {
         $building = Building::findOrFail($buildingId);
+        $nextRoomId = ExamRoomInformation::where('building_code', $buildingId)->latest()->first();
+        // $latestRoomId = ExamRoomInformation::where('building_code', $buildingId)->max('id');
+        // $nextRoomId = $latestRoomId + 1;
         $rooms = $building->examRoomInformation()->paginate(12);
         $breadcrumbs = [
             ['url' => '/', 'title' => 'หน้าหลัก'],
@@ -137,7 +139,7 @@ class BuildingController extends Controller
             ['url' => '/buildings/'.$buildingId.'/room-list', 'title' => 'รายการห้องสอบ'], 
         ];
     
-        return view('pages.room-list', compact('building', 'rooms','breadcrumbs'));
+        return view('pages.room-list', compact('building', 'rooms','nextRoomId', 'breadcrumbs'));
     }
 
     public function alert()

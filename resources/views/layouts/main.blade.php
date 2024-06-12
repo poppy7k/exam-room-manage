@@ -5,6 +5,7 @@
     <!-- Pop-up -->
     <div id="popup">
         @include('components.modals.building-edit')
+        @include('components.modals.room-edit')
     </div>
     @include('layouts.navbar')
     <main class="flex flex-grow h-full">

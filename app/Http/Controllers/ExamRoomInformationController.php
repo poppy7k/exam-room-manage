@@ -47,8 +47,8 @@ class ExamRoomInformationController extends Controller
     public function updateRoom(Request $request, $roomId)
     {
         $request->validate([
-            'floor' => 'required|string|max:255',
-            'room' => 'required|string|max:255',
+            'floor_edit' => 'required|numeric|min:0|max:255',
+            'room_edit' => 'required|numeric|min:0|max:255',
         ]);
     
         $room = ExamRoomInformation::find($roomId);
@@ -56,8 +56,8 @@ class ExamRoomInformationController extends Controller
             return response()->json(['error' => 'Room not found.'], 404);
         }
     
-        $room->floor = $request->floor;
-        $room->room = $request->room;
+        $room->floor = $request->floor_edit;
+        $room->room = $request->room_edit;
         $room->save();
     
         return response()->json(['success' => 'Room updated successfully.']);

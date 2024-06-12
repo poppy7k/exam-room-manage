@@ -41,8 +41,8 @@
 </div>
 
 <script>
-    function openRoomEditModal(room, floor) {
-        document.getElementById('editRoomForm').action = `/examroominfo/${room.id}/update`;
+    function openRoomEditModal(room, floor, room_id) {
+        document.getElementById('editRoomForm').action = `/rooms/${room_id}/update`;
         document.getElementById('floor_edit').value = floor;
         document.getElementById('room_edit').value = room;
         document.getElementById('editRoomModal').classList.remove('hidden');
