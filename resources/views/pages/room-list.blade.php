@@ -33,7 +33,8 @@
                     :floor="$room->floor"
                     :valid_seat="$room->valid_seat"
                     :total_seat="$room->total_seat"      
-                    :room_id="$room->id" 
+                    :room_id="$room->id"
+                    :buildingId="$room->building_code"
                 />
             @empty
                 {{-- <div class="col-span-4 text-center">
