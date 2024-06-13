@@ -28,7 +28,7 @@
             </p>
         </div>
         <div class="flex justify-between pb-1 pt-3">
-            <x-buttons.primary type="button" class="py-1.5 z-10"
+            <x-buttons.primary type="button" class="py-1.5 px-12 z-10"
                 onclick="window.location.href = '{{ route('room-detail', ['buildingId' => $buildingId, 'roomId' => $room_id]) }}'">
                 เลือก
             </x-buttons.primary>

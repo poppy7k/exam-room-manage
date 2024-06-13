@@ -36,7 +36,7 @@
                         <x-buttons.secondary type="button" class="hover:scale-105 py-2 w-12" onclick="closeBuildingModal()">
                             Cancel
                         </x-buttons.secondary>
-                        <x-buttons.primary type="submit" class="hover:scale-105 py-2 w-12 justify-center" onclick="">
+                        <x-buttons.primary type="submit" class="hover:scale-105 py-2 px-12 w-12 justify-center" onclick="">
                             Save
                         </x-buttons.primary>
                         

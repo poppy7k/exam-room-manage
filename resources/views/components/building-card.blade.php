@@ -40,7 +40,7 @@
                 </p>
             </div>
             <div class="flex justify-between py-1">
-                <x-buttons.primary type="button" class="py-1.5 z-10" onclick="window.location.href = '{{ route('pages.room-list', ['buildingId' => $building_id]) }}'">
+                <x-buttons.primary type="button" class="py-1.5 px-12 z-10" onclick="window.location.href = '{{ route('pages.room-list', ['buildingId' => $building_id]) }}'">
                     เลือก
                 </x-buttons.primary>
                 <x-buttons.icon-info type="button" onclick="event.stopPropagation(); openBuildingEditModal({ id: {{ $building_id }}, building_th: '{{ $building_th }}', building_en: '{{ $building_en }}' })" class="px-1 py-1 z-10">
