@@ -22,6 +22,7 @@ return new class extends Migration
             $table->integer('columns')->nullable();
             $table->integer('valid_seat')->nullable();
             $table->integer('total_seat')->nullable();
+            $table->json('selected_seats')->nullable();
             $table->timestamps();
         });
     }

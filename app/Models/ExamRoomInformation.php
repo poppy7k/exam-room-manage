@@ -21,6 +21,7 @@ class ExamRoomInformation extends Model
         'columns',
         'valid_seat',
         'total_seat',
+        'selected_seats',
     ];
 
     public function building()
