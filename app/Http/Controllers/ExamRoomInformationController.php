@@ -15,8 +15,7 @@ class ExamRoomInformationController extends Controller
         $breadcrumbs = [
             ['url' => '/', 'title' => 'หน้าหลัก'],
             ['url' => '/buildings/'.$buildingId.'/room-list', 'title' => $building->building_th],
-            ['url' => '/buildings/'.$buildingId.'/room-list', 'title' => 'รายการห้องสอบ'],
-            ['url' => '/buildings/'.$buildingId.'/room-list/add', 'title' => 'เพิ่มห้องสอบ'],  
+            ['url' => '/buildings/'.$buildingId.'/room-list/add', 'title' => 'สร้างห้องสอบ'],  
         ];
 
         return view('pages.room-create', compact('building', 'breadcrumbs', 'buildingId'));

@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BuildingController;
 use App\Http\Controllers\ExamRoomInformationController;
+use App\Models\ExamRoomInformation;
 
 Route::get('/', function () {
     return view('pages.building-list');
@@ -32,6 +33,7 @@ Route::get('/buildings/{buildingId}/room-list', [BuildingController::class, 'sho
 
 Route::get('/buildings/{buildingId}/addinfo/{roomId}/addseat', [ExamRoomInformationController::class, 'addSeat'])->name('addseat');
 Route::put('/rooms/{roomId}/update', [ExamRoomInformationController::class, 'updateRoom'])->name('examroominfo.update');
+Route::delete('/rooms/{roomId}', [ExamRoomInformationController::class, 'deleteRoom'])->name('rooms.delete');
 Route::get('/components/alert', [BuildingController::class, 'alert'])->name('components.alert');
 
 Route::get('/buildings/{buildingId}/room-list/add', [ExamRoomInformationController::class, 'create'])->name('pages.room-create');
