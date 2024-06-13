@@ -86,6 +86,23 @@ class ExamRoomInformationController extends Controller
             return response()->json(['success' => false, 'message' => 'Room not found.'], 404);
         }
     }
+    // public function showRoomDetail($buildingId, $roomId)
+    // {
+    //     $building = Building::findOrFail($buildingId);
+    //     $room = ExamRoomInformation::findOrFail($roomId);
+    //     $breadcrumbs = [
+    //         ['url' => '/', 'title' => 'หน้าหลัก'],
+    //         ['url' => '/buildings/'.$buildingId.'/room-list', 'title' => $building->building_th],
+    //         ['url' => '/buildings/'.$buildingId.'/room-list/'.$roomId, 'title' => $room->room],  
+    //     ];
+
+    //     return view('pages.room-detail', [
+    //         'buildingId' => $buildingId,
+    //         'roomId' => $roomId,
+    //         'breadcrumbs' => $breadcrumbs,
+    //     ]);
+    // }
+
     public function showRoomDetail($buildingId, $roomId)
     {
         $building = Building::findOrFail($buildingId);
@@ -95,11 +112,12 @@ class ExamRoomInformationController extends Controller
             ['url' => '/buildings/'.$buildingId.'/room-list', 'title' => $building->building_th],
             ['url' => '/buildings/'.$buildingId.'/room-list/'.$roomId, 'title' => $room->room],  
         ];
-
+    
         return view('pages.room-detail', [
             'buildingId' => $buildingId,
             'roomId' => $roomId,
             'breadcrumbs' => $breadcrumbs,
+            'room' => $room,
         ]);
     }
 }
