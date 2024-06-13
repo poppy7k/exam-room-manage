@@ -14,14 +14,12 @@
                 จำนวนที่นั่ง
             </p>
         </div> 
-        <div class="flex">
-            <p class="font-semibold text-2xl justify-start ml-4">
-                แถว
-            </p>
-            <p class="font-semibold text-2xl justify-start ml-4">
-                คอลัมน์
-            </p>
-        </div>
+        <p class="font-semibold text-2xl justify-start ml-4">
+            แถว
+        </p>
+        <p class="font-semibold text-2xl justify-start ml-4">
+            คอลัมน์
+        </p>
     </div>
     <div class="bg-white shadow-lg px-10 py-10 my-3 border-1 rounded-lg">
         <div id="seat-container" class="grid h-screen overflow-x-scroll overflow-y-scroll"></div>

@@ -40,6 +40,33 @@
 </div>
 
 <script>
+    function toExcelColumn(n) {
+        let result = '';
+        while (n >= 0) {
+            result = String.fromCharCode((n % 26) + 65) + result;
+            n = Math.floor(n / 26) - 1;
+        }
+        return result;
+    }
+    function addSeats() {
+        const rows = document.getElementById('room_create_rows').value;
+        const columns = document.getElementById('room_create_columns').value;
+        const seatContainer = document.getElementById('seat-container');
+        seatContainer.innerHTML = '';
+        seatContainer.style.gridTemplateColumns = `repeat(${columns}, minmax(4rem, 1fr))`;
+
+        let seatComponents = '';
+        for (let i = 0; i < rows; i++) {
+            for (let j = 0; j < columns; j++) {
+                seatComponents += `
+                    <x-seats.unavailable>
+                        ${i + 1}-${toExcelColumn(j)}
+                    </x-seats.unavailable>
+                `;
+            }
+        }
+        seatContainer.innerHTML = seatComponents;
+    }
     function saveSeats() {
         const form = document.getElementById('addSeatForm');
         form.submit();
