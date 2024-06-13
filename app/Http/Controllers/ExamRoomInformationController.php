@@ -25,24 +25,24 @@ class ExamRoomInformationController extends Controller
     public function store(Request $request, $buildingId)
     {
         $request->validate([
-            'floor' => 'required|string',
-            'room' => 'required|string',
-            'rows' => 'required|integer|min:1',
-            'columns' => 'required|integer|min:1',
+            'room_create_floor' => 'required|string',
+            'room_create_room' => 'required|string',
+            'room_create_rows' => 'required|integer|min:1',
+            'room_create_columns' => 'required|integer|min:1',
         ]);
 
-        $totalSeats = $request->rows * $request->columns;
-        Log::info('Rows: ' . $request->rows);
-        Log::info('Columns: ' . $request->columns);
+        $totalSeats = $request->room_create_rows * $request->room_create_columns;
+        Log::info('Rows: ' . $request->room_create_rows);
+        Log::info('Columns: ' . $request->room_create_columns);
         Log::info('Total Seats: ' . $totalSeats);
 
         ExamRoomInformation::create([
-            'floor' => $request->floor,
-            'room' => $request->room,
-            'rows' => $request->rows,
-            'columns' => $request->columns,
-            'valid_seats' => $totalSeats,
-            'total_seats' => $totalSeats,
+            'floor' => $request->room_create_floor,
+            'room' => $request->room_create_room,
+            'rows' => $request->room_create_rows,
+            'columns' => $request->room_create_columns,
+            'valid_seat' => $totalSeats,
+            'total_seat' => $totalSeats,
             'building_code' => $buildingId,
         ]);
 
@@ -93,7 +93,6 @@ class ExamRoomInformationController extends Controller
         $breadcrumbs = [
             ['url' => '/', 'title' => 'หน้าหลัก'],
             ['url' => '/buildings/'.$buildingId.'/room-list', 'title' => $building->building_th],
-            ['url' => '/buildings/'.$buildingId.'/room-list', 'title' => 'รายการห้องสอบ'],
             ['url' => '/buildings/'.$buildingId.'/room-list/'.$roomId, 'title' => $room->room],  
         ];
 

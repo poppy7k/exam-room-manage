@@ -9,7 +9,7 @@
 ])
 
 <div class="room-item relative flex bg-white flex-col bg-clip-border rounded-lg w-[260px] shadow-md mt-6 transition-all duration-500 hover:scale-105 hover:shadow-lg"">
-    <a href="{{ $href }}" class="absolute inset-0 z-0"></a>
+    <a href="{{ route('room-detail', ['buildingId' => $buildingId, 'roomId' => $room_id]) }}" class="absolute inset-0 z-0"></a>
     <div class="px-4 py-3 text-surface text-black">
         <div class="group flex">
             <span class="relative group flex hover-trigger">

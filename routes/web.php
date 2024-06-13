@@ -20,7 +20,6 @@ Route::get('/buildings/{buildingId}/addinfo', function($buildingId) {
 })->name('buildings.addinfo');
 
 Route::get('/buildings/{buildingId}/exam-room-info/create', [ExamRoomInformationController::class, 'create'])->name('examroominfo.create');
-Route::post('/exam-room-info/store', [ExamRoomInformationController::class, 'store'])->name('examroominfo.store');
 
 Route::delete('/buildings/{buildingId}', [BuildingController::class, 'destroy'])->name('buildings.destroy');
 
