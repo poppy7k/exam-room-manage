@@ -30,10 +30,10 @@
 <script>
     function validateForm() {
         var isValid = true;
-        var buildingTh = document.getElementById('building_th').value;
-        var buildingEn = document.getElementById('building_en').value;
-        var thaiPattern = /^[ก-๙0-9]+$/;
-        var englishPattern = /^[A-Za-z0-9]+$/;
+        var buildingTh = document.getElementById('building_th').value.trim();
+        var buildingEn = document.getElementById('building_en').value.trim();
+        var thaiPattern = /^[ก-๙0-9\s]+$/;
+        var englishPattern = /^[A-Za-z0-9\s]+$/;
         var buildingThError = document.getElementById('building_th_error');
         var buildingEnError = document.getElementById('building_en_error');
         if (!thaiPattern.test(buildingTh)) {

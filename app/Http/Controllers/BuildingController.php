@@ -114,15 +114,17 @@ class BuildingController extends Controller
             return response()->json(['error' => 'Building not found.'], 404);
         }
 
-        $existingBuilding = Building::where('building_th', $request->building_th_edit)
-                                    ->orWhere('building_en', $request->building_en_edit)
-                                    ->where('id', '<>', $buildingId)
-                                    ->first();
-        if ($existingBuilding) {
-            // alerts-box
-            //session()->flash('status', 'failed');
-            //session()->flash('message', 'ชื่ออาคารซ้ำ!');
-            return response()->json(['error' => 'Building name already exists.'], 422);
+        if ($request->building_th_edit !== $building->building_th || $request->building_en_edit !== $building->building_en) {
+            // Check if the edited building names (Thai and English) already exist in other buildings
+            $existingBuilding = Building::where('id', '!=', $buildingId)
+                ->where(function ($query) use ($request) {
+                    $query->where('building_th', $request->building_th_edit)
+                        ->orWhere('building_en', $request->building_en_edit);
+                })->exists();
+    
+            if ($existingBuilding) {
+                return response()->json(['error' => 'ชื่อของอาคารสอบต้องไม่ซ้ำกัน!'], 422);
+            }
         }
 
     
@@ -137,7 +139,7 @@ class BuildingController extends Controller
     
         $building->save();
     
-        return response()->json(['success' => 'Building updated successfully.']);
+        return response()->json(['success' => 'ข้อมูลอาคารสอบถูกแก้ไข้เรียบร้อยแล้ว']);
     }
 
     // public function updateAjax(Request $request, $buildingId)
