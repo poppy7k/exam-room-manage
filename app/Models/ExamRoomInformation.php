@@ -17,8 +17,10 @@ class ExamRoomInformation extends Model
         'building_code',
         'floor',
         'room',
+        'rows',
+        'columns',
+        'valid_seat',
         'total_seat',
-        'valid_seat'
     ];
 
     public function building()

@@ -5,6 +5,7 @@
     'valid_seat' => '0',
     'total_seat' => '0',
     'room_id',
+    'buildingId'
 ])
 
 <div class="room-item relative flex bg-white flex-col bg-clip-border rounded-lg w-[260px] shadow-md mt-6 transition-all duration-500 hover:scale-105 hover:shadow-lg"">
@@ -27,7 +28,8 @@
             </p>
         </div>
         <div class="flex justify-between pb-1 pt-3">
-            <x-buttons.primary type="button" class="py-1.5 z-10" onclick="">
+            <x-buttons.primary type="button" class="py-1.5 z-10"
+                onclick="window.location.href = '{{ route('room-detail', ['buildingId' => $buildingId, 'roomId' => $room_id]) }}'">
                 เลือก
             </x-buttons.primary>
             <x-buttons.icon-info type="button" onclick="event.stopPropagation(); openRoomEditModal('{{ $room }}', '{{ $floor }}', '{{ $room_id }}')" class="px-1 py-1 z-10">

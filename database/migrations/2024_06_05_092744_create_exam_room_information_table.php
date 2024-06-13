@@ -18,6 +18,8 @@ return new class extends Migration
             $table->string('building_code')->nullable();
             $table->string('floor')->nullable();
             $table->string('room')->nullable();
+            $table->integer('rows')->nullable();
+            $table->integer('columns')->nullable();
             $table->integer('valid_seat')->nullable();
             $table->integer('total_seat')->nullable();
             $table->timestamps();

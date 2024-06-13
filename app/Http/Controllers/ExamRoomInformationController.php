@@ -32,14 +32,23 @@ class ExamRoomInformationController extends Controller
         ]);
 
         $totalSeats = $request->rows * $request->columns;
+        Log::info('Rows: ' . $request->rows);
+        Log::info('Columns: ' . $request->columns);
+        Log::info('Total Seats: ' . $totalSeats);
 
         ExamRoomInformation::create([
             'floor' => $request->floor,
             'room' => $request->room,
-            'total_seats' => $totalSeats,
+            'rows' => $request->rows,
+            'columns' => $request->columns,
             'valid_seats' => $totalSeats,
+            'total_seats' => $totalSeats,
             'building_code' => $buildingId,
         ]);
+
+        Log::info('Rows1: ' . $request->rows);
+        Log::info('Columns1: ' . $request->columns);
+        Log::info('Total Seats1: ' . $totalSeats);
 
         return redirect()->route('pages.room-list', ['buildingId' => $buildingId])->with('success', 'Room created successfully.');
     }
@@ -77,5 +86,24 @@ class ExamRoomInformationController extends Controller
             return response()->json(['success' => false, 'message' => 'Room not found.'], 404);
         }
     }
+    public function showRoomDetail($buildingId, $roomId)
+    {
+        $building = Building::findOrFail($buildingId);
+        $room = ExamRoomInformation::findOrFail($roomId);
+        $breadcrumbs = [
+            ['url' => '/', 'title' => 'หน้าหลัก'],
+            ['url' => '/buildings/'.$buildingId.'/room-list', 'title' => $building->building_th],
+            ['url' => '/buildings/'.$buildingId.'/room-list', 'title' => 'รายการห้องสอบ'],
+            ['url' => '/buildings/'.$buildingId.'/room-list/'.$roomId, 'title' => $room->room],  
+        ];
+
+        return view('pages.room-detail', [
+            'buildingId' => $buildingId,
+            'roomId' => $roomId,
+            'breadcrumbs' => $breadcrumbs,
+        ]);
+    }
 }
+
+
 
