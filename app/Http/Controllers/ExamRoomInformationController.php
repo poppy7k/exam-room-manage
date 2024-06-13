@@ -86,6 +86,7 @@ class ExamRoomInformationController extends Controller
             return response()->json(['success' => false, 'message' => 'Room not found.'], 404);
         }
     }
+
     // public function showRoomDetail($buildingId, $roomId)
     // {
     //     $building = Building::findOrFail($buildingId);
@@ -95,11 +96,12 @@ class ExamRoomInformationController extends Controller
     //         ['url' => '/buildings/'.$buildingId.'/room-list', 'title' => $building->building_th],
     //         ['url' => '/buildings/'.$buildingId.'/room-list/'.$roomId, 'title' => $room->room],  
     //     ];
-
+    
     //     return view('pages.room-detail', [
     //         'buildingId' => $buildingId,
     //         'roomId' => $roomId,
     //         'breadcrumbs' => $breadcrumbs,
+    //         'room' => $room,
     //     ]);
     // }
 
@@ -107,6 +109,8 @@ class ExamRoomInformationController extends Controller
     {
         $building = Building::findOrFail($buildingId);
         $room = ExamRoomInformation::findOrFail($roomId);
+        $selectedSeats = json_encode($room->selected_seats);
+    
         $breadcrumbs = [
             ['url' => '/', 'title' => 'หน้าหลัก'],
             ['url' => '/buildings/'.$buildingId.'/room-list', 'title' => $building->building_th],
@@ -118,8 +122,46 @@ class ExamRoomInformationController extends Controller
             'roomId' => $roomId,
             'breadcrumbs' => $breadcrumbs,
             'room' => $room,
+            'selectedSeats' => $selectedSeats,
         ]);
     }
+
+    public function saveSelectedSeats(Request $request, $buildingId, $roomId)
+    {
+        $request->validate([
+            'selected_seats' => 'required|json',
+        ]);
+    
+        $room = ExamRoomInformation::where('building_code', $buildingId)
+                                    ->where('id', $roomId)
+                                    ->firstOrFail();
+    
+        $room->selected_seats = $request->selected_seats;
+        $room->save();
+    
+        return redirect()->route('room-detail', ['buildingId' => $buildingId, 'roomId' => $roomId])
+                         ->with('success', 'Selected seats saved successfully.');
+    }
+
+    // public function saveSelectedSeats(Request $request, $buildingId, $roomId)
+    // {
+    //     $request->validate([
+    //         'selected_seats' => 'required|json',
+    //         'old_selected_seats' => 'required|json',
+    //     ]);
+    
+    //     $room = ExamRoomInformation::where('building_code', $buildingId)
+    //                                 ->where('id', $roomId)
+    //                                 ->firstOrFail();
+    
+    //     // Optionally, you can perform additional validation or checks here before updating
+    //     $room->selected_seats = $request->selected_seats;
+    //     $room->old_selected_seats = $request->old_selected_seats;
+    //     $room->save();
+    
+    //     return redirect()->route('room-detail', ['buildingId' => $buildingId, 'roomId' => $roomId])
+    //                      ->with('success', 'Selected seats saved successfully.');
+    // }
 }
 
 

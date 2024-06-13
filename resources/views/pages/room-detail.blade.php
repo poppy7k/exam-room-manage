@@ -95,11 +95,11 @@
     }
 
     function addSeats() {
-        const rows = {{ $room->rows }};
-        const columns = {{ $room->columns }};
-        const seatContainer = document.getElementById('seat-container');
-        seatContainer.innerHTML = '';
-        seatContainer.style.gridTemplateColumns = `repeat(${columns}, minmax(4rem, 1fr))`;
+    const rows = {{ $room->rows }};
+    const columns = {{ $room->columns }};
+    const seatContainer = document.getElementById('seat-container');
+    seatContainer.innerHTML = '';
+    seatContainer.style.gridTemplateColumns = `repeat(${columns}, minmax(4rem, 1fr))`;
 
         let seatComponents = '';
         for (let i = 0; i < rows; i++) {
@@ -141,7 +141,7 @@
 
     // Call addSeats function to generate seats on page load
     document.addEventListener('DOMContentLoaded', addSeats);
-</script>
+</script> --}}
 
 @endsection
 
