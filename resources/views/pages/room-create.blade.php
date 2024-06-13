@@ -20,12 +20,12 @@
         </div>
         <div class="mb-4">
             <label for="room_create_rows" class="block font-semibold">จำนวนแถว (แนวตั้ง)</label>
-            <input type="number" min="1" id="room_create_rows" name="room_create_rows" placeholder="กรอกจำนวนแถวของที่นั่งในห้องสอบ" required class="w-full my-2 px-3 py-2 rounded ring-1 shadow-sm ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-green-600 transition-all duration-300 outline-none">
+            <input type="number" min="1" max="100" id="room_create_rows" name="room_create_rows" placeholder="กรอกจำนวนแถวของที่นั่งในห้องสอบ" required class="w-full my-2 px-3 py-2 rounded ring-1 shadow-sm ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-green-600 transition-all duration-300 outline-none">
             <span id="room_create_rows_error" class="error-message" style="color: red; display: none;">* กรุณากรอกชื่ออาคารด้วยภาษาอังกฤษหรือตัวเลขเท่านั้น!</span>
         </div>
         <div class="mb-4">
             <label for="room_create_columns" class="block font-semibold">จำนวนคอลัมน์ (แนวนอน)</label>
-            <input type="number" min="1" id="room_create_columns" name="room_create_columns" placeholder="กรอกจำนวนคอลัมน์ของที่นั่งในห้องสอบ" required class="w-full my-2 px-3 py-2 rounded ring-1 shadow-sm ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-green-600 transition-all duration-300 outline-none">
+            <input type="number" min="1" max="100" id="room_create_columns" name="room_create_columns" placeholder="กรอกจำนวนคอลัมน์ของที่นั่งในห้องสอบ" required class="w-full my-2 px-3 py-2 rounded ring-1 shadow-sm ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-green-600 transition-all duration-300 outline-none">
             <span id="room_create_columns_error" class="error-message" style="color: red; display: none;">* กรุณากรอกชื่ออาคารด้วยภาษาอังกฤษหรือตัวเลขเท่านั้น!</span>
         </div>
         <x-buttons.primary type="submit" class="py-2 w-full hover:scale-105 justify-center">
@@ -53,15 +53,16 @@
         const columns = document.getElementById('room_create_columns').value;
         const seatContainer = document.getElementById('seat-container');
         seatContainer.innerHTML = '';
-        seatContainer.style.gridTemplateColumns = `repeat(${columns}, minmax(2.5rem, 1fr))`;
+        seatContainer.style.gridTemplateColumns = `repeat(${columns}, minmax(4rem, 1fr))`;
 
+        let seatComponents = '';
         for (let i = 0; i < rows; i++) {
             for (let j = 0; j < columns; j++) {
                 seatComponents += `
-                <x-seat>
-                    ${i + 1}-${toExcelColumn(j)}
-                </x-seat>
-            `;
+                    <x-seat>
+                        ${i + 1}-${toExcelColumn(j)}
+                    </x-seat>
+                `;
             }
         }
         seatContainer.innerHTML = seatComponents;

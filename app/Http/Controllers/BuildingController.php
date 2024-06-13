@@ -7,6 +7,7 @@ use App\Models\ExamRoomInformation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\Rule;
 
 class BuildingController extends Controller
 {
@@ -112,9 +113,21 @@ class BuildingController extends Controller
         if (!$building) {
             return response()->json(['error' => 'Building not found.'], 404);
         }
+
+        $existingBuilding = Building::where('building_th', $request->building_th_edit)
+                                    ->orWhere('building_en', $request->building_en_edit)
+                                    ->where('id', '<>', $buildingId)
+                                    ->first();
+        if ($existingBuilding) {
+            // alerts-box
+            //session()->flash('status', 'failed');
+            //session()->flash('message', 'ชื่ออาคารซ้ำ!');
+            return response()->json(['error' => 'Building name already exists.'], 422);
+        }
+
     
         $building->building_th = $request->building_th_edit;
-        $building->building_en = $request->building_en;
+        $building->building_en = $request->building_en_edit;
     
         if ($request->hasFile('building_image_edit')) {
             $fileName = $request->building_en . '.' . $request->file('building_image_edit')->getClientOriginalExtension();

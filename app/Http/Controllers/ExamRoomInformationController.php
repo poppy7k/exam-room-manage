@@ -25,7 +25,7 @@ class ExamRoomInformationController extends Controller
     public function store(Request $request, $buildingId)
     {
         $request->validate([
-            'floor' => 'required|string',
+            'floor' => 'required|integer|min:0',
             'room' => 'required|string',
             'rows' => 'required|integer|min:1',
             'columns' => 'required|integer|min:1',
@@ -48,7 +48,7 @@ class ExamRoomInformationController extends Controller
     {
         $request->validate([
             'floor_edit' => 'required|numeric|min:0|max:255',
-            'room_edit' => 'required|numeric|min:0|max:255',
+            'room_edit' => 'required|string',
         ]);
     
         $room = ExamRoomInformation::find($roomId);
