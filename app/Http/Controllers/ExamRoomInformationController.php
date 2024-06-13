@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Building;
 use App\Models\ExamRoomInformation;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class ExamRoomInformationController extends Controller
 {
@@ -60,6 +61,21 @@ class ExamRoomInformationController extends Controller
         $room->save();
     
         return response()->json(['success' => 'Room updated successfully.']);
+    }
+
+    public function destroy($roomId)
+    {
+
+        $room = ExamRoomInformation::find($roomId);
+
+        if ($room) {
+
+            $room->delete();
+
+            return response()->json(['success' => true, 'message' => 'Room deleted successfully.']);
+        } else {
+            return response()->json(['success' => false, 'message' => 'Room not found.'], 404);
+        }
     }
 }
 

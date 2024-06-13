@@ -6,6 +6,7 @@ use App\Models\Building;
 use App\Models\ExamRoomInformation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 
 class BuildingController extends Controller
 {
@@ -125,6 +126,31 @@ class BuildingController extends Controller
     
         return response()->json(['success' => 'Building updated successfully.']);
     }
+
+    // public function updateAjax(Request $request, $buildingId)
+    // {
+    //     try {
+    //         Log::info('Update Building Request Data:', $request->all());
+
+    //         $building = Building::findOrFail($buildingId);
+    //         $building->building_th = $request->input('building_th_edit');
+    //         $building->building_en = $request->input('building_en_edit');
+
+    //         Log::info('Building EN:', ['building_en' => $request->input('building_en_edit')]);
+
+    //         if ($request->hasFile('building_image_edit')) {
+    //             $path = $request->file('building_image_edit')->store('building_images', 'public');
+    //             $building->image_path = $path;
+    //         }
+
+    //         $building->save();
+
+    //         return response()->json(['success' => 'Building updated successfully.']);
+    //     } catch (\Exception $e) {
+    //         Log::error('Failed to update building:', ['error' => $e->getMessage()]);
+    //         return response()->json(['error' => 'Failed to update the building.'], 500);
+    //     }
+    // }
 
     public function showRoomList($buildingId)
     {

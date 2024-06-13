@@ -2,9 +2,11 @@
 
 namespace Database\Seeders;
 
+use App\Models\Applicant;
 use App\Models\User;
 use App\Models\Building;
 use App\Models\ExamRoomInformation;
+use App\Models\Staff;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -23,10 +25,14 @@ class DatabaseSeeder extends Seeder
         ]);
         // Building::factory(10)->create();
         // ExamRoomInformation::factory(20)->create();
+        // Applicant::factory(5)->create();
+        // Staff::factory(5)->create();
 
         $this->call([
             BuildingSeeder::class,
             ExamRoomInfomationSeeder::class,
+            ApplicantSeeder::class,
+            StaffSeeder::class,
         ]);
     }
 }
