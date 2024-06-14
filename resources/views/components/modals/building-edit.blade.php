@@ -62,7 +62,7 @@
     document.getElementById('editBuildingForm').addEventListener('submit', function(event) {
         event.preventDefault();
         if (!validateEditForm()) {
-            return false; // ยกเลิกการ submit ถ้า validate ไม่ผ่าน
+            return false; // Cancel submit if validation fails
         }
         var formData = new FormData(this);
         var action = this.action;

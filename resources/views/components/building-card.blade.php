@@ -16,10 +16,10 @@
             <img
             class="rounded-t-lg w-full h-48 object-fill"
             src="{{ $building_image }}"
-            alt="{{ $building_th . 'building_image'}}" 
-            {{-- src="{{ asset('storage/' . $building->building_image) }}"
-            alt="{{ $building->building_th }}" --}}
+            alt="{{ $building_en . ' building_image'}}"
+            onerror="this.onerror=null;this.src='{{ asset('storage/building_images/default/default-building-image.jpg') }}';"
             />
+            {{-- <p>{{$building_image}}</p> --}}
         </div>
         <div class="p-4 text-surface text-black">
             <div class="group w-auto">
