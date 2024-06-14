@@ -27,57 +27,73 @@
         <div class="flex">
         </div>
     </div>
-    <div class="bg-white shadow-lg my-3 rounded-lg max-h-screen flex flex-col">
+    <div class="bg-white shadow-md my-3 rounded-lg max-h-screen flex flex-col">
         <!-- Div ด้านบน -->
-        <div onclick="" class="bg-white rounded-lg h-12 text-center group hover:h-28 transition-all duration-500 flex flex-col justify-center items-center cursor-pointer">
-            <div class="transition-all duration-500 opacity-0 group-hover:opacity-100 flex flex-col items-center"> 
-                <x-buttons.primary class="mx-auto mt-4 my-2 -rotate-90 rounded-full group-hover:scale-110 fill-white">
-                    <svg xmlns="http://www.w3.org/2000/svg" id="Bold" viewBox="0 0 24 24" width="24" height="24"><path d="M13.1,19.5a1.5,1.5,0,0,1-1.061-2.561l4.586-4.585a.5.5,0,0,0,0-.708L12.043,7.061a1.5,1.5,0,0,1,2.121-2.122L18.75,9.525a3.505,3.505,0,0,1,0,4.95l-4.586,4.586A1.5,1.5,0,0,1,13.1,19.5Z"/><path d="M6.1,19.5a1.5,1.5,0,0,1-1.061-2.561L9.982,12,5.043,7.061A1.5,1.5,0,0,1,7.164,4.939l6,6a1.5,1.5,0,0,1,0,2.122l-6,6A1.5,1.5,0,0,1,6.1,19.5Z"/></svg>
-                </x-buttons.primary>
-                <p class="text-sm font-semibold">
-                    เพิ่มคอลัมน์ด้านบน
-                </p>
+        <div class="bg-white grow rounded-lg h-12 text-center group hover:h-28 transition-all duration-500 flex gap-4 justify-center items-center">
+            <div onclick="" class="transition-all duration-500 opacity-0 group-hover:opacity-100 flex flex-col items-center"> 
+                <x-buttons.icon-primary-bg class="group/custombutton mx-auto p-0.5 rounded-full hover:scale-125">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="rotate-90" id="Bold" viewBox="0 0 24 24" width="24" height="24"><path d="M13.1,19.5a1.5,1.5,0,0,1-1.061-2.561l4.586-4.585a.5.5,0,0,0,0-.708L12.043,7.061a1.5,1.5,0,0,1,2.121-2.122L18.75,9.525a3.505,3.505,0,0,1,0,4.95l-4.586,4.586A1.5,1.5,0,0,1,13.1,19.5Z"/><path d="M6.1,19.5a1.5,1.5,0,0,1-1.061-2.561L9.982,12,5.043,7.061A1.5,1.5,0,0,1,7.164,4.939l6,6a1.5,1.5,0,0,1,0,2.122l-6,6A1.5,1.5,0,0,1,6.1,19.5Z"/></svg>
+                    <x-tooltip title="เพิ่มคอลัมน์ด้านบน" class="-translate-x-10 hidden group-hover:opacity-0 group-hover/custombutton:block group-hover:scale-90 group-hover/custombutton:opacity-100 group-hover/custombutton:transition-all group-hover/custombutton:duration-500"></x-tooltip>
+                </x-buttons.icon-primary-bg>
+            </div>
+            <div onclick="" class="transition-all duration-500 opacity-0 group/tooltip group-hover:opacity-100 flex flex-col items-center"> 
+                <x-buttons.icon-danger-bg class="group/custombutton mx-auto p-0.5 rounded-full hover:scale-125">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="-rotate-90" id="Bold" viewBox="0 0 24 24" width="24" height="24"><path d="M13.1,19.5a1.5,1.5,0,0,1-1.061-2.561l4.586-4.585a.5.5,0,0,0,0-.708L12.043,7.061a1.5,1.5,0,0,1,2.121-2.122L18.75,9.525a3.505,3.505,0,0,1,0,4.95l-4.586,4.586A1.5,1.5,0,0,1,13.1,19.5Z"/><path d="M6.1,19.5a1.5,1.5,0,0,1-1.061-2.561L9.982,12,5.043,7.061A1.5,1.5,0,0,1,7.164,4.939l6,6a1.5,1.5,0,0,1,0,2.122l-6,6A1.5,1.5,0,0,1,6.1,19.5Z"/></svg>
+                    <x-tooltip title="ลบคอลัมน์ด้านบน" class="-translate-x-9 hidden group-hover:opacity-0 group-hover/custombutton:block group-hover:scale-90 group-hover/custombutton:opacity-100 group-hover/custombutton:transition-all group-hover/custombutton:duration-500"></x-tooltip>
+                </x-buttons.icon-danger-bg>
             </div>
         </div>
         
         <div class="flex flex-grow">
             <!-- Div ด้านซ้าย -->
-            <div onclick="" class="bg-white rounded-lg w-12 flex-shrink-0 text-center py-4 group hover:w-28 transition-all duration-500 flex flex-col justify-center items-center cursor-pointer">
-                <div class="transition-all duration-500 opacity-0 group-hover:opacity-100 flex flex-col items-center"> 
-                    <x-buttons.primary class="mb-2 rotate-180 rounded-full group-hover:scale-110 fill-white">
-                        <svg xmlns="http://www.w3.org/2000/svg" id="Bold" viewBox="0 0 24 24" width="24" height="24"><path d="M13.1,19.5a1.5,1.5,0,0,1-1.061-2.561l4.586-4.585a.5.5,0,0,0,0-.708L12.043,7.061a1.5,1.5,0,0,1,2.121-2.122L18.75,9.525a3.505,3.505,0,0,1,0,4.95l-4.586,4.586A1.5,1.5,0,0,1,13.1,19.5Z"/><path d="M6.1,19.5a1.5,1.5,0,0,1-1.061-2.561L9.982,12,5.043,7.061A1.5,1.5,0,0,1,7.164,4.939l6,6a1.5,1.5,0,0,1,0,2.122l-6,6A1.5,1.5,0,0,1,6.1,19.5Z"/></svg>
-                    </x-buttons.primary>
-                    <p class="text-sm font-semibold">
-                        เพิ่มแถวด้านซ้าย
-                    </p>
+            <div class="bg-white rounded-lg w-12 flex-shrink-0 text-center py-4 group hover:w-28 transition-all duration-500 flex flex-col gap-4 justify-center items-center ">
+                <div onclick="" class="transition-all duration-500 opacity-0 group-hover:opacity-100 flex flex-col gap-4 items-center"> 
+                    <x-buttons.icon-primary-bg class="group/custombutton mx-auto p-0.5 rounded-full hover:scale-125 z-10">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="rotate-180" id="Bold" viewBox="0 0 24 24" width="24" height="24"><path d="M13.1,19.5a1.5,1.5,0,0,1-1.061-2.561l4.586-4.585a.5.5,0,0,0,0-.708L12.043,7.061a1.5,1.5,0,0,1,2.121-2.122L18.75,9.525a3.505,3.505,0,0,1,0,4.95l-4.586,4.586A1.5,1.5,0,0,1,13.1,19.5Z"/><path d="M6.1,19.5a1.5,1.5,0,0,1-1.061-2.561L9.982,12,5.043,7.061A1.5,1.5,0,0,1,7.164,4.939l6,6a1.5,1.5,0,0,1,0,2.122l-6,6A1.5,1.5,0,0,1,6.1,19.5Z"/></svg>
+                        <x-tooltip title="เพิ่มแถวด้านซ้าย" class="-translate-x-8 hidden group-hover:opacity-0 group-hover/custombutton:block group-hover:scale-90 group-hover/custombutton:opacity-100 group-hover/custombutton:transition-all group-hover/custombutton:duration-500"></x-tooltip>
+                    </x-buttons.icon-primary-bg>
+                </div>
+                <div onclick="" class="transition-all duration-500 opacity-0 group-hover:opacity-100 flex flex-col gap-4 items-center"> 
+                    <x-buttons.icon-danger-bg class="group/custombutton mx-auto p-0.5 rounded-full hover:scale-125">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="rotate-0" id="Bold" viewBox="0 0 24 24" width="24" height="24"><path d="M13.1,19.5a1.5,1.5,0,0,1-1.061-2.561l4.586-4.585a.5.5,0,0,0,0-.708L12.043,7.061a1.5,1.5,0,0,1,2.121-2.122L18.75,9.525a3.505,3.505,0,0,1,0,4.95l-4.586,4.586A1.5,1.5,0,0,1,13.1,19.5Z"/><path d="M6.1,19.5a1.5,1.5,0,0,1-1.061-2.561L9.982,12,5.043,7.061A1.5,1.5,0,0,1,7.164,4.939l6,6a1.5,1.5,0,0,1,0,2.122l-6,6A1.5,1.5,0,0,1,6.1,19.5Z"/></svg>
+                        <x-tooltip title="ลบแถวด้านซ้าย" class="-translate-x-7 hidden group-hover:opacity-0 group-hover/custombutton:block group-hover:scale-90 group-hover/custombutton:opacity-100 group-hover/custombutton:transition-all group-hover/custombutton:duration-500"></x-tooltip>
+                    </x-buttons.icon-danger-bg>
                 </div>
             </div>
-             <div id="seat-container" class="grid gap-2 overflow-x-auto overflow-y-auto w-11/12 h-96">
+            <div id="seat-container" class="grid gap-2 overflow-x-auto overflow-y-auto w-full h-96">
             <!-- Seats will be generated by JavaScript -->
-        </div>
+            </div>
     
             <!-- Div ด้านขวา -->
-            <div onclick="" class="bg-white rounded-lg w-12 flex-shrink-0 text-center py-4 group hover:w-28 transition-all duration-500 flex flex-col justify-center items-center cursor-pointer">
-                <div class="transition-all duration-500 opacity-0 group-hover:opacity-100 flex flex-col items-center"> 
-                    <x-buttons.primary class="mb-2 rounded-full group-hover:scale-110 fill-white">
-                        <svg xmlns="http://www.w3.org/2000/svg" id="Bold" viewBox="0 0 24 24" width="24" height="24"><path d="M13.1,19.5a1.5,1.5,0,0,1-1.061-2.561l4.586-4.585a.5.5,0,0,0,0-.708L12.043,7.061a1.5,1.5,0,0,1,2.121-2.122L18.75,9.525a3.505,3.505,0,0,1,0,4.95l-4.586,4.586A1.5,1.5,0,0,1,13.1,19.5Z"/><path d="M6.1,19.5a1.5,1.5,0,0,1-1.061-2.561L9.982,12,5.043,7.061A1.5,1.5,0,0,1,7.164,4.939l6,6a1.5,1.5,0,0,1,0,2.122l-6,6A1.5,1.5,0,0,1,6.1,19.5Z"/></svg>
-                    </x-buttons.primary>
-                    <p class="text-sm font-semibold">
-                        เพิ่มแถวด้านขวา
-                    </p>
+            <div id="room-detail-right-div" class="bg-white grow rounded-lg w-12 flex-shrink-0 text-center py-4 gap-4 group hover:w-28 transition-all duration-500 flex flex-col justify-center items-center cursor-pointer">
+                <div onclick="" class="transition-all duration-500 opacity-0 group-hover:opacity-100 flex flex-col items-center"> 
+                    <x-buttons.icon-primary-bg class="group/custombutton mx-auto p-0.5 rounded-full hover:scale-125 z-10">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="rotate-0" id="Bold" viewBox="0 0 24 24" width="24" height="24"><path d="M13.1,19.5a1.5,1.5,0,0,1-1.061-2.561l4.586-4.585a.5.5,0,0,0,0-.708L12.043,7.061a1.5,1.5,0,0,1,2.121-2.122L18.75,9.525a3.505,3.505,0,0,1,0,4.95l-4.586,4.586A1.5,1.5,0,0,1,13.1,19.5Z"/><path d="M6.1,19.5a1.5,1.5,0,0,1-1.061-2.561L9.982,12,5.043,7.061A1.5,1.5,0,0,1,7.164,4.939l6,6a1.5,1.5,0,0,1,0,2.122l-6,6A1.5,1.5,0,0,1,6.1,19.5Z"/></svg>
+                        <x-tooltip title="เพิ่มแถวด้านขวา" class="-translate-x-8 hidden group-hover:opacity-0 group-hover/custombutton:block group-hover:scale-90 group-hover/custombutton:opacity-100 group-hover/custombutton:transition-all group-hover/custombutton:duration-500"></x-tooltip>
+                    </x-buttons.icon-primary-bg>
+                </div>
+                <div onclick="" class="transition-all duration-500 opacity-0 group-hover:opacity-100 flex flex-col items-center"> 
+                    <x-buttons.icon-danger-bg class="group/custombutton mx-auto p-0.5 rounded-full hover:scale-125">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="rotate-180" id="Bold" viewBox="0 0 24 24" width="24" height="24"><path d="M13.1,19.5a1.5,1.5,0,0,1-1.061-2.561l4.586-4.585a.5.5,0,0,0,0-.708L12.043,7.061a1.5,1.5,0,0,1,2.121-2.122L18.75,9.525a3.505,3.505,0,0,1,0,4.95l-4.586,4.586A1.5,1.5,0,0,1,13.1,19.5Z"/><path d="M6.1,19.5a1.5,1.5,0,0,1-1.061-2.561L9.982,12,5.043,7.061A1.5,1.5,0,0,1,7.164,4.939l6,6a1.5,1.5,0,0,1,0,2.122l-6,6A1.5,1.5,0,0,1,6.1,19.5Z"/></svg>
+                        <x-tooltip title="ลบแถวด้านขวา" class="-translate-x-7 hidden group-hover:opacity-0 group-hover/custombutton:block group-hover:scale-90 group-hover/custombutton:opacity-100 group-hover/custombutton:transition-all group-hover/custombutton:duration-500"></x-tooltip>
+                    </x-buttons.icon-danger-bg>
                 </div>
             </div>
         </div>
         
         <!-- Div ด้านล่าง -->
-        <div class="bg-white rounded-lg h-12 text-center group hover:h-28 transition-all duration-500 flex flex-col justify-center items-center cursor-pointer">
+        <div class="bg-white rounded-lg h-12 text-center group hover:h-28 transition-all duration-500 flex gap-4 justify-center items-center">
             <div onclick="" class="transition-all duration-500 opacity-0 group-hover:opacity-100 flex flex-col items-center"> 
-                <x-buttons.primary class="mx-auto mt-4 my-2 rotate-90 rounded-full group-hover:scale-110 fill-white">
-                    <svg xmlns="http://www.w3.org/2000/svg" id="Bold" viewBox="0 0 24 24" width="24" height="24"><path d="M13.1,19.5a1.5,1.5,0,0,1-1.061-2.561l4.586-4.585a.5.5,0,0,0,0-.708L12.043,7.061a1.5,1.5,0,0,1,2.121-2.122L18.75,9.525a3.505,3.505,0,0,1,0,4.95l-4.586,4.586A1.5,1.5,0,0,1,13.1,19.5Z"/><path d="M6.1,19.5a1.5,1.5,0,0,1-1.061-2.561L9.982,12,5.043,7.061A1.5,1.5,0,0,1,7.164,4.939l6,6a1.5,1.5,0,0,1,0,2.122l-6,6A1.5,1.5,0,0,1,6.1,19.5Z"/></svg>
-                </x-buttons.primary>
-                <p class="text-sm font-semibold">
-                    เพิ่มคอลัมน์ด้านล่าง
-                </p>
+                <x-buttons.icon-primary-bg class="group/custombutton mx-auto p-0.5 rounded-full hover:scale-125">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="rotate-90" id="Bold" viewBox="0 0 24 24" width="24" height="24"><path d="M13.1,19.5a1.5,1.5,0,0,1-1.061-2.561l4.586-4.585a.5.5,0,0,0,0-.708L12.043,7.061a1.5,1.5,0,0,1,2.121-2.122L18.75,9.525a3.505,3.505,0,0,1,0,4.95l-4.586,4.586A1.5,1.5,0,0,1,13.1,19.5Z"/><path d="M6.1,19.5a1.5,1.5,0,0,1-1.061-2.561L9.982,12,5.043,7.061A1.5,1.5,0,0,1,7.164,4.939l6,6a1.5,1.5,0,0,1,0,2.122l-6,6A1.5,1.5,0,0,1,6.1,19.5Z"/></svg>
+                    <x-tooltip title="เพิ่มคอลัมน์ด้านล่าง" class="-translate-x-10 hidden group-hover:opacity-0 group-hover/custombutton:block group-hover:scale-90 group-hover/custombutton:opacity-100 group-hover/custombutton:transition-all group-hover/custombutton:duration-500"></x-tooltip>
+                </x-buttons.icon-primary-bg>
+            </div>
+            <div onclick="" class="transition-all duration-500 opacity-0 group/tooltip group-hover:opacity-100 flex flex-col items-center"> 
+                <x-buttons.icon-danger-bg class="group/custombutton mx-auto p-0.5 rounded-full hover:scale-125">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="-rotate-90" id="Bold" viewBox="0 0 24 24" width="24" height="24"><path d="M13.1,19.5a1.5,1.5,0,0,1-1.061-2.561l4.586-4.585a.5.5,0,0,0,0-.708L12.043,7.061a1.5,1.5,0,0,1,2.121-2.122L18.75,9.525a3.505,3.505,0,0,1,0,4.95l-4.586,4.586A1.5,1.5,0,0,1,13.1,19.5Z"/><path d="M6.1,19.5a1.5,1.5,0,0,1-1.061-2.561L9.982,12,5.043,7.061A1.5,1.5,0,0,1,7.164,4.939l6,6a1.5,1.5,0,0,1,0,2.122l-6,6A1.5,1.5,0,0,1,6.1,19.5Z"/></svg>
+                    <x-tooltip title="ลบคอลัมน์ด้านล่าง" class="-translate-x-9 hidden group-hover:opacity-0 group-hover/custombutton:block group-hover:scale-90 group-hover/custombutton:opacity-100 group-hover/custombutton:transition-all group-hover/custombutton:duration-500"></x-tooltip>
+                </x-buttons.icon-danger-bg>
             </div>
         </div>
     </div>
@@ -141,7 +157,8 @@
 
     // Call addSeats function to generate seats on page load
     document.addEventListener('DOMContentLoaded', addSeats);
-</script> --}}
+
+</script>
 
 @endsection
 
