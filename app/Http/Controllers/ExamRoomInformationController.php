@@ -32,9 +32,9 @@ class ExamRoomInformationController extends Controller
         ]);
 
         $totalSeats = $request->room_create_rows * $request->room_create_columns;
-        Log::info('Rows: ' . $request->room_create_rows);
-        Log::info('Columns: ' . $request->room_create_columns);
-        Log::info('Total Seats: ' . $totalSeats);
+        // Log::info('Rows: ' . $request->room_create_rows);
+        // Log::info('Columns: ' . $request->room_create_columns);
+        // Log::info('Total Seats: ' . $totalSeats);
 
         ExamRoomInformation::create([
             'floor' => $request->room_create_floor,
@@ -46,9 +46,9 @@ class ExamRoomInformationController extends Controller
             'building_code' => $buildingId,
         ]);
 
-        Log::info('Rows1: ' . $request->rows);
-        Log::info('Columns1: ' . $request->columns);
-        Log::info('Total Seats1: ' . $totalSeats);
+        // Log::info('Rows1: ' . $request->rows);
+        // Log::info('Columns1: ' . $request->columns);
+        // Log::info('Total Seats1: ' . $totalSeats);
 
         return redirect()->route('pages.room-list', ['buildingId' => $buildingId])->with('success', 'Room created successfully.');
     }
@@ -110,7 +110,7 @@ class ExamRoomInformationController extends Controller
         $building = Building::findOrFail($buildingId);
         $room = ExamRoomInformation::findOrFail($roomId);
         $selectedSeats = json_encode($room->selected_seats);
-        Log::info('$selectedSeats: ' . $selectedSeats);
+        // Log::info('$selectedSeats: ' . $selectedSeats);
     
         $breadcrumbs = [
             ['url' => '/', 'title' => 'หน้าหลัก'],
@@ -131,6 +131,7 @@ class ExamRoomInformationController extends Controller
     {
         $request->validate([
             'selected_seats' => 'required|json',
+            'valid_seat' => 'required|integer',
         ]);
     
         $room = ExamRoomInformation::where('building_code', $buildingId)
@@ -138,8 +139,9 @@ class ExamRoomInformationController extends Controller
                                     ->firstOrFail();
     
         $room->selected_seats = $request->selected_seats;
+        $room->valid_seat = $request->valid_seat;
         $room->save();
-        
+    
         return redirect()->route('room-detail', ['buildingId' => $buildingId, 'roomId' => $roomId])
                          ->with('success', 'Selected seats saved successfully.');
     }

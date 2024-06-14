@@ -14,7 +14,11 @@
             <p class="font-normal text- justify-start ml-4 mt-1.5">
                 ที่นั่งว่าง
             </p>
-            <p class="font-bold ml-1 mt-1.5 text-green-800"> {{ $room->total_seat }}</p> 
+            <p id="validSeatCount" class="font-bold ml-1 mt-1.5 text-green-800"> {{ $room->valid_seat }}</p> 
+            <p class="font-normal text- justify-start ml-4 mt-1.5">
+                ที่นั่งทั้งหมด
+            </p>
+            <p class="font-bold ml-1 mt-1.5"> {{ $room->total_seat }}</p> 
             <p class="font-normal text- justify-start ml-4 mt-1.5">
                 แถว
             </p>
@@ -86,12 +90,16 @@
     @csrf
     @method('PUT')
     <input type="hidden" id="selectedSeatsInput" name="selected_seats">
+    <input type="hidden" id="validSeatCountInput" name="valid_seat">
     <x-buttons.primary type="submit" class="py-2 w-full hover:scale-105 justify-center">
         บันทึกที่นั่ง
     </x-buttons.primary>
 </form>
 
 <script>
+    let validSeatCount = {{ $room->valid_seat }};
+    let selectedSeats = @json($selectedSeats) || [];
+
     function toExcelColumn(n) {
         let result = '';
         while (n >= 0) {
@@ -136,8 +144,6 @@
         seatContainer.innerHTML = seatComponents;
     }
 
-    let selectedSeats = @json($selectedSeats) || [];
-
     function toggleSeat(row, column) {
         const seatId = `${row}-${column}`;
         if (!Array.isArray(selectedSeats)) {
@@ -146,6 +152,7 @@
 
         if (selectedSeats.includes(seatId)) {
             selectedSeats = selectedSeats.filter(id => id !== seatId);
+            validSeatCount++;
             document.getElementById(`seat-${seatId}`).innerHTML = `
                 <x-seats.primary>
                     ${seatId}
@@ -153,6 +160,7 @@
             `;
         } else {
             selectedSeats.push(seatId);
+            validSeatCount--;
             document.getElementById(`seat-${seatId}`).innerHTML = `
                 <x-seats.unavailable>
                     ${seatId}
@@ -160,14 +168,17 @@
             `;
         }
 
+        document.getElementById('validSeatCount').textContent = validSeatCount;
         console.log('Selected Seats:', selectedSeats);
 
         document.getElementById('selectedSeatsInput').value = JSON.stringify(selectedSeats);
+        document.getElementById('validSeatCountInput').value = validSeatCount;
     }
 
     function saveSeats() {
         console.log('Saving Seats:', selectedSeats);
         document.getElementById('selectedSeatsInput').value = JSON.stringify(selectedSeats);
+        document.getElementById('validSeatCountInput').value = validSeatCount;
     }
 
     document.addEventListener('DOMContentLoaded', addSeats);

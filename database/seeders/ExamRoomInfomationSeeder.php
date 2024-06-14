@@ -20,7 +20,7 @@ class ExamRoomInfomationSeeder extends Seeder
         $examroominfo->room = "213";
         $examroominfo->rows = 5;
         $examroominfo->columns = 10;
-        $examroominfo->valid_seat = 28;
+        $examroominfo->valid_seat = 50;
         $examroominfo->total_seat = 50;
         $examroominfo->save();
 
@@ -86,7 +86,7 @@ class ExamRoomInfomationSeeder extends Seeder
         $examroominfo->room = "204";
         $examroominfo->rows = 5;
         $examroominfo->columns = 10;
-        $examroominfo->valid_seat = 39;
+        $examroominfo->valid_seat = 50;
         $examroominfo->total_seat = 50;
         $examroominfo->save();
 
@@ -130,7 +130,7 @@ class ExamRoomInfomationSeeder extends Seeder
         $examroominfo->room = "401";
         $examroominfo->rows = 15;
         $examroominfo->columns = 10;
-        $examroominfo->valid_seat = 156;
+        $examroominfo->valid_seat = 150;
         $examroominfo->total_seat = 150;
         $examroominfo->save();
 
@@ -174,7 +174,7 @@ class ExamRoomInfomationSeeder extends Seeder
         $examroominfo->room = "902";
         $examroominfo->rows = 15;
         $examroominfo->columns = 10;
-        $examroominfo->valid_seat = 144;
+        $examroominfo->valid_seat = 150;
         $examroominfo->total_seat = 150;
         $examroominfo->save();
 
@@ -185,7 +185,7 @@ class ExamRoomInfomationSeeder extends Seeder
         $examroominfo->room = "1002";
         $examroominfo->rows = 15;
         $examroominfo->columns = 10;
-        $examroominfo->valid_seat = 144;
+        $examroominfo->valid_seat = 150;
         $examroominfo->total_seat = 150;
         $examroominfo->save();
 
@@ -196,7 +196,7 @@ class ExamRoomInfomationSeeder extends Seeder
         $examroominfo->room = NULL;
         $examroominfo->rows = 30;
         $examroominfo->columns = 10;
-        $examroominfo->valid_seat = 292;
+        $examroominfo->valid_seat = 300;
         $examroominfo->total_seat = 300;
         $examroominfo->save();
 
@@ -207,7 +207,7 @@ class ExamRoomInfomationSeeder extends Seeder
         $examroominfo->room = "ศูนย์กิจกรรมนิสิต";
         $examroominfo->rows = 10;
         $examroominfo->columns = 10;
-        $examroominfo->valid_seat = 124;
+        $examroominfo->valid_seat = 100;
         $examroominfo->total_seat = 100;
         $examroominfo->save();
 
@@ -218,7 +218,7 @@ class ExamRoomInfomationSeeder extends Seeder
         $examroominfo->room = "สุธรรม";
         $examroominfo->rows = 30;
         $examroominfo->columns = 10;
-        $examroominfo->valid_seat = 301;
+        $examroominfo->valid_seat = 300;
         $examroominfo->total_seat = 300;
         $examroominfo->save();
 
