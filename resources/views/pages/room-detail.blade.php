@@ -14,7 +14,11 @@
             <p class="font-normal text- justify-start ml-4 mt-1.5">
                 ที่นั่งว่าง
             </p>
-            <p class="font-bold ml-1 mt-1.5 text-green-800"> {{ $room->total_seat }}</p> 
+            <p id="validSeatCount" class="font-bold ml-1 mt-1.5 text-green-800"> {{ $room->valid_seat }}</p> 
+            <p class="font-normal text- justify-start ml-4 mt-1.5">
+                ที่นั่งทั้งหมด
+            </p>
+            <p class="font-bold ml-1 mt-1.5"> {{ $room->total_seat }}</p> 
             <p class="font-normal text- justify-start ml-4 mt-1.5">
                 แถว
             </p>
@@ -98,8 +102,20 @@
         </div>
     </div>
 </div>
+<form id="addSeatForm" method="POST" action="{{ route('examroominfo.saveSelectedSeats', ['buildingId' => $room->building_code, 'roomId' => $room->id]) }}" class="pt-4" enctype="multipart/form-data" onsubmit="saveSeats()">
+    @csrf
+    @method('PUT')
+    <input type="hidden" id="selectedSeatsInput" name="selected_seats">
+    <input type="hidden" id="validSeatCountInput" name="valid_seat">
+    <x-buttons.primary type="submit" class="py-2 w-full hover:scale-105 justify-center">
+        บันทึกที่นั่ง
+    </x-buttons.primary>
+</form>
 
 <script>
+    let validSeatCount = {{ $room->valid_seat }};
+    let selectedSeats = @json($selectedSeats) || [];
+
     function toExcelColumn(n) {
         let result = '';
         while (n >= 0) {
@@ -107,57 +123,81 @@
             n = Math.floor(n / 26) - 1;
         }
         return result;
-
     }
 
     function addSeats() {
-    const rows = {{ $room->rows }};
-    const columns = {{ $room->columns }};
-    const seatContainer = document.getElementById('seat-container');
-    seatContainer.innerHTML = '';
-    seatContainer.style.gridTemplateColumns = `repeat(${columns}, minmax(4rem, 1fr))`;
+        const rows = {{ $room->rows }};
+        const columns = {{ $room->columns }};
+        const seatContainer = document.getElementById('seat-container');
+        seatContainer.innerHTML = '';
+        seatContainer.style.gridTemplateColumns = `repeat(${columns}, minmax(4rem, 1fr))`;
 
         let seatComponents = '';
         for (let i = 0; i < rows; i++) {
             for (let j = 0; j < columns; j++) {
-                seatComponents += `
-                    <x-seats.primary>
-                        ${i + 1}-${toExcelColumn(j)}
-                    </x-seats.primary>
-                `;
+                const seatId = `${i + 1}-${toExcelColumn(j)}`;
+                let seatComponent = '';
+                if (selectedSeats.includes(seatId)) {
+                    seatComponent = `
+                        <div onclick="toggleSeat(${i + 1}, '${toExcelColumn(j)}')" id="seat-${seatId}" class="seat p-4 text-center cursor-pointer">
+                            <x-seats.unavailable>
+                                ${i + 1}-${toExcelColumn(j)}
+                            </x-seats.unavailable>
+                        </div>
+                    `;
+                } else {
+                    seatComponent = `
+                        <div onclick="toggleSeat(${i + 1}, '${toExcelColumn(j)}')" id="seat-${seatId}" class="seat p-4 text-center cursor-pointer">
+                            <x-seats.primary>
+                                ${i + 1}-${toExcelColumn(j)}
+                            </x-seats.primary>
+                        </div>
+                    `;
+                }
+                seatComponents += seatComponent;
             }
         }
         seatContainer.innerHTML = seatComponents;
     }
 
-    let selectedSeats = [];
-
     function toggleSeat(row, column) {
         const seatId = `${row}-${column}`;
-        const seatElement = document.getElementById(`seat-${row - 1}-${column.charCodeAt(0) - 65}`);
+        if (!Array.isArray(selectedSeats)) {
+            selectedSeats = [];
+        }
+
         if (selectedSeats.includes(seatId)) {
-            const index = selectedSeats.indexOf(seatId);
-            if (index > -1) {
-                selectedSeats.splice(index, 1);
-            }
-            seatElement.style.backgroundColor = '';
+            selectedSeats = selectedSeats.filter(id => id !== seatId);
+            validSeatCount++;
+            document.getElementById(`seat-${seatId}`).innerHTML = `
+                <x-seats.primary>
+                    ${seatId}
+                </x-seats.primary>
+            `;
         } else {
             selectedSeats.push(seatId);
-            seatElement.style.backgroundColor = '#FF0000'; 
+            validSeatCount--;
+            document.getElementById(`seat-${seatId}`).innerHTML = `
+                <x-seats.unavailable>
+                    ${seatId}
+                </x-seats.unavailable>
+            `;
         }
-        // Debugging: Log selectedSeats array
-        console.log(selectedSeats);
+
+        document.getElementById('validSeatCount').textContent = validSeatCount;
+        console.log('Selected Seats:', selectedSeats);
+
         document.getElementById('selectedSeatsInput').value = JSON.stringify(selectedSeats);
+        document.getElementById('validSeatCountInput').value = validSeatCount;
     }
 
     function saveSeats() {
-        const form = document.getElementById('addSeatForm');
-        form.submit();
+        console.log('Saving Seats:', selectedSeats);
+        document.getElementById('selectedSeatsInput').value = JSON.stringify(selectedSeats);
+        document.getElementById('validSeatCountInput').value = validSeatCount;
     }
 
-    // Call addSeats function to generate seats on page load
     document.addEventListener('DOMContentLoaded', addSeats);
-
 </script>
 
 @endsection
