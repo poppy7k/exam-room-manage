@@ -33,8 +33,11 @@ class BuildingController extends Controller
             $fileName = $validatedData['building_en'] . '.' . $request->file('building_image')->getClientOriginalExtension();
             $imagePath = $request->file('building_image')->storeAs('building_images', $fileName, 'public');
             $imageFilename = basename($imagePath);
+            Log::info('Image Path: ' . $imagePath);
+            Log::info('Image Filename: ' . $imageFilename);
         } else {
             $imageFilename = null;
+            Log::info('No image uploaded.');
         }
     
         $building = Building::create([
@@ -42,7 +45,7 @@ class BuildingController extends Controller
             'building_en' => $validatedData['building_en'],
             'building_image' => $imageFilename,
         ]);
-
+    
         // alerts-box
         session()->flash('status', 'success');
         session()->flash('message', 'สร้างอาคารสอบสำเร็จ!');

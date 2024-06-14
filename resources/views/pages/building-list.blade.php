@@ -30,8 +30,8 @@
                 $totalValidSeats = $building->examRoomInformation->sum('valid_seat');
             @endphp
             <x-building-card
-                {{-- :building_image="'{{ $building->building_image ? asset('storage/'.$building->building_image) : asset('storage/default/default-building-image.jpg') }}'" --}}
-                :building_image="'https://images.unsplash.com/photo-1554629947-334ff61d85dc?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1024&h=1280&q=80'"
+                :building_image="asset('storage/building_images/' . ($building->building_image ?? 'default/default-building-image.jpg'))"
+                {{-- :building_image="'https://images.unsplash.com/photo-1554629947-334ff61d85dc?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1024&h=1280&q=80'" --}}
                 :building_th="$building->building_th"
                 :building_en="$building->building_en"
                 :building_id="$building->id"
