@@ -115,7 +115,7 @@
                 let seatComponent = '';
                 if (selectedSeats.includes(seatId)) {
                     seatComponent = `
-                        <div onclick="toggleSeat(${i + 1}, '${toExcelColumn(j)}')" id="seat-${i}-${j}" class="seat p-4 text-center cursor-pointer">
+                        <div onclick="toggleSeat(${i + 1}, '${toExcelColumn(j)}')" id="seat-${seatId}" class="seat p-4 text-center cursor-pointer">
                             <x-seats.unavailable>
                                 ${i + 1}-${toExcelColumn(j)}
                             </x-seats.unavailable>
@@ -123,7 +123,7 @@
                     `;
                 } else {
                     seatComponent = `
-                        <div onclick="toggleSeat(${i + 1}, '${toExcelColumn(j)}')" id="seat-${i}-${j}" class="seat p-4 text-center cursor-pointer">
+                        <div onclick="toggleSeat(${i + 1}, '${toExcelColumn(j)}')" id="seat-${seatId}" class="seat p-4 text-center cursor-pointer">
                             <x-seats.primary>
                                 ${i + 1}-${toExcelColumn(j)}
                             </x-seats.primary>
@@ -146,14 +146,23 @@
 
         if (selectedSeats.includes(seatId)) {
             selectedSeats = selectedSeats.filter(id => id !== seatId);
+            document.getElementById(`seat-${seatId}`).innerHTML = `
+                <x-seats.primary>
+                    ${seatId}
+                </x-seats.primary>
+            `;
         } else {
             selectedSeats.push(seatId);
+            document.getElementById(`seat-${seatId}`).innerHTML = `
+                <x-seats.unavailable>
+                    ${seatId}
+                </x-seats.unavailable>
+            `;
         }
 
         console.log('Selected Seats:', selectedSeats);
 
         document.getElementById('selectedSeatsInput').value = JSON.stringify(selectedSeats);
-        addSeats(); 
     }
 
     function saveSeats() {
