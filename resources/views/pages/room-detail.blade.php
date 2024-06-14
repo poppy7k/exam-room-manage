@@ -82,6 +82,14 @@
         </div>
     </div>
 </div>
+<form id="addSeatForm" method="POST" action="{{ route('examroominfo.saveSelectedSeats', ['buildingId' => $room->building_code, 'roomId' => $room->id]) }}" class="pt-4" enctype="multipart/form-data" onsubmit="saveSeats()">
+    @csrf
+    @method('PUT')
+    <input type="hidden" id="selectedSeatsInput" name="selected_seats">
+    <x-buttons.primary type="submit" class="py-2 w-full hover:scale-105 justify-center">
+        บันทึกที่นั่ง
+    </x-buttons.primary>
+</form>
 
 <script>
     function toExcelColumn(n) {
@@ -91,57 +99,70 @@
             n = Math.floor(n / 26) - 1;
         }
         return result;
-
     }
 
     function addSeats() {
-    const rows = {{ $room->rows }};
-    const columns = {{ $room->columns }};
-    const seatContainer = document.getElementById('seat-container');
-    seatContainer.innerHTML = '';
-    seatContainer.style.gridTemplateColumns = `repeat(${columns}, minmax(4rem, 1fr))`;
+        const rows = {{ $room->rows }};
+        const columns = {{ $room->columns }};
+        const seatContainer = document.getElementById('seat-container');
+        seatContainer.innerHTML = '';
+        seatContainer.style.gridTemplateColumns = `repeat(${columns}, minmax(4rem, 1fr))`;
 
         let seatComponents = '';
         for (let i = 0; i < rows; i++) {
             for (let j = 0; j < columns; j++) {
-                seatComponents += `
-                    <x-seats.primary>
-                        ${i + 1}-${toExcelColumn(j)}
-                    </x-seats.primary>
-                `;
+                const seatId = `${i + 1}-${toExcelColumn(j)}`;
+                let seatComponent = '';
+                if (selectedSeats.includes(seatId)) {
+                    seatComponent = `
+                        <div onclick="toggleSeat(${i + 1}, '${toExcelColumn(j)}')" id="seat-${i}-${j}" class="seat p-4 text-center cursor-pointer">
+                            <x-seats.unavailable>
+                                ${i + 1}-${toExcelColumn(j)}
+                            </x-seats.unavailable>
+                        </div>
+                    `;
+                } else {
+                    seatComponent = `
+                        <div onclick="toggleSeat(${i + 1}, '${toExcelColumn(j)}')" id="seat-${i}-${j}" class="seat p-4 text-center cursor-pointer">
+                            <x-seats.primary>
+                                ${i + 1}-${toExcelColumn(j)}
+                            </x-seats.primary>
+                        </div>
+                    `;
+                }
+                seatComponents += seatComponent;
             }
         }
         seatContainer.innerHTML = seatComponents;
     }
 
-    let selectedSeats = [];
+    let selectedSeats = @json($selectedSeats) || [];
 
     function toggleSeat(row, column) {
         const seatId = `${row}-${column}`;
-        const seatElement = document.getElementById(`seat-${row - 1}-${column.charCodeAt(0) - 65}`);
+        if (!Array.isArray(selectedSeats)) {
+            selectedSeats = [];
+        }
+
         if (selectedSeats.includes(seatId)) {
-            const index = selectedSeats.indexOf(seatId);
-            if (index > -1) {
-                selectedSeats.splice(index, 1);
-            }
-            seatElement.style.backgroundColor = '';
+            selectedSeats = selectedSeats.filter(id => id !== seatId);
         } else {
             selectedSeats.push(seatId);
-            seatElement.style.backgroundColor = '#FF0000'; 
         }
-        // Debugging: Log selectedSeats array
-        console.log(selectedSeats);
+
+        console.log('Selected Seats:', selectedSeats);
+
         document.getElementById('selectedSeatsInput').value = JSON.stringify(selectedSeats);
+        addSeats(); 
     }
 
     function saveSeats() {
-        const form = document.getElementById('addSeatForm');
-        form.submit();
+        console.log('Saving Seats:', selectedSeats);
+        document.getElementById('selectedSeatsInput').value = JSON.stringify(selectedSeats);
     }
 
-    // Call addSeats function to generate seats on page load
     document.addEventListener('DOMContentLoaded', addSeats);
-</script> --}}
+</script>
 
 @endsection
 

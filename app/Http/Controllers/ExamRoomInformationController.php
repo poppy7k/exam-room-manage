@@ -110,6 +110,7 @@ class ExamRoomInformationController extends Controller
         $building = Building::findOrFail($buildingId);
         $room = ExamRoomInformation::findOrFail($roomId);
         $selectedSeats = json_encode($room->selected_seats);
+        Log::info('$selectedSeats: ' . $selectedSeats);
     
         $breadcrumbs = [
             ['url' => '/', 'title' => 'หน้าหลัก'],
@@ -138,30 +139,10 @@ class ExamRoomInformationController extends Controller
     
         $room->selected_seats = $request->selected_seats;
         $room->save();
-    
+        
         return redirect()->route('room-detail', ['buildingId' => $buildingId, 'roomId' => $roomId])
                          ->with('success', 'Selected seats saved successfully.');
     }
-
-    // public function saveSelectedSeats(Request $request, $buildingId, $roomId)
-    // {
-    //     $request->validate([
-    //         'selected_seats' => 'required|json',
-    //         'old_selected_seats' => 'required|json',
-    //     ]);
-    
-    //     $room = ExamRoomInformation::where('building_code', $buildingId)
-    //                                 ->where('id', $roomId)
-    //                                 ->firstOrFail();
-    
-    //     // Optionally, you can perform additional validation or checks here before updating
-    //     $room->selected_seats = $request->selected_seats;
-    //     $room->old_selected_seats = $request->old_selected_seats;
-    //     $room->save();
-    
-    //     return redirect()->route('room-detail', ['buildingId' => $buildingId, 'roomId' => $roomId])
-    //                      ->with('success', 'Selected seats saved successfully.');
-    // }
 }
 
 
