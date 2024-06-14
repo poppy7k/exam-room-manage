@@ -86,29 +86,6 @@ class BuildingController extends Controller
         }
     }
 
-    // public function update(Request $request, $buildingId)
-    // {
-    //     $request->validate([
-    //         'building_th' => 'required|string|max:255',
-    //         'building_en' => 'required|string|max:255',
-    //     ]);
-
-    //     $building = Building::find($buildingId);
-    //     if (!$building) {
-    //         return redirect()->route('buildings.index')->with('error', 'Building not found.');
-    //     }
-
-    //     $building->update($request->all());
-
-    //     foreach ($request->exam_rooms as $examRoom) {
-    //         ExamRoomInformation::updateOrCreate(
-    //             ['building_code' => $buildingId, 'room' => $examRoom['room']],
-    //             $examRoom
-    //         );
-    //     }
-    //     return redirect()->route('building-list')->with('success', 'Building updated successfully.');
-    // }
-
     public function updateAjax(Request $request, $buildingId)
     {
         $request->validate([
@@ -121,7 +98,7 @@ class BuildingController extends Controller
         if (!$building) {
             return response()->json(['error' => 'Building not found.'], 404);
         }
-
+    
         if ($request->building_th_edit !== $building->building_th || $request->building_en_edit !== $building->building_en) {
             // Check if the edited building names (Thai and English) already exist in other buildings
             $existingBuilding = Building::where('id', '!=', $buildingId)
@@ -134,14 +111,18 @@ class BuildingController extends Controller
                 return response()->json(['error' => 'ชื่อของอาคารสอบต้องไม่ซ้ำกัน!'], 422);
             }
         }
-
     
         $building->building_th = $request->building_th_edit;
         $building->building_en = $request->building_en_edit;
     
         if ($request->hasFile('building_image_edit')) {
-            $fileName = $request->building_en . '.' . $request->file('building_image_edit')->getClientOriginalExtension();
-            $imagePath = $request->file('building_image_edit')->storeAs('building_image_edit', $fileName, 'public');
+            // Delete the old image if it exists
+            if ($building->building_image) {
+                Storage::disk('public')->delete('building_images/' . $building->building_image);
+            }
+            
+            $fileName = $request->building_en_edit . '.' . $request->file('building_image_edit')->getClientOriginalExtension();
+            $imagePath = $request->file('building_image_edit')->storeAs('building_images', $fileName, 'public');
             $building->building_image = basename($imagePath);
         }
     
@@ -149,31 +130,6 @@ class BuildingController extends Controller
     
         return response()->json(['success' => 'ข้อมูลอาคารสอบถูกแก้ไข้เรียบร้อยแล้ว']);
     }
-
-    // public function updateAjax(Request $request, $buildingId)
-    // {
-    //     try {
-    //         Log::info('Update Building Request Data:', $request->all());
-
-    //         $building = Building::findOrFail($buildingId);
-    //         $building->building_th = $request->input('building_th_edit');
-    //         $building->building_en = $request->input('building_en_edit');
-
-    //         Log::info('Building EN:', ['building_en' => $request->input('building_en_edit')]);
-
-    //         if ($request->hasFile('building_image_edit')) {
-    //             $path = $request->file('building_image_edit')->store('building_images', 'public');
-    //             $building->image_path = $path;
-    //         }
-
-    //         $building->save();
-
-    //         return response()->json(['success' => 'Building updated successfully.']);
-    //     } catch (\Exception $e) {
-    //         Log::error('Failed to update building:', ['error' => $e->getMessage()]);
-    //         return response()->json(['error' => 'Failed to update the building.'], 500);
-    //     }
-    // }
 
     public function showRoomList($buildingId)
     {
