@@ -66,15 +66,20 @@ class BuildingController extends Controller
 
     public function destroy($buildingId)
     {
-
         $building = Building::find($buildingId);
-
+    
         if ($building) {
 
             ExamRoomInformation::where('building_code', $buildingId)->delete();
-
+    
+            if ($building->building_image) {
+                $imagePath = 'building_images/' . $building->building_image;
+                if (Storage::disk('public')->exists($imagePath)) {
+                    Storage::disk('public')->delete($imagePath);
+                }
+            }
             $building->delete();
-
+    
             return response()->json(['success' => true, 'message' => 'Building and associated exam room information deleted successfully.']);
         } else {
             return response()->json(['success' => false, 'message' => 'Building not found.'], 404);
