@@ -5,14 +5,11 @@ use App\Http\Controllers\BuildingController;
 use App\Http\Controllers\ExamRoomInformationController;
 use App\Models\ExamRoomInformation;
 
-Route::get('/', function () {
-    return view('pages.building-list');
-})->name('home');
+Route::get('/', [BuildingController::class, 'index'])->name('index');
 
-Route::get('/', [BuildingController::class, 'building_list'])->name('building-list');
+Route::get('/buildings', [BuildingController::class, 'building_list'])->name('building-list');
 Route::get('/buildings/add', [BuildingController::class, 'create'])->name('pages.building-create');
 
-Route::get('/buildings', [BuildingController::class, 'index'])->name('buildings.index');
 Route::post('/buildings/store', [BuildingController::class, 'store'])->name('buildings.store');
 
 Route::get('/buildings/{buildingId}/addinfo', function($buildingId) {

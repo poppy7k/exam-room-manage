@@ -19,7 +19,7 @@ class ExamRoomInformationController extends Controller
             ['url' => '/buildings/'.$buildingId.'/room-list/add', 'title' => 'สร้างห้องสอบ'],  
         ];
 
-        return view('pages.room-create', compact('building', 'breadcrumbs', 'buildingId'));
+        return view('pages.room-manage.rooms.room-create', compact('building', 'breadcrumbs', 'buildingId'));
     }
 
     public function store(Request $request, $buildingId)
@@ -50,7 +50,7 @@ class ExamRoomInformationController extends Controller
         // Log::info('Columns1: ' . $request->columns);
         // Log::info('Total Seats1: ' . $totalSeats);
 
-        return redirect()->route('pages.room-list', ['buildingId' => $buildingId])->with('success', 'Room created successfully.');
+        return redirect()->route('pages.room-manage.rooms.room-list', ['buildingId' => $buildingId])->with('success', 'Room created successfully.');
     }
 
     public function updateRoom(Request $request, $roomId)
@@ -118,7 +118,7 @@ class ExamRoomInformationController extends Controller
             ['url' => '/buildings/'.$buildingId.'/room-list/'.$roomId, 'title' => $room->room],  
         ];
     
-        return view('pages.room-detail', [
+        return view('pages.room-manage.rooms.room-detail', [
             'buildingId' => $buildingId,
             'roomId' => $roomId,
             'breadcrumbs' => $breadcrumbs,

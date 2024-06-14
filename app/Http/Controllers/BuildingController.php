@@ -18,7 +18,7 @@ class BuildingController extends Controller
             ['url' => '/buildings/add', 'title' => 'สร้างอาคารสอบ'],
         ];
 
-        return view('pages.building-create', compact('breadcrumbs'));
+        return view('pages.room-manage.buildings.building-create', compact('breadcrumbs'));
     }
 
     public function store(Request $request)
@@ -47,7 +47,7 @@ class BuildingController extends Controller
         session()->flash('status', 'success');
         session()->flash('message', 'สร้างอาคารสอบสำเร็จ!');
     
-        return redirect()->route('pages.room-list', ['buildingId' => $building->id])
+        return redirect()->route('pages.room-manage.rooms.room-list', ['buildingId' => $building->id])
                          ->with('buildingData', $building->toArray());
     }
 
@@ -58,7 +58,7 @@ class BuildingController extends Controller
             ['url' => '/', 'title' => 'หน้าหลัก'],
         ];
 
-        return view('pages.building-list', compact('breadcrumbs', 'buildings'));
+        return view('pages.room-manage.buildings.building-list', compact('breadcrumbs', 'buildings'));
     }
 
     public function destroy($buildingId)
@@ -180,12 +180,21 @@ class BuildingController extends Controller
             ['url' => '/buildings/'.$buildingId.'/room-list', 'title' => 'รายการห้องสอบ'], 
         ];
     
-        return view('pages.room-list', compact('building', 'rooms','nextRoomId', 'breadcrumbs'));
+        return view('pages.room-manage.rooms.room-list', compact('building', 'rooms','nextRoomId', 'breadcrumbs'));
     }
 
     public function alert()
     {
         return back()->with('status', 'Task status updated successfully!');
+    }
+
+    public function index()
+    {
+        $breadcrumbs = [
+            ['url' => '/', 'title' => 'หน้าหลัก'],
+        ];
+
+        return view('pages.index', compact('breadcrumbs'));
     }
 
 }
