@@ -145,6 +145,32 @@ class ExamRoomInformationController extends Controller
         return redirect()->route('room-detail', ['buildingId' => $buildingId, 'roomId' => $roomId])
                          ->with('success', 'Selected seats saved successfully.');
     }
+
+    // public function saveSelectedSeats(Request $request, $buildingId, $roomId)
+    // {
+    //     $request->validate([
+    //         'selected_seats' => 'required|json',
+    //         'valid_seat' => 'required|integer',
+    //     ]);
+    
+    //     $room = ExamRoomInformation::where('building_code', $buildingId)
+    //                                 ->where('id', $roomId)
+    //                                 ->firstOrFail();
+    
+    //     $selectedSeats = json_decode($request->selected_seats, true);
+    
+    //     if (json_last_error() !== JSON_ERROR_NONE) {
+    //         return redirect()->route('room-detail', ['buildingId' => $buildingId, 'roomId' => $roomId])
+    //                          ->with('error', 'Invalid JSON data for selected seats.');
+    //     }
+    
+    //     $room->selected_seats = json_encode($selectedSeats); // Ensure valid JSON
+    //     $room->valid_seat = $request->valid_seat;
+    //     $room->save();
+    
+    //     return redirect()->route('room-detail', ['buildingId' => $buildingId, 'roomId' => $roomId])
+    //                      ->with('success', 'Selected seats saved successfully.');
+    // }
 }
 
 
