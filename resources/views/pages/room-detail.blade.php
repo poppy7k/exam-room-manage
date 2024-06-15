@@ -222,7 +222,6 @@
     }
 
     function addColumn(position) {
-        let rows = parseInt(document.getElementById('row-count').textContent);
         let columns = parseInt(document.getElementById('column-count').textContent);
         columns++;
         document.getElementById('column-count').textContent = columns;
@@ -248,6 +247,15 @@
                 selectedSeats = selectedSeats.filter(seat => {
                     const col = seat.split('-')[1];
                     return col.charCodeAt(0) - 65 < columns;
+                });
+            } else if (position === 'left') {
+                selectedSeats = selectedSeats.map(seat => {
+                    const [row, col] = seat.split('-');
+                    const colIndex = col.charCodeAt(0) - 65 - 1;
+                    return `${row}-${toExcelColumn(colIndex)}`;
+                }).filter(seat => {
+                    const col = seat.split('-')[1];
+                    return col.charCodeAt(0) - 65 >= 0;
                 });
             }
 
@@ -281,6 +289,14 @@
                     const row = seat.split('-')[0];
                     return parseInt(row) <= rows;
                 });
+            } else if (position === 'top') {
+                selectedSeats = selectedSeats.map(seat => {
+                    const [row, col] = seat.split('-');
+                    return `${parseInt(row) - 1}-${col}`;
+                }).filter(seat => {
+                    const row = seat.split('-')[0];
+                    return parseInt(row) >= 1;
+                });
             }
 
             addSeats();
@@ -291,5 +307,6 @@
 </script>
 
 @endsection
+
 
 
