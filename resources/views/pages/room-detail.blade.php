@@ -137,176 +137,173 @@
 </form>
 
 <script>
-    let validSeatCount = {{ $room->valid_seat }};
-    let selectedSeats = @json($selectedSeats) || [];
+let validSeatCount = {{ $room->valid_seat }};
+let selectedSeats = JSON.parse(@json($room->selected_seats) || "[]");
 
-    function toExcelColumn(n) {
-        let result = '';
-        while (n >= 0) {
-            result = String.fromCharCode((n % 26) + 65) + result;
-            n = Math.floor(n / 26) - 1;
-        }
-        return result;
+function toExcelColumn(n) {
+    let result = '';
+    while (n >= 0) {
+        result = String.fromCharCode((n % 26) + 65) + result;
+        n = Math.floor(n / 26) - 1;
     }
+    return result;
+}
 
-    function addSeats() {
-        const rows = parseInt(document.getElementById('row-count').textContent);
-        const columns = parseInt(document.getElementById('column-count').textContent);
-        const seatContainer = document.getElementById('seat-container');
-        seatContainer.innerHTML = '';
-        seatContainer.style.gridTemplateColumns = `repeat(${columns}, minmax(4rem, 1fr))`;
+function addSeats() {
+    const rows = parseInt(document.getElementById('row-count').textContent);
+    const columns = parseInt(document.getElementById('column-count').textContent);
+    const seatContainer = document.getElementById('seat-container');
+    seatContainer.innerHTML = '';
+    seatContainer.style.gridTemplateColumns = `repeat(${columns}, minmax(4rem, 1fr))`;
 
-        let seatComponents = '';
-        for (let i = 0; i < rows; i++) {
-            for (let j = 0; j < columns; j++) {
-                const seatId = `${i + 1}-${toExcelColumn(j)}`;
-                let seatComponent = '';
-                if (selectedSeats.includes(seatId)) {
-                    seatComponent = `
-                        <div onclick="toggleSeat(${i + 1}, '${toExcelColumn(j)}')" id="seat-${seatId}" class="seat p-4 text-center cursor-pointer">
-                            <x-seats.unavailable>
-                                ${i + 1}-${toExcelColumn(j)}
-                            </x-seats.unavailable>
-                        </div>
-                    `;
-                } else {
-                    seatComponent = `
-                        <div onclick="toggleSeat(${i + 1}, '${toExcelColumn(j)}')" id="seat-${seatId}" class="seat p-4 text-center cursor-pointer">
-                            <x-seats.primary>
-                                ${i + 1}-${toExcelColumn(j)}
-                            </x-seats.primary>
-                        </div>
-                    `;
-                }
-                seatComponents += seatComponent;
+    let seatComponents = '';
+    for (let i = 0; i < rows; i++) {
+        for (let j = 0; j < columns; j++) {
+            const seatId = `${i + 1}-${toExcelColumn(j)}`;
+            let seatComponent = '';
+            if (selectedSeats.includes(seatId)) {
+                seatComponent = `
+                    <div onclick="toggleSeat(${i + 1}, '${toExcelColumn(j)}')" id="seat-${seatId}" class="seat p-4 text-center cursor-pointer">
+                        <x-seats.unavailable>
+                            ${i + 1}-${toExcelColumn(j)}
+                        </x-seats.unavailable>
+                    </div>
+                `;
+            } else {
+                seatComponent = `
+                    <div onclick="toggleSeat(${i + 1}, '${toExcelColumn(j)}')" id="seat-${seatId}" class="seat p-4 text-center cursor-pointer">
+                        <x-seats.primary>
+                            ${i + 1}-${toExcelColumn(j)}
+                        </x-seats.primary>
+                    </div>
+                `;
             }
+            seatComponents += seatComponent;
         }
-        seatContainer.innerHTML = seatComponents;
+    }
+    seatContainer.innerHTML = seatComponents;
+}
+
+function toggleSeat(row, column) {
+    const seatId = `${row}-${column}`;
+    console.log('Before Toggle:', selectedSeats);
+
+    if (selectedSeats.includes(seatId)) {
+        selectedSeats = selectedSeats.filter(id => id !== seatId);
+        validSeatCount++;
+        document.getElementById(`seat-${seatId}`).innerHTML = `
+            <x-seats.primary>
+                ${seatId}
+            </x-seats.primary>
+        `;
+    } else {
+        selectedSeats.push(seatId);
+        validSeatCount--;
+        document.getElementById(`seat-${seatId}`).innerHTML = `
+            <x-seats.unavailable>
+                ${seatId}
+            </x-seats.unavailable>
+        `;
     }
 
-    function toggleSeat(row, column) {
-        const seatId = `${row}-${column}`;
-        if (!Array.isArray(selectedSeats)) {
-            selectedSeats = [];
-        }
+    console.log('After Toggle:', selectedSeats);
 
-        if (selectedSeats.includes(seatId)) {
-            selectedSeats = selectedSeats.filter(id => id !== seatId);
-            validSeatCount++;
-            document.getElementById(`seat-${seatId}`).innerHTML = `
-                <x-seats.primary>
-                    ${seatId}
-                </x-seats.primary>
-            `;
-        } else {
-            selectedSeats.push(seatId);
-            validSeatCount--;
-            document.getElementById(`seat-${seatId}`).innerHTML = `
-                <x-seats.unavailable>
-                    ${seatId}
-                </x-seats.unavailable>
-            `;
-        }
+    document.getElementById('validSeatCount').textContent = validSeatCount;
 
-        document.getElementById('validSeatCount').textContent = validSeatCount;
-        console.log('Selected Seats:', selectedSeats);
+    document.getElementById('selectedSeatsInput').value = JSON.stringify(selectedSeats);
+    document.getElementById('validSeatCountInput').value = validSeatCount;
+}
 
-        document.getElementById('selectedSeatsInput').value = JSON.stringify(selectedSeats);
-        document.getElementById('validSeatCountInput').value = validSeatCount;
+function saveSeats() {
+    document.getElementById('selectedSeatsInput').value = JSON.stringify(selectedSeats);
+    document.getElementById('validSeatCountInput').value = validSeatCount;
+}
+
+function addColumn(position) {
+    let columns = parseInt(document.getElementById('column-count').textContent);
+    columns++;
+    document.getElementById('column-count').textContent = columns;
+
+    if (position === 'left') {
+        selectedSeats = selectedSeats.map(seat => {
+            const [row, col] = seat.split('-');
+            const colIndex = col.charCodeAt(0) - 65 + 1;
+            return `${row}-${toExcelColumn(colIndex)}`;
+        });
     }
 
-    function saveSeats() {
-        console.log('Saving Seats:', selectedSeats);
-        document.getElementById('selectedSeatsInput').value = JSON.stringify(selectedSeats);
-        document.getElementById('validSeatCountInput').value = validSeatCount;
-    }
+    addSeats();
+}
 
-    function addColumn(position) {
-        let columns = parseInt(document.getElementById('column-count').textContent);
-        columns++;
+function removeColumn(position) {
+    let columns = parseInt(document.getElementById('column-count').textContent);
+    if (columns > 1) {
+        columns--;
         document.getElementById('column-count').textContent = columns;
 
-        if (position === 'left') {
+        if (position === 'right') {
+            selectedSeats = selectedSeats.filter(seat => {
+                const col = seat.split('-')[1];
+                return col.charCodeAt(0) - 65 < columns;
+            });
+        } else if (position === 'left') {
             selectedSeats = selectedSeats.map(seat => {
                 const [row, col] = seat.split('-');
-                const colIndex = col.charCodeAt(0) - 65 + 1;
+                const colIndex = col.charCodeAt(0) - 65 - 1;
                 return `${row}-${toExcelColumn(colIndex)}`;
+            }).filter(seat => {
+                const col = seat.split('-')[1];
+                return col.charCodeAt(0) - 65 >= 0;
             });
         }
 
         addSeats();
     }
+}
 
-    function removeColumn(position) {
-        let columns = parseInt(document.getElementById('column-count').textContent);
-        if (columns > 1) {
-            columns--;
-            document.getElementById('column-count').textContent = columns;
+function addRow(position) {
+    let rows = parseInt(document.getElementById('row-count').textContent);
+    rows++;
+    document.getElementById('row-count').textContent = rows;
 
-            if (position === 'right') {
-                selectedSeats = selectedSeats.filter(seat => {
-                    const col = seat.split('-')[1];
-                    return col.charCodeAt(0) - 65 < columns;
-                });
-            } else if (position === 'left') {
-                selectedSeats = selectedSeats.map(seat => {
-                    const [row, col] = seat.split('-');
-                    const colIndex = col.charCodeAt(0) - 65 - 1;
-                    return `${row}-${toExcelColumn(colIndex)}`;
-                }).filter(seat => {
-                    const col = seat.split('-')[1];
-                    return col.charCodeAt(0) - 65 >= 0;
-                });
-            }
-
-            addSeats();
-        }
+    if (position === 'top') {
+        selectedSeats = selectedSeats.map(seat => {
+            const [row, col] = seat.split('-');
+            return `${parseInt(row) + 1}-${col}`;
+        });
     }
 
-    function addRow(position) {
-        let rows = parseInt(document.getElementById('row-count').textContent);
-        rows++;
+    addSeats();
+}
+
+function removeRow(position) {
+    let rows = parseInt(document.getElementById('row-count').textContent);
+    if (rows > 1) {
+        rows--;
         document.getElementById('row-count').textContent = rows;
 
-        if (position === 'top') {
+        if (position === 'bottom') {
+            selectedSeats = selectedSeats.filter(seat => {
+                const row = seat.split('-')[0];
+                return parseInt(row) <= rows;
+            });
+        } else if (position === 'top') {
             selectedSeats = selectedSeats.map(seat => {
                 const [row, col] = seat.split('-');
-                return `${parseInt(row) + 1}-${col}`;
+                return `${parseInt(row) - 1}-${col}`;
+            }).filter(seat => {
+                const row = seat.split('-')[0];
+                return parseInt(row) >= 1;
             });
         }
 
         addSeats();
     }
+}
 
-    function removeRow(position) {
-        let rows = parseInt(document.getElementById('row-count').textContent);
-        if (rows > 1) {
-            rows--;
-            document.getElementById('row-count').textContent = rows;
-
-            if (position === 'bottom') {
-                selectedSeats = selectedSeats.filter(seat => {
-                    const row = seat.split('-')[0];
-                    return parseInt(row) <= rows;
-                });
-            } else if (position === 'top') {
-                selectedSeats = selectedSeats.map(seat => {
-                    const [row, col] = seat.split('-');
-                    return `${parseInt(row) - 1}-${col}`;
-                }).filter(seat => {
-                    const row = seat.split('-')[0];
-                    return parseInt(row) >= 1;
-                });
-            }
-
-            addSeats();
-        }
-    }
-
-    document.addEventListener('DOMContentLoaded', addSeats);
+document.addEventListener('DOMContentLoaded', addSeats);
 </script>
 
+
+
 @endsection
-
-
-
