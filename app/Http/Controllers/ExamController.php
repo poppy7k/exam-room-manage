@@ -8,35 +8,38 @@ use App\Models\Exam;
 class ExamController extends Controller
 {
     public function index() {
+        $exams = Exam::paginate(8);
         $breadcrumbs = [
             ['url' => '/', 'title' => 'หน้าหลัก'],
             ['url' => '/exams', 'title' => 'รายการสอบ'],
         ];
         session()->flash('sidebar', '3');
 
-        return view('pages.exam-manage.exam-list', compact('breadcrumbs'));
+        return view('pages.exam-manage.exam-list', compact('breadcrumbs','exams'));
     }
 
     public function store(Request $request)
     {
         $validatedData = $request->validate([
-            'name' => 'required|string',
-            'exam_takers_quantity' => 'required|integer|min:1',
-            'building_id' => 'required|string',
-            'room_id' => 'required|string',
-            'subject' => 'required|string',
-            'exam_date' => 'required|string',
+            'department_name' => 'required|string',
+            'exam_position' => 'required|string',
+            'exam_date' => 'required|date',
+            'exam_start_time' => 'required|date_format:H:i',
+            'exam_end_time' => 'required|date_format:H:i',
         ]);
     
         Exam::create([
-            'building_th' => $validatedData['building_th'],
-            'building_en' => $validatedData['building_en'],
+            'department_name' => $validatedData['department_name'],
+            'exam_position' => $validatedData['exam_position'],
+            'exam_date' => $validatedData['exam_date'],
+            'exam_start_time' => $validatedData['exam_date'] . ' ' . $validatedData['exam_start_time'],
+            'exam_end_time' => $validatedData['exam_date'] . ' ' . $validatedData['exam_end_time'],
         ]);
     
-        // alerts-box
         session()->flash('status', 'success');
-        session()->flash('message', 'สร้างอาคารสอบสำเร็จ!');
-
+        session()->flash('message', 'สร้างการสอบสำเร็จ!');
+    
+        return redirect()->route('exam-list');
     }
     
     public function create() {

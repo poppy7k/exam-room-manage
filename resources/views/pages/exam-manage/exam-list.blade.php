@@ -24,7 +24,7 @@
             </x-buttons.icon-primary>
         </div>
     </div>
-    <div class="room-item relative flex bg-white flex-col bg-clip-border rounded-lg w-[260px] shadow-md mt-6 transition-all duration-500 hover:scale-105 hover:shadow-lg"">
+    {{-- <div class="room-item relative flex bg-white flex-col bg-clip-border rounded-lg w-[260px] shadow-md mt-6 transition-all duration-500 hover:scale-105 hover:shadow-lg"">
         <a href="#" class="absolute inset-0 z-0"></a>
         <div class="px-4 py-3 text-surface text-black">
             <div class="group flex">
@@ -67,6 +67,20 @@
                 </x-buttons.icon-danger>
             </div>
         </div>
+    </div> --}}
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-4 mt-2">
+        @forelse($exams as $exam)
+            <x-exam-card
+                :department_name="$exam->department_name"
+                :exam_position="$exam->exam_position"
+                :exam_date="$exam->exam_date"
+                :exam_start_time="$exam->exam_start_time"      
+                :exam_end_time="$exam->exam_end_time"
+
+            />
+        @empty
+
+        @endforelse
     </div>
     <div id="empty-state" class="col-span-4 text-center py-32 my-3" style="display: none;">
         <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 mx-auto mt-10 mb-5 fill-gray-500" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Capa_1" x="0px" y="0px" viewBox="0 0 512.021 512.021" style="enable-background:new 0 0 512.021 512.021;" xml:space="preserve" width="512" height="512">
