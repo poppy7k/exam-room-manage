@@ -29,13 +29,26 @@
         <div class="px-4 py-3 text-surface text-black">
             <div class="group flex">
                 <span class="relative group flex hover-trigger">
-                    <p class="text-xl my-1 font-semibold max-w-40 truncate">
-                        ทดสอบทดสอบทดสอบ
+                    <p class="text-xl my-1 font-semibold w-56 truncate">
+                        ทดสอบทดสอบทดสอบทดสอบทดสอบ
                     </p>
+                    <x-tooltip title="ทดสอบทดสอบทดสอบทดสอบทดสอบ" class="group-hover:-translate-x-20 group-hover:translate-y-4 z-20"></x-tooltip>
                 </span> 
             </div>
+            <div class="my-2 flex">
+                สถานะ: 
+                <p class="w-max ml-2 py-1 px-2 -translate-y-0.5 bg-gradient-to-tr from-yellow-600 to-yellow-400 rounded-lg text-sm text-white shadow-md">
+                    เลือกห้อง
+                </p>
+            </div>
             <div class="flex">
-                
+                เวลาสอบ: 13.00 - 16.00
+            </div>
+            <div class="flex">
+                ตำแหน่ง: คณิตศาสตร์
+            </div>
+            <div class="mb-2 mt-4 flex">
+                จัดสอบโดย: สำนักคอม
             </div>
             <div class="flex justify-between pb-1 pt-3">
                 <x-buttons.primary type="button" class="py-1.5 px-12 z-10"

@@ -7,15 +7,26 @@
     </p>
     <form method="POST" class="pt-4" action="#" enctype="multipart/form-data" onsubmit="return validateForm()">
         @csrf
-        <div class="mb-4">
-            <label for="building_th" class="block font-semibold">ชื่ออาคาร (ภาษาไทย)</label>
-            <input type="text" id="building_th" name="building_th" placeholder="กรอกชื่ออาคาร (ภาษาไทย)" required class="w-full my-2 px-3 py-2 rounded ring-1 shadow-sm ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-green-600 transition-all duration-300 outline-none">
-            <span id="building_th_error" class="error-message" style="color: red; display: none;">* กรุณากรอกชื่ออาคารด้วยภาษาไทยหรือตัวเลขเท่านั้น!</span>
+        <div class="flex mb-4 justify-between">
+            <div class="">
+                <label for="exam_date" class="block font-semibold">วันที่การสอบ</label>
+                <input type="date" id="exam_date" name="exam_date" class="my-2 px-2 py-1 rounded ring-1 shadow-sm ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-green-600 transition-all duration-300 outline-none">
+            </div>
+            <div class="">
+                <label for="building_th" class="block font-semibold">เวลาเริ่มการสอบ</label>
+                <input type="text" id="building_th" name="building_th" placeholder="เวลาเริ่มการสอบ" required class="w-full my-2 px-3 py-2 rounded ring-1 shadow-sm ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-green-600 transition-all duration-300 outline-none">
+                <span id="building_th_error" class="error-message" style="color: red; display: none;">* กรุณากรอกชื่ออาคารด้วยภาษาไทยหรือตัวเลขเท่านั้น!</span>
+            </div>
+            <div class="">
+                <label for="building_th" class="block font-semibold">เวลาสิ้นสุดการสอบ</label>
+                <input type="text" id="building_th" name="building_th" placeholder="เวลาสิ้นสุดการสอบ" required class="w-full my-2 px-3 py-2 rounded ring-1 shadow-sm ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-green-600 transition-all duration-300 outline-none">
+                <span id="building_th_error" class="error-message" style="color: red; display: none;">* กรุณากรอกชื่ออาคารด้วยภาษาไทยหรือตัวเลขเท่านั้น!</span>
+            </div>
         </div>
         <div class="mb-4">
-            <label for="building_en" class="block font-semibold">ชื่ออาคาร (English)</label>
-            <input type="text" id="building_en" name="building_en" placeholder="กรอกชื่ออาคาร (English)" required class="w-full my-2 px-3 py-2 rounded ring-1 shadow-sm ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-green-600 transition-all duration-300 outline-none">
-            <span id="building_en_error" class="error-message" style="color: red; display: none;">* กรุณากรอกชื่ออาคารด้วยภาษาอังกฤษหรือตัวเลขเท่านั้น!</span>
+            <label for="building_en" class="block font-semibold">ตำแหน่ง</label>
+            <input type="text" id="building_en" name="building_en" placeholder="กรอกชื่อตำแหน่ง" required class="w-full my-2 px-3 py-2 rounded ring-1 shadow-sm ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-green-600 transition-all duration-300 outline-none">
+            <span id="building_en_error" class="error-message" style="color: red; display: none;"></span>
         </div>
         <x-buttons.primary type="submit" class="py-2 w-full hover:scale-105 justify-center">
             สร้างการสอบ
