@@ -59,7 +59,9 @@ class BuildingController extends Controller
         $buildings = Building::paginate(8);
         $breadcrumbs = [
             ['url' => '/', 'title' => 'หน้าหลัก'],
+            ['url' => '/buildings', 'title' => 'รายการอาคารสอบ'],
         ];
+        session()->flash('sidebar', '2');
 
         return view('pages.room-manage.buildings.building-list', compact('breadcrumbs', 'buildings'));
     }
@@ -140,8 +142,8 @@ class BuildingController extends Controller
         $rooms = $building->examRoomInformation()->paginate(12);
         $breadcrumbs = [
             ['url' => '/', 'title' => 'หน้าหลัก'],
+            ['url' => '/buildings', 'title' => 'รายการอาคารสอบ'],
             ['url' => '/buildings/'.$buildingId.'/room-list', 'title' => ''.$building->building_th],
-            ['url' => '/buildings/'.$buildingId.'/room-list', 'title' => 'รายการห้องสอบ'], 
         ];
     
         return view('pages.room-manage.rooms.room-list', compact('building', 'rooms','nextRoomId', 'breadcrumbs'));
@@ -157,6 +159,7 @@ class BuildingController extends Controller
         $breadcrumbs = [
             ['url' => '/', 'title' => 'หน้าหลัก'],
         ];
+        session()->flash('sidebar', '1');
 
         return view('pages.index', compact('breadcrumbs'));
     }

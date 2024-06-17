@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BuildingController;
+use App\Http\Controllers\ExamController;
 use App\Http\Controllers\ExamRoomInformationController;
 use App\Models\ExamRoomInformation;
 
@@ -40,3 +41,7 @@ Route::get('/buildings/{buildingId}/room-list/{roomId}', [ExamRoomInformationCon
 
 Route::put('/buildings/{buildingId}/room-list/{roomId}', [ExamRoomInformationController::class, 'saveSelectedSeats'])->name('examroominfo.saveSelectedSeats');
 // Route::match(['post', 'put'], '/buildings/{buildingId}/room-list/{roomId}/save-selected-seats', [ExamRoomInformationController::class, 'saveSelectedSeats'])->name('examroominfo.saveSelectedSeats');
+
+// Exam-Manage //
+Route::get('/exams', [ExamController::class, 'index'])->name('exam-list');
+Route::get('/exams/create', [ExamController::class, 'create'])->name('exam-create');

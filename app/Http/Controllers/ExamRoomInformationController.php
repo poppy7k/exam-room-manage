@@ -15,6 +15,7 @@ class ExamRoomInformationController extends Controller
         $building = Building::findOrFail($buildingId);
         $breadcrumbs = [
             ['url' => '/', 'title' => 'หน้าหลัก'],
+            ['url' => '/buildings', 'title' => 'รายการอาคารสอบ'],
             ['url' => '/buildings/'.$buildingId.'/room-list', 'title' => $building->building_th],
             ['url' => '/buildings/'.$buildingId.'/room-list/add', 'title' => 'สร้างห้องสอบ'],  
         ];
@@ -114,6 +115,7 @@ class ExamRoomInformationController extends Controller
     
         $breadcrumbs = [
             ['url' => '/', 'title' => 'หน้าหลัก'],
+            ['url' => '/buildings', 'title' => 'รายการอาคารสอบ'],
             ['url' => '/buildings/'.$buildingId.'/room-list', 'title' => $building->building_th],
             ['url' => '/buildings/'.$buildingId.'/room-list/'.$roomId, 'title' => $room->room],  
         ];
