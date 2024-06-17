@@ -13,20 +13,32 @@
                 <input type="date" id="exam_date" name="exam_date" class="my-2 px-3 py-1 rounded ring-1 shadow-sm ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-green-600 transition-all duration-300 outline-none">
             </div>
             <div class="">
-                <label for="building_th" class="block font-semibold">เวลาเริ่มการสอบ</label>
-                <input type="text" id="building_th" name="building_th" placeholder="เวลาเริ่มการสอบ" required class="w-full my-2 px-3 py-2 rounded ring-1 shadow-sm ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-green-600 transition-all duration-300 outline-none">
-                <span id="building_th_error" class="error-message" style="color: red; display: none;">* กรุณากรอกชื่ออาคารด้วยภาษาไทยหรือตัวเลขเท่านั้น!</span>
+                <label for="exam_start_time" class="block font-semibold">เวลาเริ่มการสอบ</label>
+                <input type="text" list="exam_start_list" id="exam_start_time" name="exam_start_time" placeholder="เวลาเริ่มการสอบ" required class="w-full my-2 px-3 py-2 rounded ring-1 shadow-sm ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-green-600 transition-all duration-300 outline-none">
+                <datalist id="exam_start_list">
+                    <option value="Option 1"></option>
+                    <option value="Option 2"></option>
+                    <option value="Option 3"></option>
+                 </datalist>
             </div>
             <div class="">
-                <label for="building_th" class="block font-semibold">เวลาสิ้นสุดการสอบ</label>
-                <input type="text" id="building_th" name="building_th" placeholder="เวลาสิ้นสุดการสอบ" required class="w-full my-2 px-3 py-2 rounded ring-1 shadow-sm ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-green-600 transition-all duration-300 outline-none">
-                <span id="building_th_error" class="error-message" style="color: red; display: none;">* กรุณากรอกชื่ออาคารด้วยภาษาไทยหรือตัวเลขเท่านั้น!</span>
+                <label for="exam_end_time" class="block font-semibold">เวลาสิ้นสุดการสอบ</label>
+                <input type="text" list="exam_end_list" id="exam_end_time" name="exam_end_time" placeholder="เวลาสิ้นสุดการสอบ" required class="w-full my-2 px-3 py-2 rounded ring-1 shadow-sm ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-green-600 transition-all duration-300 outline-none">
+                <datalist id="exam_end_list">
+                    <option value="Option 1"></option>
+                    <option value="Option 2"></option>
+                    <option value="Option 3"></option>
+                 </datalist>
             </div>
         </div>
         <div class="mb-4">
-            <label for="building_en" class="block font-semibold">ตำแหน่ง</label>
-            <input type="text" id="building_en" name="building_en" placeholder="กรอกชื่อตำแหน่ง" required class="w-full my-2 px-3 py-2 rounded ring-1 shadow-sm ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-green-600 transition-all duration-300 outline-none">
-            <span id="building_en_error" class="error-message" style="color: red; display: none;"></span>
+            <label for="exam_position" class="block font-semibold">ตำแหน่ง</label>
+            <input type="text" list="exam_position_list" id="exam_position" name="exam_position" placeholder="กรอกชื่อตำแหน่ง" required class="w-full my-2 px-3 py-2 rounded ring-1 shadow-sm ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-green-600 transition-all duration-300 outline-none">
+            <datalist id="exam_position_list">
+                <option value="Option 1"></option>
+                <option value="Option 2"></option>
+                <option value="Option 3"></option>
+             </datalist>
         </div>
         <x-buttons.primary type="submit" class="py-2 w-full hover:scale-105 justify-center">
             สร้างการสอบ
