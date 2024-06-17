@@ -16,14 +16,14 @@
             <img
             class="rounded-t-lg w-full h-48 object-fill"
             src="{{ $building_image }}"
-            alt="{{ $building_en . ' building_image'}}"
+            alt="{{ $building_th . 'building_image'}}" 
             onerror="this.onerror=null;this.src='{{ asset('storage/building_images/default/default-building-image.jpg') }}';"
             />
-            {{-- <p>{{$building_image}}</p> --}}
         </div>
+        {{-- <p>{{$building_image}}</p> --}}
         <div class="p-4 text-surface text-black">
             <div class="group w-auto">
-                <p class="mb-0 text-xl font-bold leading-tight truncate">
+                <p class="mb-0 text-xl font-bold leading-tight truncate building-th">
                     <span class="hover-trigger relative">
                         {{ $building_th }}
                         <x-tooltip title="{{ $building_th }}" class="group-hover:-translate-x-0 group-hover:-translate-y-2 z-10"></x-tooltip>
@@ -32,7 +32,7 @@
                 </p>
             </div>
             <div class="group">
-                <p class="mb-4 text-base truncate ">
+                <p class="mb-4 text-base truncate building-en">
                     <span class="hover-trigger relative">
                         {{ $building_en }}
                         <x-tooltip title="{{ $building_en }}" class="group-hover:-translate-x-0 group-hover:-translate-y-8 z-10"></x-tooltip>

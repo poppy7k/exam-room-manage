@@ -69,15 +69,16 @@
         var hasVisibleItems = false;
 
         Array.from(buildingItems).forEach(function(item) {
-            var buildingName = item.textContent.toLowerCase();
-            if (buildingName.includes(searchQuery)) {
+            var buildingTh = item.querySelector('.building-th').textContent.toLowerCase();
+            var buildingEn = item.querySelector('.building-en').textContent.toLowerCase();
+            if (buildingTh.includes(searchQuery) || buildingEn.includes(searchQuery)) {
                 item.style.display = 'block';
-                hasVisibleItems = true
+                hasVisibleItems = true;
             } else {
                 item.style.display = 'none';
             }
         });
-        document.getElementById('empty-state').style.display = hasVisibleItems ? 'none' : 'block';s
+        document.getElementById('empty-state').style.display = hasVisibleItems ? 'none' : 'block';
     });
 </script>
 @endsection
