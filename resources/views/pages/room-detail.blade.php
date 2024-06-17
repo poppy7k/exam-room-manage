@@ -18,7 +18,7 @@
             <p class="font-normal text- justify-start ml-4 mt-1.5">
                 ที่นั่งทั้งหมด
             </p>
-            <p class="font-bold ml-1 mt-1.5"> {{ $room->total_seat }}</p>
+            <p id="totalSeatCount" class="font-bold ml-1 mt-1.5"> {{ $room->total_seat }}</p>
             <p class="font-normal text- justify-start ml-4 mt-1.5">
                 แถว
             </p>
@@ -131,6 +131,8 @@
     @method('PUT')
     <input type="hidden" id="selectedSeatsInput" name="selected_seats">
     <input type="hidden" id="validSeatCountInput" name="valid_seat">
+    <input type="hidden" id="rowsInput" name="rows">
+    <input type="hidden" id="columnsInput" name="columns">
     <x-buttons.primary type="submit" class="py-2 w-full hover:scale-105 justify-center">
         บันทึกที่นั่ง
     </x-buttons.primary>
@@ -217,6 +219,8 @@ function toggleSeat(row, column) {
 function saveSeats() {
     document.getElementById('selectedSeatsInput').value = JSON.stringify(selectedSeats);
     document.getElementById('validSeatCountInput').value = validSeatCount;
+    document.getElementById('rowsInput').value = document.getElementById('row-count').textContent;
+    document.getElementById('columnsInput').value = document.getElementById('column-count').textContent;
 }
 
 function addColumn(position) {
@@ -233,6 +237,8 @@ function addColumn(position) {
     }
 
     addSeats();
+    updateValidSeatCount();
+    updateTotalSeatCount();
 }
 
 function removeColumn(position) {
@@ -258,6 +264,8 @@ function removeColumn(position) {
         }
 
         addSeats();
+        updateValidSeatCount();
+        updateTotalSeatCount();
     }
 }
 
@@ -274,6 +282,8 @@ function addRow(position) {
     }
 
     addSeats();
+    updateValidSeatCount();
+    updateTotalSeatCount();
 }
 
 function removeRow(position) {
@@ -298,12 +308,28 @@ function removeRow(position) {
         }
 
         addSeats();
+        updateValidSeatCount();
+        updateTotalSeatCount();
     }
+}
+
+function updateValidSeatCount() {
+    const rows = parseInt(document.getElementById('row-count').textContent);
+    const columns = parseInt(document.getElementById('column-count').textContent);
+    const totalSeats = rows * columns;
+    const occupiedSeats = selectedSeats.length;
+    validSeatCount = totalSeats - occupiedSeats;
+    document.getElementById('validSeatCount').textContent = validSeatCount;
+}
+
+function updateTotalSeatCount() {
+    const rows = parseInt(document.getElementById('row-count').textContent);
+    const columns = parseInt(document.getElementById('column-count').textContent);
+    const totalSeats = rows * columns;
+    document.getElementById('totalSeatCount').textContent = totalSeats;
 }
 
 document.addEventListener('DOMContentLoaded', addSeats);
 </script>
-
-
 
 @endsection

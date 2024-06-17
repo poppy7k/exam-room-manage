@@ -31,12 +31,7 @@
         <x-buttons.primary type="submit" class="py-2 w-full hover:scale-105 justify-center">
             สร้างห้องสอบ
         </x-buttons.primary>
-        <button type="button" onclick="addSeats()" style="background-color: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; margin-top: 10px;">Add Seats</button>
     </form>
-</div>
-
-<div class="bg-white shadow-lg px-10 py-10 my-3 border-1 rounded-lg divide-y-2">
-    <div id="seat-container" class="grid h-96 overflow-x-scroll overflow-y-scroll"></div>
 </div>
 
 <script>
