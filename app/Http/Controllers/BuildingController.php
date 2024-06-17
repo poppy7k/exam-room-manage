@@ -50,7 +50,7 @@ class BuildingController extends Controller
         session()->flash('status', 'success');
         session()->flash('message', 'สร้างอาคารสอบสำเร็จ!');
     
-        return redirect()->route('pages.room-manage.rooms.room-list', ['buildingId' => $building->id])
+        return redirect()->route('pages.room-list', ['buildingId' => $building->id])
                          ->with('buildingData', $building->toArray());
     }
 

@@ -10,7 +10,7 @@
         <div class="flex mb-4 justify-between">
             <div class="">
                 <label for="exam_date" class="block font-semibold">วันที่การสอบ</label>
-                <input type="date" id="exam_date" name="exam_date" class="my-2 px-2 py-1 rounded ring-1 shadow-sm ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-green-600 transition-all duration-300 outline-none">
+                <input type="date" id="exam_date" name="exam_date" class="my-2 px-3 py-1 rounded ring-1 shadow-sm ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-green-600 transition-all duration-300 outline-none">
             </div>
             <div class="">
                 <label for="building_th" class="block font-semibold">เวลาเริ่มการสอบ</label>
