@@ -1,31 +1,42 @@
 @props([
     'href' => '#', 
-    'department_name',
-    'exam_position',
-    'exam_date',
-    'exam_start_time',
-    'exam_end_time',
-    'status',
+    'exam_name' => 'null',
+    'department_name' => 'null',
+    'exam_position' => 'null',
+    'exam_date' => 'null',
+    'exam_start_time' => 'null',
+    'exam_end_time' => 'null',
+    'status' => 'null',
 ])
 
 <div class="room-item relative flex bg-white flex-col bg-clip-border rounded-lg w-[260px] shadow-md mt-6 transition-all duration-500 hover:scale-105 hover:shadow-lg"">
-    <a href="" class="absolute inset-0 z-0"></a>
+    <a href="#" class="absolute inset-0 z-0"></a>
     <div class="px-4 py-3 text-surface text-black">
         <div class="group flex">
             <span class="relative group flex hover-trigger">
-                <p class="text-2xl -my-1 font-semibold max-w-28 truncate">
-                    {{-- {{ $exam }} --}}
+                <p class="text-xl my-1 font-semibold w-56 truncate">
+                    {{ $exam_name }}
                 </p>
-                <p class="text-gray-600 -my-1 pl-2 py-1.5">
-                    {{-- ชื่อฝ่ายงาน{{ $deparment_name }} --}}
-                </p>
-                {{-- <x-tooltip title="{{ $room }} ชั้น {{ $floor }}" class="group-hover:-translate-x-20 group-hover:translate-y-4 z-20"></x-tooltip> --}}
+                <x-tooltip title="ทดสอบทดสอบทดสอบทดสอบทดสอบ" class="group-hover:-translate-x-20 group-hover:translate-y-4 z-20"></x-tooltip>
             </span> 
         </div>
-        <div class="flex justify-end">
-            <p class="absolute justify-end -mx-1 -my-7 px-2 py-1 bg-gradient-to-tr from-green-600 to-green-400 rounded-lg text-sm text-white shadow-md">
-                {{-- {{ $status }} รอการเลือก --}}
+        <div class="my-2 flex">
+            สถานะ: 
+            <p class="w-max ml-2 py-1 px-2 -translate-y-0.5 bg-gradient-to-tr from-yellow-600 to-yellow-400 rounded-lg text-sm text-white shadow-md">
+                {{ $status }}
             </p>
+        </div>
+        <div class="flex">
+            วันที่สอบ: {{ \Carbon\Carbon::parse($exam_start_time)->format('D, d/m/Y') }}
+        </div>
+        <div class="flex">
+            เวลาสอบ: {{ \Carbon\Carbon::parse($exam_start_time)->format('H:i') }} - {{ \Carbon\Carbon::parse($exam_end_time)->format('H:i') }}
+        </div>
+        <div class="flex">
+            ตำแหน่ง: {{ $exam_position }}
+        </div>
+        <div class="mb-2 mt-4 flex">
+            จัดสอบโดย: {{ $department_name }}
         </div>
         <div class="flex justify-between pb-1 pt-3">
             <x-buttons.primary type="button" class="py-1.5 px-12 z-10"
