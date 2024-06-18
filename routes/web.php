@@ -45,6 +45,7 @@ Route::put('/buildings/{buildingId}/room-list/{roomId}', [ExamRoomInformationCon
 Route::get('/exams', [ExamController::class, 'index'])->name('exam-list');
 Route::get('/exams/create', [ExamController::class, 'create'])->name('exam-create');
 Route::post('/exams', [ExamController::class, 'store'])->name('exams.store');
+Route::delete('/exams/{examId}', [ExamController::class, 'destroy'])->name('exams.destroy');
 
 // Alert //
 Route::post('/set-alert-message', function (Illuminate\Http\Request $request) {

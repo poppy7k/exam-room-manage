@@ -51,4 +51,18 @@ class ExamController extends Controller
 
         return view('pages.exam-manage.exam-create', compact('breadcrumbs'));
     }
+
+    public function destroy($examId) {
+
+        $exam = Exam::find($examId);
+
+        if ($exam) {
+
+            $exam->delete();
+
+            return response()->json(['success' => true, 'message' => 'Room deleted successfully.']);
+        } else {
+            return response()->json(['success' => false, 'message' => 'Room not found.'], 404);
+        }
+    }
 }

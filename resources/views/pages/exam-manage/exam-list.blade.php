@@ -208,7 +208,8 @@
                 :exam_date="$exam->exam_date"
                 :exam_start_time="$exam->exam_start_time"      
                 :exam_end_time="$exam->exam_end_time"
-
+                :exam_id="$exam->id"
+                :exam_name="$exam->exam_name"
             />
         @empty
 
