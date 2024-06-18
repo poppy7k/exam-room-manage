@@ -45,3 +45,4 @@ Route::put('/buildings/{buildingId}/room-list/{roomId}', [ExamRoomInformationCon
 // Exam-Manage //
 Route::get('/exams', [ExamController::class, 'index'])->name('exam-list');
 Route::get('/exams/create', [ExamController::class, 'create'])->name('exam-create');
+Route::post('/exams', [ExamController::class, 'store'])->name('exams.store');

@@ -9,15 +9,18 @@ class Exam extends Model
 {
     use HasFactory;
 
-    protected $table = 'exam_list';
+    protected $table = 'exams';
 
     protected $fillable = [
-        // 'orders',
-        'name',
+        'department_name',
+        'exam_position',
+        'exam_date',
+        'exam_start_time',
+        'exam_end_time',
         'exam_takers_quantity',
         'building_id',
         'room_id',
-        'subject',
-        'exam_date',
+        'organization',
+        'status'
     ];
 }
