@@ -12,7 +12,6 @@ class Exam extends Model
     protected $table = 'exams';
 
     protected $fillable = [
-        'exam_name',
         'department_name',
         'exam_position',
         'exam_date',

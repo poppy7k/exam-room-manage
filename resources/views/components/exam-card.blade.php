@@ -8,7 +8,6 @@
     'exam_end_time' => 'null',
     'status' => 'null',
     'organization' => 'null',
-    'examId'
     'exam_id',
 ])
 
