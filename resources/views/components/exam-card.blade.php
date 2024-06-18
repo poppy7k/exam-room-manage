@@ -15,10 +15,10 @@
     <div class="px-4 py-3 text-surface text-black">
         <div class="group flex">
             <span class="relative group flex hover-trigger">
-                <p class="text-xl my-1 font-semibold w-56 truncate">
+                <p class="text-xl my-1 font-semibold max-w-56 truncate">
                     {{ $exam_name }}
                 </p>
-                <x-tooltip title="ทดสอบทดสอบทดสอบทดสอบทดสอบ" class="group-hover:-translate-x-20 group-hover:translate-y-4 z-20"></x-tooltip>
+                <x-tooltip title="{{ $exam_name }}" class="group-hover:translate-y-6 z-20"></x-tooltip>
             </span> 
         </div>
         <div class="my-2 flex">
