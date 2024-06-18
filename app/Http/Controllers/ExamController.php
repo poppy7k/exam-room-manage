@@ -94,7 +94,7 @@ class ExamController extends Controller
             ['url' => '/', 'title' => 'หน้าหลัก'],
             ['url' => '/exams', 'title' => 'รายการสอบ'],
             ['url' => '/exams/'.$examId.'/buildings', 'title' => ''.$exams->department_name],
-            ['url' => '/exams/'.$examId.'/buildings/'.$buildingId, 'title' => ''.$exams->department_name,''.$buildings->building_th],
+            ['url' => '/exams/'.$examId.'/buildings/'.$buildingId, 'title' => ''.$buildings->building_th],
 
         ];
         session()->flash('sidebar', '3');
