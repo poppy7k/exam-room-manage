@@ -29,7 +29,7 @@
                                 </div>
                                 <div class="mb-4">
                                     <label for="building_image_edit" class="block text-gray-700 font-semibold">รูปภาพของอาคารสอบ</label>
-                                    <input type="file" name="building_image_edit" id="building_image_edit" class="w-full my-2 px-3 py-2 rounded ring-1 shadow-sm ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-green-600 transition-all duration-300 outline-none">
+                                    <input type="file" name="building_image_edit" id="building_image_edit" class="w-full my-2 px-3 py-2  rounded ring-1 shadow-sm ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-green-600 transition-all duration-300 outline-none file:rounded-md file:border-0 file:font-semibold file:px-2 file:py-1.5 file:bg-green-200 file:text-green-700 file:text-md hover:file:bg-green-300">
                                 </div>
                             </div>
                         </div>

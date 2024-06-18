@@ -23,7 +23,7 @@
         </div>
         <div class="mb-6">
             <label for="building_image" class="block font-semibold">อัปโหลดรูปภาพของอาคาร</label>
-            <input type="file" id="building_image" name="building_image" accept="image/*" class="w-full my-2 px-3 py-2 rounded ring-1 shadow-sm ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-green-600 transition-all duration-300 outline-none">
+            <input type="file" id="building_image" name="building_image" accept="image/*" class="w-full my-2 px-3 py-2  rounded ring-1 shadow-sm ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-green-600 transition-all duration-300 outline-none file:rounded-md file:border-0 file:font-semibold file:px-2 file:py-1.5 file:bg-green-200 file:text-green-700 file:text-md hover:file:bg-green-300">
         </div>
         <x-buttons.primary type="submit" class="py-2 w-full hover:scale-105 justify-center">
             สร้างอาคารสอบ

@@ -15,6 +15,7 @@ class BuildingController extends Controller
     {
         $breadcrumbs = [
             ['url' => '/', 'title' => 'หน้าหลัก'],
+            ['url' => '/buildings', 'title' => 'รายการอาคารสอบ'],
             ['url' => '/buildings/add', 'title' => 'สร้างอาคารสอบ'],
         ];
 
