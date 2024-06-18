@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Exam;
 use App\Models\Building;
+use App\Models\ExamRoomInformation;
+
 class ExamController extends Controller
 {
     public function index() {
@@ -81,5 +83,22 @@ class ExamController extends Controller
         session()->flash('sidebar', '3');
 
         return view('pages.exam-manage.exam-buildinglist', compact('breadcrumbs', 'exams','buildings'));
+    }
+
+    public function exam_room_list($examId,$buildingId)
+    {
+        $exams = Exam::findOrFail($examId);
+        $buildings = Building::findOrFail($buildingId);
+        $rooms = $buildings->examRoomInformation()->paginate(12);
+        $breadcrumbs = [
+            ['url' => '/', 'title' => 'หน้าหลัก'],
+            ['url' => '/exams', 'title' => 'รายการสอบ'],
+            ['url' => '/exams/'.$examId.'/buildings', 'title' => ''.$exams->department_name],
+            ['url' => '/exams/'.$examId.'/buildings/'.$buildingId, 'title' => ''.$exams->department_name,''.$buildings->building_th],
+
+        ];
+        session()->flash('sidebar', '3');
+
+        return view('pages.exam-manage.exam-roomlist', compact('breadcrumbs', 'exams','buildings','rooms'));
     }
 }
