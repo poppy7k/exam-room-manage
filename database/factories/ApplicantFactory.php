@@ -19,7 +19,7 @@ class ApplicantFactory extends Factory
     public function definition()
     {
         return [
-            'id_number' => $this->faker->unique()->numerify('ID####'),
+            'id_number' => $this->faker->unique()->numerify('######'),
             'id_card' => $this->faker->unique()->numerify('###########'),
             'name' => $this->faker->name,
             'degree' => $this->faker->word,

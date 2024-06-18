@@ -52,3 +52,5 @@ Route::post('/set-alert-message', function (Illuminate\Http\Request $request) {
     session()->flash('status', 'success');
     session()->flash('message', $request->message);
 });
+
+Route::get('/exams/{examId}/buildings', [ExamController::class, 'exam_building_list'])->name('exam-buildinglist');

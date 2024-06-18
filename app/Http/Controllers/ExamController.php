@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Exam;
-
+use App\Models\Building;
 class ExamController extends Controller
 {
     public function index() {
@@ -37,6 +37,7 @@ class ExamController extends Controller
             'exam_start_time' => $validatedData['exam_date'] . ' ' . $validatedData['exam_start_time'],
             'exam_end_time' => $validatedData['exam_date'] . ' ' . $validatedData['exam_end_time'],
             'status' => 'pending',
+            'status' => 'pending',
         ]);
     
         session()->flash('status', 'success');
@@ -53,19 +54,5 @@ class ExamController extends Controller
         session()->flash('sidebar', '3');
 
         return view('pages.exam-manage.exam-create', compact('breadcrumbs'));
-    }
-
-    public function destroy($examId) {
-
-        $exam = Exam::find($examId);
-
-        if ($exam) {
-
-            $exam->delete();
-
-            return response()->json(['success' => true, 'message' => 'Room deleted successfully.']);
-        } else {
-            return response()->json(['success' => false, 'message' => 'Room not found.'], 404);
-        }
     }
 }
