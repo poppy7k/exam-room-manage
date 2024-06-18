@@ -46,3 +46,5 @@ Route::put('/buildings/{buildingId}/room-list/{roomId}', [ExamRoomInformationCon
 Route::get('/exams', [ExamController::class, 'index'])->name('exam-list');
 Route::get('/exams/create', [ExamController::class, 'create'])->name('exam-create');
 Route::post('/exams', [ExamController::class, 'store'])->name('exams.store');
+
+Route::get('/exams/{examId}/buildings', [ExamController::class, 'exam_building_list'])->name('exam-buildinglist');

@@ -22,7 +22,7 @@ return new class extends Migration
             $table->datetime('exam_start_time')->nullable();//
             $table->datetime('exam_end_time')->nullable();//
             $table->string('organization')->nullable();
-            $table->string('status')->nullable();
+            $table->string('status')->default('pending');
             $table->timestamps();
         });
     }

@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Exam;
-
+use App\Models\Building;
 class ExamController extends Controller
 {
     public function index() {
@@ -34,6 +34,7 @@ class ExamController extends Controller
             'exam_date' => $validatedData['exam_date'],
             'exam_start_time' => $validatedData['exam_date'] . ' ' . $validatedData['exam_start_time'],
             'exam_end_time' => $validatedData['exam_date'] . ' ' . $validatedData['exam_end_time'],
+            'status' => 'pending',
         ]);
     
         session()->flash('status', 'success');
@@ -50,5 +51,20 @@ class ExamController extends Controller
         session()->flash('sidebar', '3');
 
         return view('pages.exam-manage.exam-create', compact('breadcrumbs'));
+    }
+
+    public function exam_building_list($examId)
+    {
+        $buildings = Building::paginate(8);
+        $exams = Exam::findOrFail($examId);
+        $breadcrumbs = [
+            ['url' => '/', 'title' => 'หน้าหลัก'],
+            ['url' => '/exams', 'title' => 'รายการสอบ'],
+            ['url' => '/exams/'.$examId.'/buildings', 'title' => ''.$exams->department_name],
+
+        ];
+        session()->flash('sidebar', '3');
+
+        return view('pages.exam-manage.exam-buildinglist', compact('breadcrumbs', 'exams','buildings'));
     }
 }

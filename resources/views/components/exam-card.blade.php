@@ -7,6 +7,8 @@
     'exam_start_time' => 'null',
     'exam_end_time' => 'null',
     'status' => 'null',
+    'organization' => 'null',
+    'examId'
 ])
 
 <div class="room-item relative flex bg-white flex-col bg-clip-border rounded-lg w-[260px] shadow-md mt-6 transition-all duration-500 hover:scale-105 hover:shadow-lg"">
@@ -15,9 +17,9 @@
         <div class="group flex">
             <span class="relative group flex hover-trigger">
                 <p class="text-xl my-1 font-semibold w-56 truncate">
-                    {{ $exam_name }}
+                    {{ $department_name }}
                 </p>
-                <x-tooltip title="ทดสอบทดสอบทดสอบทดสอบทดสอบ" class="group-hover:-translate-x-20 group-hover:translate-y-4 z-20"></x-tooltip>
+                <x-tooltip title="{{ $department_name }}" class="group-hover:-translate-x-20 group-hover:translate-y-4 z-20"></x-tooltip>
             </span> 
         </div>
         <div class="my-2 flex">
@@ -36,11 +38,11 @@
             ตำแหน่ง: {{ $exam_position }}
         </div>
         <div class="mb-2 mt-4 flex">
-            จัดสอบโดย: {{ $department_name }}
+            จัดสอบโดย: {{ $organization }}
         </div>
         <div class="flex justify-between pb-1 pt-3">
             <x-buttons.primary type="button" class="py-1.5 px-12 z-10"
-                onclick="">
+                onclick="window.location.href = '{{ route('exam-buildinglist',['examId' => $examId])}}'">
                 เลือก
             </x-buttons.primary>
             <x-buttons.icon-info type="button" onclick="" class="px-1 py-1 z-10">
