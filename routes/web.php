@@ -54,3 +54,4 @@ Route::post('/set-alert-message', function (Illuminate\Http\Request $request) {
 });
 
 Route::get('/exams/{examId}/buildings', [ExamController::class, 'exam_building_list'])->name('exam-buildinglist');
+Route::get('/exams/{examId}/buildings/{buildingId}', [ExamController::class, 'exam_room_list'])->name('exam-roomlist');

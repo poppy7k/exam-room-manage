@@ -5,6 +5,8 @@
     'building_th',
     'building_id',
     'valid_seat',
+    'examId',
+    'buildingId'
 ])
 
 <div class="building-item relative flex flex-col bg-clip-border w-[260px] rounded-lg bg-white shadow-md mt-6 transition-all duration-500 hover:scale-105 hover:shadow-lg">
@@ -41,7 +43,7 @@
             </div>
             <div class="flex justify-between py-1">
                 {{-- <x-buttons.primary type="button" class="py-1.5 px-12 z-10" onclick="window.location.href = '{{ route('pages.room-list', ['buildingId' => $building_id]) }}'"> --}}
-                <x-buttons.primary type="button" class="py-1.5 px-12 z-10" onclick="">
+                <x-buttons.primary type="button" class="py-1.5 px-12 z-10" onclick="window.location.href = '{{ route('exam-roomlist',['examId' => $examId , 'buildingId' => $buildingId])}}'">
                     เลือก
                 </x-buttons.primary>
                 {{-- <x-buttons.icon-info type="button" onclick="event.stopPropagation(); openBuildingEditModal({ id: {{ $building_id }}, building_th: '{{ $building_th }}', building_en: '{{ $building_en }}' })" class="px-1 py-1 z-10">

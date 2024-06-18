@@ -11,7 +11,7 @@
                 -
             </p>
             <p class="font-normal text-md mt-1.5">
-                ทั้งหมด
+                ทั้งหมด {{{ count($exams)}}}
             </p>
         </div> 
         <div class="flex">
@@ -35,6 +35,7 @@
                 :exam_id="$exam->id"
                 :exam_name="$exam->exam_name"
                 :status="$exam->status"
+                {{-- :examId="$exam->id" --}}
             />
         @empty
 
