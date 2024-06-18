@@ -7,10 +7,19 @@
     </p>
     <form method="POST" class="pt-4" action="#" enctype="multipart/form-data" onsubmit="return validateForm()">
         @csrf
+        <div class="mb-4">
+            <label for="exam_name" class="block font-semibold">ชื่อการสอบ</label>
+            <input type="text" list="exam_name_list" id="exam_name" name="exam_name" placeholder="กรอกชื่อการสอบ" required class="w-full my-2 px-3 py-2 rounded ring-1 shadow-sm ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-green-600 transition-all duration-300 outline-none">
+            <datalist id="exam_name_list">
+                <option value="Option 1"></option>
+                <option value="Option 2"></option>
+                <option value="Option 3"></option>
+             </datalist>
+        </div>
         <div class="flex mb-4 justify-between">
             <div class="">
                 <label for="exam_date" class="block font-semibold">วันที่การสอบ</label>
-                <input type="date" id="exam_date" name="exam_date" class="my-2 px-3 py-1 rounded ring-1 shadow-sm ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-green-600 transition-all duration-300 outline-none">
+                <input type="date" id="exam_date" name="exam_date" class="w-full my-2 px-3 py-1 rounded ring-1 shadow-sm ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-green-600 transition-all duration-300 outline-none">
             </div>
             <div class="">
                 <label for="exam_start_time" class="block font-semibold">เวลาเริ่มการสอบ</label>

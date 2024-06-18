@@ -145,6 +145,7 @@ class BuildingController extends Controller
             ['url' => '/buildings', 'title' => 'รายการอาคารสอบ'],
             ['url' => '/buildings/'.$buildingId.'/room-list', 'title' => ''.$building->building_th],
         ];
+        session()->flash('sidebar', '2');
     
         return view('pages.room-manage.rooms.room-list', compact('building', 'rooms','nextRoomId', 'breadcrumbs'));
     }
