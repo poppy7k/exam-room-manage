@@ -35,7 +35,7 @@
                 :exam_id="$exam->id"
                 :exam_name="$exam->exam_name"
                 :status="$exam->status"
-                {{-- :examId="$exam->id" --}}
+                :organization="$exam->organization"
             />
         @empty
 

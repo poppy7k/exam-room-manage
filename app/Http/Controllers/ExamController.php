@@ -29,6 +29,8 @@ class ExamController extends Controller
             'exam_start_time' => 'required|date_format:H:i',
             'exam_end_time' => 'required|date_format:H:i',
         ]);
+        $organizations = ["สำนักคอมพิวเตอร์", "คณะวิทยาศาสตร์", "คณะวิศวะกรรมศาสตร์","คณะมนุษย์ศาสตร์"];
+        $randomOrganization = $organizations[array_rand($organizations)];
     
         Exam::create([
             'department_name' => $validatedData['department_name'],
@@ -36,6 +38,7 @@ class ExamController extends Controller
             'exam_date' => $validatedData['exam_date'],
             'exam_start_time' => $validatedData['exam_date'] . ' ' . $validatedData['exam_start_time'],
             'exam_end_time' => $validatedData['exam_date'] . ' ' . $validatedData['exam_end_time'],
+            'organization' => $randomOrganization,
             'status' => 'pending',
         ]);
     
