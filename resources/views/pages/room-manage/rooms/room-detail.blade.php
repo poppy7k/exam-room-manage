@@ -34,6 +34,9 @@
     <div class="bg-white shadow-md my-3 rounded-lg max-h-screen flex flex-col">
         <!-- Div ด้านบน -->
         <div class="bg-white grow rounded-lg h-12 text-center group hover:h-28 transition-all duration-500 flex gap-4 justify-center items-center">
+            <div class="absolute group-hover:hidden">
+                <svg xmlns="http://www.w3.org/2000/svg" class="rotate-180 w-7 h-7" id="Outline" viewBox="0 0 24 24" width="512" height="512"><path d="M18.71,8.21a1,1,0,0,0-1.42,0l-4.58,4.58a1,1,0,0,1-1.42,0L6.71,8.21a1,1,0,0,0-1.42,0,1,1,0,0,0,0,1.41l4.59,4.59a3,3,0,0,0,4.24,0l4.59-4.59A1,1,0,0,0,18.71,8.21Z"/></svg>
+            </div>
             <div onclick="addRow('top')" class="transition-all duration-500 opacity-0 group-hover:opacity-100 flex flex-col items-center">
                 <x-buttons.icon-primary-bg class="group/custombutton mx-auto p-0.5 rounded-full hover:scale-125">
                     <svg xmlns="http://www.w3.org/2000/svg" class="-rotate-90" id="Bold" viewBox="0 0 24 24" width="24" height="24">
@@ -57,6 +60,9 @@
         <div class="flex flex-grow">
             <!-- Div ด้านซ้าย -->
             <div class="bg-white rounded-lg w-12 flex-shrink-0 text-center py-4 group hover:w-28 transition-all duration-500 flex flex-col gap-4 justify-center items-center ">
+                <div class="absolute group-hover:hidden">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="rotate-90 w-7 h-7" id="Outline" viewBox="0 0 24 24" width="512" height="512"><path d="M18.71,8.21a1,1,0,0,0-1.42,0l-4.58,4.58a1,1,0,0,1-1.42,0L6.71,8.21a1,1,0,0,0-1.42,0,1,1,0,0,0,0,1.41l4.59,4.59a3,3,0,0,0,4.24,0l4.59-4.59A1,1,0,0,0,18.71,8.21Z"/></svg>
+                </div>
                 <div onclick="addColumn('left')" class="transition-all duration-500 opacity-0 group-hover:opacity-100 flex flex-col gap-4 items-center">
                     <x-buttons.icon-primary-bg class="group/custombutton mx-auto p-0.5 rounded-full hover:scale-125 z-10">
                         <svg xmlns="http://www.w3.org/2000/svg" class="rotate-180" id="Bold" viewBox="0 0 24 24" width="24" height="24">
@@ -82,6 +88,9 @@
 
             <!-- Div ด้านขวา -->
             <div class="bg-white grow rounded-lg w-12 flex-shrink-0 text-center py-4 gap-4 group hover:w-28 transition-all duration-500 flex flex-col justify-center items-center cursor-pointer">
+                <div class="absolute group-hover:hidden">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="-rotate-90 w-7 h-7" id="Outline" viewBox="0 0 24 24" width="512" height="512"><path d="M18.71,8.21a1,1,0,0,0-1.42,0l-4.58,4.58a1,1,0,0,1-1.42,0L6.71,8.21a1,1,0,0,0-1.42,0,1,1,0,0,0,0,1.41l4.59,4.59a3,3,0,0,0,4.24,0l4.59-4.59A1,1,0,0,0,18.71,8.21Z"/></svg>
+                </div>
                 <div onclick="addColumn('right')" class="transition-all duration-500 opacity-0 group-hover:opacity-100 flex flex-col items-center">
                     <x-buttons.icon-primary-bg class="group/custombutton mx-auto p-0.5 rounded-full hover:scale-125 z-10">
                         <svg xmlns="http://www.w3.org/2000/svg" class="rotate-0" id="Bold" viewBox="0 0 24 24" width="24" height="24">
@@ -105,6 +114,9 @@
 
         <!-- Div ด้านล่าง -->
         <div class="bg-white rounded-lg h-12 text-center group hover:h-28 transition-all duration-500 flex gap-4 justify-center items-center">
+            <div class="absolute group-hover:hidden">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7" id="Outline" viewBox="0 0 24 24" width="512" height="512"><path d="M18.71,8.21a1,1,0,0,0-1.42,0l-4.58,4.58a1,1,0,0,1-1.42,0L6.71,8.21a1,1,0,0,0-1.42,0,1,1,0,0,0,0,1.41l4.59,4.59a3,3,0,0,0,4.24,0l4.59-4.59A1,1,0,0,0,18.71,8.21Z"/></svg>
+            </div>
             <div onclick="addRow('bottom')" class="transition-all duration-500 opacity-0 group-hover:opacity-100 flex flex-col items-center">
                 <x-buttons.icon-primary-bg class="group/custombutton mx-auto p-0.5 rounded-full hover:scale-125">
                     <svg xmlns="http://www.w3.org/2000/svg" class="rotate-90" id="Bold" viewBox="0 0 24 24" width="24" height="24">
