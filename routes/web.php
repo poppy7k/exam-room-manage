@@ -31,7 +31,6 @@ Route::get('/buildings/{buildingId}/room-list', [BuildingController::class, 'sho
 Route::get('/buildings/{buildingId}/addinfo/{roomId}/addseat', [ExamRoomInformationController::class, 'addSeat'])->name('addseat');
 Route::put('/rooms/{roomId}/update', [ExamRoomInformationController::class, 'updateRoom'])->name('examroominfo.update');
 Route::delete('/rooms/{roomId}', [ExamRoomInformationController::class, 'deleteRoom'])->name('rooms.delete');
-Route::get('/components/alert', [BuildingController::class, 'alert'])->name('components.alert');
 
 Route::get('/buildings/{buildingId}/room-list/add', [ExamRoomInformationController::class, 'create'])->name('pages.room-create');
 Route::post('/buildings/{buildingId}/room-list/store', [ExamRoomInformationController::class, 'store'])->name('examroominfo.store');
@@ -46,3 +45,9 @@ Route::put('/buildings/{buildingId}/room-list/{roomId}', [ExamRoomInformationCon
 Route::get('/exams', [ExamController::class, 'index'])->name('exam-list');
 Route::get('/exams/create', [ExamController::class, 'create'])->name('exam-create');
 Route::post('/exams', [ExamController::class, 'store'])->name('exams.store');
+
+// Alert //
+Route::post('/set-alert-message', function (Illuminate\Http\Request $request) {
+    session()->flash('status', 'success');
+    session()->flash('message', $request->message);
+});

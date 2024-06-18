@@ -27,6 +27,7 @@ class BuildingController extends Controller
             'building_th' => 'required|string',
             'building_en' => 'required|string',
             'building_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'building_map_url' => 'nullable|url',
         ]);
     
         if ($request->hasFile('building_image')) {
@@ -44,6 +45,7 @@ class BuildingController extends Controller
             'building_th' => $validatedData['building_th'],
             'building_en' => $validatedData['building_en'],
             'building_image' => $imageFilename,
+            'building_map_url' => $validatedData['building_map_url'],
         ]);
     
         // alerts-box
@@ -94,6 +96,7 @@ class BuildingController extends Controller
             'building_th_edit' => 'required|string|max:255',
             'building_en_edit' => 'required|string|max:255',
             'building_image_edit' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'building_map_url_edit' => 'nullable|url'
         ]);
     
         $building = Building::find($buildingId);
@@ -116,6 +119,7 @@ class BuildingController extends Controller
     
         $building->building_th = $request->building_th_edit;
         $building->building_en = $request->building_en_edit;
+        $building->building_map_url = $request->building_map_url_edit;
     
         if ($request->hasFile('building_image_edit')) {
             // Delete the old image if it exists
@@ -150,11 +154,6 @@ class BuildingController extends Controller
         return view('pages.room-manage.rooms.room-list', compact('building', 'rooms','nextRoomId', 'breadcrumbs'));
     }
 
-    public function alert()
-    {
-        return back()->with('status', 'Task status updated successfully!');
-    }
-
     public function index()
     {
         $breadcrumbs = [
@@ -163,6 +162,14 @@ class BuildingController extends Controller
         session()->flash('sidebar', '1');
 
         return view('pages.index', compact('breadcrumbs'));
+    }
+
+    public function setAlertMessage(Request $request)
+    {
+        // ตั้ง session flash message
+        session()->flash('status', 'success');
+        session()->flash('message', $request->message);
+        
     }
 
 }

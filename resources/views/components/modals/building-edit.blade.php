@@ -24,6 +24,10 @@
                                     <span id="building_en_edit_error" class="error-message" style="color: red; display: none;">* กรุณากรอกชื่ออาคารด้วยภาษาอังกฤษหรือตัวเลขเท่านั้น!</span>
                                 </div>
                                 <div class="mb-4">
+                                    <label for="building_map_url_edit" class="block font-semibold">ลิ้งค์แผนที่ของอาคารสอบ</label>
+                                    <input type="text" id="building_map_url_edit" name="building_map_url_edit" placeholder="กรอกลิ้งค์แผนที่ของอาคารสอบ" class="w-full my-2 px-3 py-2 rounded ring-1 shadow-sm ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-green-600 transition-all duration-300 outline-none">
+                                </div>
+                                <div class="mb-4">
                                     <label for="building_image_edit" class="block text-gray-700 font-semibold">รูปภาพของอาคารสอบ</label>
                                     <input type="file" name="building_image_edit" id="building_image_edit" class="w-full my-2 px-3 py-2 rounded ring-1 shadow-sm ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-green-600 transition-all duration-300 outline-none">
                                 </div>
@@ -33,7 +37,7 @@
                 </div>
                 <div class="bg-gray-200 px-4 pb-4 sm:px-6 sm:flex sm:flex-row-reverse">
                     <div class="flex pt-4 pr-4 gap-4">
-                        <x-buttons.secondary type="button" class="hover:scale-105 py-2 w-12" onclick="closeBuildingModal()">
+                        <x-buttons.secondary type="button" class="hover:scale-105 py-2 w-12 justify-center" onclick="closeBuildingModal()">
                             Cancel
                         </x-buttons.secondary>
                         <x-buttons.primary type="submit" class="hover:scale-105 py-2 px-12 w-12 justify-center" onclick="">
@@ -52,6 +56,7 @@
         document.getElementById('editBuildingForm').action = `/buildings/${building.id}/ajax`;
         document.getElementById('building_th_edit').value = building.building_th;
         document.getElementById('building_en_edit').value = building.building_en;
+        document.getElementById('building_map_url_edit').value = building.building_map_url;
         document.getElementById('editBuildingModal').classList.remove('hidden');
     }
 

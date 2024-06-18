@@ -27,7 +27,7 @@
                 </div>
                 <div class="bg-gray-200 px-4 pb-4 sm:px-6 sm:flex sm:flex-row-reverse">
                     <div class="flex pt-4 pr-4 gap-4">
-                        <x-buttons.secondary type="button" class="hover:scale-105 py-2 w-12" onclick="closeRoomModal()">
+                        <x-buttons.secondary type="button" class="hover:scale-105 py-2 w-12 justify-center" onclick="closeRoomModal()">
                             Cancel
                         </x-buttons.secondary>
                         <x-buttons.primary type="submit" class="hover:scale-105 py-2 px-12 w-12 justify-center">

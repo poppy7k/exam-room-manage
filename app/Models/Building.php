@@ -14,6 +14,7 @@ class Building extends Model
         'building_th',
         'building_en',
         'building_image',
+        'building_map_url'
     ];
 
     public function examRoomInformation()

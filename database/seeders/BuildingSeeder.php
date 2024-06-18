@@ -68,31 +68,37 @@ class BuildingSeeder extends Seeder
                 'building_th' => 'ศูนย์เรียนรวม 1',
                 'building_en' => 'Lecture Hall 1',
                 'building_image' => 'Lecture Hall 1.jpg',
+                'building_map_url' => 'https://maps.app.goo.gl/avR1tUvxKxJYqUG29',
             ],
             [
                 'building_th' => 'ศูนย์เรียนรวม 3',
                 'building_en' => 'Lecture Hall 3',
                 'building_image' => 'Lecture Hall 3.jpg',
+                'building_map_url' => 'https://maps.app.goo.gl/FRfoK7hk5nLgnsfq7',
             ],
             [
                 'building_th' => 'ศูนย์เรียนรวม 4',
                 'building_en' => 'Lecture Hall 4',
                 'building_image' => 'Lecture Hall 4.jpg',
+                'building_map_url' => 'https://maps.app.goo.gl/oVhco8xWRjpZk6pH9',
             ],
             [
                 'building_th' => 'เทพศาสตร์สถิตย์',
                 'building_en' => 'Thep Sat Sathit Building',
                 'building_image' => 'Thep Sat Sathit Building.jpg',
+                'building_map_url' => 'https://maps.app.goo.gl/TmZphtjBY3sLKcJL9',
             ],
             [
                 'building_th' => 'ศูนย์กิจกรรมนิสิต',
                 'building_en' => 'Student Activity Center',
                 'building_image' => null,
+                'building_map_url' => 'https://maps.app.goo.gl/y44Ufv5VCkqDE9F5A',
             ],
             [
                 'building_th' => 'สารนิเทศ 50 ปี',
                 'building_en' => 'Kasetsart Golden Jubilee Administrative and Information Center',
                 'building_image' => 'Kasetsart Golden Jubilee Administrative and Information Center.jpg',
+                'building_map_url' => null,
             ],
         ];
 
@@ -110,6 +116,7 @@ class BuildingSeeder extends Seeder
             $building->building_th = $buildingData['building_th'];
             $building->building_en = $buildingData['building_en'];
             $building->building_image = $buildingData['building_image'];
+            $building->building_map_url = $buildingData['building_map_url'];
             $building->save();
         }
     }

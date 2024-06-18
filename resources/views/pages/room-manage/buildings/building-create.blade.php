@@ -17,6 +17,10 @@
             <input type="text" id="building_en" name="building_en" placeholder="กรอกชื่ออาคาร (English)" required class="w-full my-2 px-3 py-2 rounded ring-1 shadow-sm ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-green-600 transition-all duration-300 outline-none">
             <span id="building_en_error" class="error-message" style="color: red; display: none;">* กรุณากรอกชื่ออาคารด้วยภาษาอังกฤษหรือตัวเลขเท่านั้น!</span>
         </div>
+        <div class="mb-4">
+            <label for="building_map_url" class="block font-semibold">ลิ้งค์แผนที่ของอาคารสอบ</label>
+            <input type="text" id="building_map_url" name="building_map_url" placeholder="กรอกลิ้งค์แผนที่ของอาคารสอบ" class="w-full my-2 px-3 py-2 rounded ring-1 shadow-sm ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-green-600 transition-all duration-300 outline-none">
+        </div>
         <div class="mb-6">
             <label for="building_image" class="block font-semibold">อัปโหลดรูปภาพของอาคาร</label>
             <input type="file" id="building_image" name="building_image" accept="image/*" class="w-full my-2 px-3 py-2 rounded ring-1 shadow-sm ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-green-600 transition-all duration-300 outline-none">

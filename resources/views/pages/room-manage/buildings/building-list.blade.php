@@ -36,6 +36,7 @@
                 :building_en="$building->building_en"
                 :building_id="$building->id"
                 :valid_seat="$totalValidSeats"
+                :building_map_url="$building->building_map_url"
             />
         @empty
             <div class="col-span-4 text-center py-32 my-3">

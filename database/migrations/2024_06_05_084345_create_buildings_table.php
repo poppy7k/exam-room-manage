@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('building_th')->unique();
             $table->string('building_en')->unique();
             $table->string('building_image')->nullable();
+            $table->string('building_map_url')->nullable();
             $table->timestamps();
         });
     }
