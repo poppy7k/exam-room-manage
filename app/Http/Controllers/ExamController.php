@@ -21,6 +21,7 @@ class ExamController extends Controller
     public function store(Request $request)
     {
         $validatedData = $request->validate([
+            'exam_name' => 'required|string',
             'department_name' => 'required|string',
             'exam_position' => 'required|string',
             'exam_date' => 'required|date',
@@ -29,11 +30,13 @@ class ExamController extends Controller
         ]);
     
         Exam::create([
+            'exam_name' => $validatedData['exam_name'],
             'department_name' => $validatedData['department_name'],
             'exam_position' => $validatedData['exam_position'],
             'exam_date' => $validatedData['exam_date'],
             'exam_start_time' => $validatedData['exam_date'] . ' ' . $validatedData['exam_start_time'],
             'exam_end_time' => $validatedData['exam_date'] . ' ' . $validatedData['exam_end_time'],
+            'status' => 'pending',
         ]);
     
         session()->flash('status', 'success');

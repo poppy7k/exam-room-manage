@@ -210,6 +210,7 @@
                 :exam_end_time="$exam->exam_end_time"
                 :exam_id="$exam->id"
                 :exam_name="$exam->exam_name"
+                :status="$exam->status"
             />
         @empty
 

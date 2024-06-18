@@ -23,9 +23,26 @@
         </div>
         <div class="my-2 flex">
             สถานะ: 
+            @if ($status == 'pending')
             <p class="w-max ml-2 py-1 px-2 -translate-y-0.5 bg-gradient-to-tr from-yellow-600 to-yellow-400 rounded-lg text-sm text-white shadow-md">
-                {{ $status }}
+                รอการเลือกห้องสอบ
             </p>
+            @endif
+            @if ($status == 'ready')
+            <p class="w-max ml-2 py-1 px-2 -translate-y-0.5 bg-gradient-to-tr from-green-600 to-green-400 rounded-lg text-sm text-white shadow-md">
+                พร้อมจัดสอบ
+            </p>
+            @endif
+            @if ($status == 'inprogress')
+            <p class="w-max ml-2 py-1 px-2 -translate-y-0.5 bg-gradient-to-tr from-cyan-600 to-cyan-400 rounded-lg text-sm text-white shadow-md">
+                ระหว่างการสอบ
+            </p>
+            @endif
+            @if ($status == 'finished')
+            <p class="w-max ml-2 py-1 px-2 -translate-y-0.5 bg-gradient-to-tr from-gray-600 to-gray-400 rounded-lg text-sm text-white shadow-md">
+                การสอบเสร็จสิ้น
+            </p>
+            @endif
         </div>
         <div class="flex">
             วันที่สอบ: {{ \Carbon\Carbon::parse($exam_start_time)->format('D, d/m/Y') }}
