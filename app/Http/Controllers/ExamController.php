@@ -46,11 +46,26 @@ class ExamController extends Controller
     public function create() {
         $breadcrumbs = [
             ['url' => '/', 'title' => 'หน้าหลัก'],
+            ['url' => '/exams', 'title' => 'รายการสอบ'],
             ['url' => '/exams', 'title' => 'สร้างการสอบ'],
         ];
         session()->flash('sidebar', '3');
 
         return view('pages.exam-manage.exam-create', compact('breadcrumbs'));
+    }
+
+    public function destroy($examId) {
+
+        $exam = Exam::find($examId);
+
+        if ($exam) {
+
+            $exam->delete();
+
+            return response()->json(['success' => true, 'message' => 'Room deleted successfully.']);
+        } else {
+            return response()->json(['success' => false, 'message' => 'Room not found.'], 404);
+        }
     }
 
     public function exam_building_list($examId)
