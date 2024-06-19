@@ -16,7 +16,6 @@
                 </p>
             </div> 
             <div class="flex">
-                <button onclick="showSelectedRoomsPopup()">ตกลง</button>
                 <div class="search-container px-2">
                     <input type="text" id="search-input" placeholder="ค้นหาห้องสอบ" class="w-full px-5 py-2 rounded-full ring-1 shadow-sm ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-green-600 transition-all duration-300 outline-none">
                 </div>
@@ -51,11 +50,27 @@
         </div>
     </div>
 
-    <div id="selected-rooms-popup" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center">
-        <div class="bg-white p-5 rounded-lg shadow-lg">
-            <h3 class="text-2xl font-semibold mb-4">Selected Rooms</h3>
-            <div id="selected-rooms"></div>
-            <button onclick="closeSelectedRoomsPopup()">Close</button>
+    <div class="flex items-center justify-center fixed rounded-lg bottom-0 transform w-10/12 z-20 ">
+        <div class="flex gap-3 bg-white rounded-lg border-1 border-gray-50 my-[84px] text-black shadow-xl">
+            <p class="px-5 py-3 my-auto">
+                ห้องที่เลือก
+            </p>
+            <p id="selected-rooms" class="flex gap-1 min-w-60 max-w-60 font-semibold text-green-700 py-3 my-auto"></p>
+            <div class="py-3 my-auto flex gap-2">
+                จำนวนที่นั่ง
+                <p id="selected-seats" class="ml-5 text-green-700 font-semibold">
+                    0
+                </p>
+                <p>
+                    /
+                </p>
+                <p id="applicant-quantity">
+                    0
+                </p>
+            </div>
+            <x-buttons.primary class="px-5 py-auto my-auto mx-5">
+                ยืนยัน
+            </x-buttons.primary>
         </div>
     </div>
 

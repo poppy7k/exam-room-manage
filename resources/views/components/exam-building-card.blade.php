@@ -10,7 +10,7 @@
 ])
 
 <div class="building-item relative flex flex-col bg-clip-border w-[260px] rounded-lg bg-white shadow-md mt-6 transition-all duration-500 hover:scale-105 hover:shadow-lg">
-    <a href="{{ route('pages.room-list', ['buildingId' => $building_id]) }}" class="absolute inset-0 z-0"></a>
+    <a href="{{ route('exam-roomlist',['examId' => $examId , 'buildingId' => $buildingId])}}" class="absolute inset-0 z-0"></a>
         <div class="flex justify-end">
             <p class="absolute mx-3 my-3 px-2 py-2 bg-gradient-to-tr from-green-600 to-green-400 rounded-lg text-sm text-white shadow-md">
                 {{ $valid_seat }} ที่นั่ง

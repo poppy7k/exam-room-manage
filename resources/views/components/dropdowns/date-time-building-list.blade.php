@@ -1,4 +1,10 @@
-<div x-show="showFilterBuilding" @click.outside="showFilterBuilding = false"  id="filterBuildingModal" class="absolute -translate-x-28 z-40">
+<div x-show="showDateTimeBuilding" @click.outside="showDateTimeBuilding = false"  id="filterBuildingModal" class="absolute -translate-x-28 -translate-y-4 z-40"
+    x-transition:enter="transition ease-out duration-300"
+    x-transition:enter-start="opacity-0 -translate-y-16 scale-90"
+    x-transition:enter-end="opacity-100 -translate-y-4 scale-100"
+    x-transition:leave="transition ease-in duration-100"
+    x-transition:leave-start="opacity-100 scale-100 -translate-y-4"
+    x-transition:leave-end="opacity-0 scale-90 -translate-y-16">
     <div class="relative flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
         <div class="align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
             <div class="px-4 pt-2 pb-4">

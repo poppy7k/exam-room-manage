@@ -9,6 +9,17 @@
 ])
 
 <div class="room-item relative flex bg-white flex-col bg-clip-border rounded-lg w-[260px] shadow-md mt-6 transition-all duration-500 hover:scale-105 hover:shadow-lg" data-room-id="{{ $room_id }}">
+    <a class="select-room-button absolute inset-0 z-0 cursor-pointer"></a>
+    <div class="hidden select-room-button room-checked absolute flex flex-col gap-2 justify-center items-center inset-0 z-40 bg-green-300/90 rounded-lg cursor-pointer transition-all duration-100 group hover:bg-red-300/90">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 group-hover:hidden block fill-green-800" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Capa_1" x="0px" y="0px" viewBox="0 0 507.506 507.506" style="enable-background:new 0 0 507.506 507.506;" xml:space="preserve" width="512" height="512"><g><path d="M163.865,436.934c-14.406,0.006-28.222-5.72-38.4-15.915L9.369,304.966c-12.492-12.496-12.492-32.752,0-45.248l0,0   c12.496-12.492,32.752-12.492,45.248,0l109.248,109.248L452.889,79.942c12.496-12.492,32.752-12.492,45.248,0l0,0   c12.492,12.496,12.492,32.752,0,45.248L202.265,421.019C192.087,431.214,178.271,436.94,163.865,436.934z"/></g></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-9 h-9 hidden group-hover:block fill-red-800" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Capa_1" x="0px" y="0px" viewBox="0 0 512.021 512.021" style="enable-background:new 0 0 512.021 512.021;" xml:space="preserve" width="512" height="512"><g><path d="M301.258,256.01L502.645,54.645c12.501-12.501,12.501-32.769,0-45.269c-12.501-12.501-32.769-12.501-45.269,0l0,0   L256.01,210.762L54.645,9.376c-12.501-12.501-32.769-12.501-45.269,0s-12.501,32.769,0,45.269L210.762,256.01L9.376,457.376   c-12.501,12.501-12.501,32.769,0,45.269s32.769,12.501,45.269,0L256.01,301.258l201.365,201.387   c12.501,12.501,32.769,12.501,45.269,0c12.501-12.501,12.501-32.769,0-45.269L301.258,256.01z"/></g></svg>
+        <p class="text-green-800 font-semibold text-xl block group-hover:hidden">
+            ได้เลือกห้องนี้แล้ว
+        </p>
+        <p class="text-red-800 font-semibold text-xl hidden group-hover:block fill-red-800">
+            ยกเลิกห้องนี้
+        </p>
+    </div>
     <div class="px-4 py-3 text-surface text-black">
         <div class="group flex">
             <span class="relative group flex hover-trigger">
@@ -41,6 +52,7 @@ document.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('.select-room-button').forEach(button => {
         button.addEventListener('click', function () {
             const roomItem = this.closest('.room-item');
+            const roomChecked = roomItem.querySelector('.room-checked');
             const roomId = roomItem.getAttribute('data-room-id');
             const roomDetails = {
                 id: roomId,
@@ -52,22 +64,33 @@ document.addEventListener('DOMContentLoaded', function () {
             if (!selectedRooms.some(room => room.id === roomId)) {
                 selectedRooms.push(roomDetails);
                 updateSelectedRoomsList();
+                roomChecked.classList.remove('hidden');
+            } else {
+                selectedRooms.splice(selectedRooms.findIndex(room => room.id === roomId), 1); // ลบออกจาก selectedRooms
+                updateSelectedRoomsList();
+                roomChecked.classList.add('hidden');
             }
         });
     });
 
     function updateSelectedRoomsList() {
         const selectedRoomsContainer = document.getElementById('selected-rooms');
-        selectedRoomsContainer.innerHTML = '';
+        const selectedSeatsContainer = document.getElementById('selected-seats');
+        selectedRoomsContainer.innerText = '';
+        selectedSeatsContainer.innerText = '0';
 
         selectedRooms.forEach(room => {
-            const roomElement = document.createElement('div');
-            roomElement.className = 'selected-room';
-            roomElement.innerHTML = `
-                <p>${room.room} - ${room.floor} - ${room.validSeat}</p>
-            `;
-            selectedRoomsContainer.appendChild(roomElement);
+            const roomText = document.createTextNode(`${room.room}, `);
+            var seatText = document.createTextNode(getTotalValidSeat());
+            selectedRoomsContainer.appendChild(roomText);
+            selectedSeatsContainer.innerText = seatText.textContent;
         });
     }
-});
+
+    function getTotalValidSeat() {
+        return selectedRooms.reduce((total, room) => parseInt(total) + parseInt(room.validSeat), 0);
+    }
+
+
+    });
 </script>
