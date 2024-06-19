@@ -29,6 +29,8 @@ class ExamController extends Controller
             'exam_start_time' => 'required|date_format:H:i',
             'exam_end_time' => 'required|date_format:H:i',
         ]);
+        $organizations = ["สำนักคอมพิวเตอร์", "คณะวิทยาศาสตร์", "คณะวิศวะกรรมศาสตร์","คณะมนุษย์ศาสตร์"];
+        $randomOrganization = $organizations[array_rand($organizations)];
     
         Exam::create([
             'department_name' => $validatedData['department_name'],
@@ -36,6 +38,7 @@ class ExamController extends Controller
             'exam_date' => $validatedData['exam_date'],
             'exam_start_time' => $validatedData['exam_date'] . ' ' . $validatedData['exam_start_time'],
             'exam_end_time' => $validatedData['exam_date'] . ' ' . $validatedData['exam_end_time'],
+            'organization' => $randomOrganization,
             'status' => 'pending',
         ]);
     
@@ -94,7 +97,7 @@ class ExamController extends Controller
             ['url' => '/', 'title' => 'หน้าหลัก'],
             ['url' => '/exams', 'title' => 'รายการสอบ'],
             ['url' => '/exams/'.$examId.'/buildings', 'title' => ''.$exams->department_name],
-            ['url' => '/exams/'.$examId.'/buildings/'.$buildingId, 'title' => ''.$exams->department_name,''.$buildings->building_th],
+            ['url' => '/exams/'.$examId.'/buildings/'.$buildingId, 'title' => ''.$buildings->building_th],
 
         ];
         session()->flash('sidebar', '3');
