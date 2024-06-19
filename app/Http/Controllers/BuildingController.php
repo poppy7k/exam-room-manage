@@ -57,17 +57,45 @@ class BuildingController extends Controller
                          ->with('buildingData', $building->toArray());
     }
 
-    public function building_list()
+    public function building_list(Request $request)
     {
-        $buildings = Building::paginate(8);
+        $sort = $request->get('sort', 'alphabet_th'); // Default sort by building_th
+        $buildings = Building::query()
+            ->select('buildings.*')
+            ->selectSub(
+                ExamRoomInformation::query()
+                    ->selectRaw('SUM(valid_seat)')
+                    ->whereColumn('building_code', 'buildings.id'),
+                'total_valid_seats'
+            );
+    
+        switch ($sort) {
+            case 'alphabet_th':
+                $buildings->orderBy('building_th');
+                break;
+            case 'alphabet_en':
+                $buildings->orderBy('building_en');
+                break;
+            case 'seat_desc':
+                $buildings->orderByDesc('total_valid_seats');
+                break;
+            case 'seat_asc':
+                $buildings->orderBy('total_valid_seats');
+                break;
+            default:
+                $buildings->orderBy('building_th');
+        }
+        $buildings = $buildings->paginate(8);
+    
         $breadcrumbs = [
             ['url' => '/', 'title' => 'หน้าหลัก'],
             ['url' => '/buildings', 'title' => 'รายการอาคารสอบ'],
         ];
         session()->flash('sidebar', '2');
-
+    
         return view('pages.room-manage.buildings.building-list', compact('breadcrumbs', 'buildings'));
     }
+
 
     public function destroy($buildingId)
     {

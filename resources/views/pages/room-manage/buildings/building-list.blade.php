@@ -1,5 +1,5 @@
-@extends('layouts.main')
 
+@extends('layouts.main')
 @section('content')
 <div class="flex flex-col divide-gray-300 w-full">
     <div class="flex justify-between items-center">
@@ -14,13 +14,19 @@
                 ทั้งหมด {{{ count($buildings)}}}
             </p>
         </div> 
-        <div class="flex">
-            <x-buttons.icon-primary id="filter-building" onclick="toggleFilterBuildingList(); event.stopPropagation();" class="px-[5px] pt-1.5 pb-1 z-40">
-                <svg id="Layer_1" class="w-5 h-5" height="512" viewBox="0 0 24 24" width="512" xmlns="http://www.w3.org/2000/svg" data-name="Layer 1"><path d="m14 24a1 1 0 0 1 -.6-.2l-4-3a1 1 0 0 1 -.4-.8v-5.62l-7.016-7.893a3.9 3.9 0 0 1 2.916-6.487h14.2a3.9 3.9 0 0 1 2.913 6.488l-7.013 7.892v8.62a1 1 0 0 1 -1 1zm-3-4.5 2 1.5v-7a1 1 0 0 1 .253-.664l7.268-8.177a1.9 1.9 0 0 0 -1.421-3.159h-14.2a1.9 1.9 0 0 0 -1.421 3.158l7.269 8.178a1 1 0 0 1 .252.664z"/></svg>
-                <x-tooltip title="ฟิลเตอร์อาคารสอบ" class="group-hover:-translate-x-11"></x-tooltip>
+        <div class="flex gap-4">
+            <x-buttons.icon-primary id="filter-building" onclick="event.stopPropagation();" class="px-[5px] pt-1 pb-1 z-40">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" id="Layer_1" data-name="Layer 1" viewBox="0 0 24 24" width="512" height="512"><path d="M17,10.039c-3.859,0-7,3.14-7,7,0,3.838,3.141,6.961,7,6.961s7-3.14,7-7c0-3.838-3.141-6.961-7-6.961Zm0,11.961c-2.757,0-5-2.226-5-4.961,0-2.757,2.243-5,5-5s5,2.226,5,4.961c0,2.757-2.243,5-5,5Zm1.707-4.707c.391,.391,.391,1.023,0,1.414-.195,.195-.451,.293-.707,.293s-.512-.098-.707-.293l-1-1c-.188-.188-.293-.442-.293-.707v-2c0-.552,.447-1,1-1s1,.448,1,1v1.586l.707,.707Zm5.293-10.293v2c0,.552-.447,1-1,1s-1-.448-1-1v-2c0-1.654-1.346-3-3-3H5c-1.654,0-3,1.346-3,3v1H11c.552,0,1,.448,1,1s-.448,1-1,1H2v9c0,1.654,1.346,3,3,3h4c.552,0,1,.448,1,1s-.448,1-1,1H5c-2.757,0-5-2.243-5-5V7C0,4.243,2.243,2,5,2h1V1c0-.552,.448-1,1-1s1,.448,1,1v1h8V1c0-.552,.447-1,1-1s1,.448,1,1v1h1c2.757,0,5,2.243,5,5Z"/></svg>
+                <x-tooltip title="เลือกวันและเวลา" class="group-hover:-translate-x-9"></x-tooltip>
             </x-buttons.icon-primary>
-            @include('components.modals.filter-building-list')
-            <div class="search-container px-2">
+            <div x-data="{ showFilterBuilding: false }" class="z-10"> 
+                <x-buttons.icon-primary @click="showFilterBuilding = !showFilterBuilding" id="filter-building" onclick="event.stopPropagation();" class="px-[5px] pt-1.5 pb-1 z-40">
+                    <svg id="Layer_1" class="w-5 h-5" height="512" viewBox="0 0 24 24" width="512" xmlns="http://www.w3.org/2000/svg" data-name="Layer 1"><path d="m14 24a1 1 0 0 1 -.6-.2l-4-3a1 1 0 0 1 -.4-.8v-5.62l-7.016-7.893a3.9 3.9 0 0 1 2.916-6.487h14.2a3.9 3.9 0 0 1 2.913 6.488l-7.013 7.892v8.62a1 1 0 0 1 -1 1zm-3-4.5 2 1.5v-7a1 1 0 0 1 .253-.664l7.268-8.177a1.9 1.9 0 0 0 -1.421-3.159h-14.2a1.9 1.9 0 0 0 -1.421 3.158l7.269 8.178a1 1 0 0 1 .252.664z"/></svg>
+                    <x-tooltip title="ฟิลเตอร์อาคารสอบ" class="group-hover:-translate-x-11"></x-tooltip>
+                </x-buttons.icon-primary>
+                @include('components.modals.filter-building-list')
+            </div>
+            <div class="search-container">
                 <input type="text" id="search-input" placeholder="ค้นหาอาคารสอบ" class="w-full px-5 py-2 rounded-full ring-1 shadow-sm ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-green-600 transition-all duration-300 outline-none">
             </div>
             <x-buttons.icon-primary type="submit" onclick="window.location.href = '{{ route('pages.building-create') }}'" class="px-[5px] py-1 z-40">
@@ -29,7 +35,7 @@
             </x-buttons.icon-primary>
         </div>
     </div>
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-4 mt-2">
+    <div id="building-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-4 mt-2">
         @forelse ($buildings as $building)
             @php
                 $totalValidSeats = $building->examRoomInformation->sum('valid_seat');
@@ -86,5 +92,20 @@
         });
         document.getElementById('empty-state').style.display = hasVisibleItems ? 'none' : 'block';
     });
+    document.querySelectorAll('a[data-sort]').forEach((link) => {
+        link.addEventListener('click', (event) => {
+            event.preventDefault();
+            const url = link.href;
+            fetch(url)
+                .then(response => response.text())
+                .then(data => {
+                    // นำข้อมูลที่ได้มาแสดงใน element ที่กำหนด
+                    document.getElementById('building-list').innerHTML = data;
+                });
+        });
+    });
+
+
+
 </script>
 @endsection
