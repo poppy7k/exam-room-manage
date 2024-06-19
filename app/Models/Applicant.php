@@ -17,5 +17,25 @@ class Applicant extends Model
         'name',
         'degree',
         'position',
+        'department',
+        'exam_room_information_id',
+        'row',
+        'column',
     ];
+
+    public function seats()
+    {
+        return $this->hasMany(Seat::class);
+    }
+
+    public function exam()
+    {
+        return $this->belongsTo(Exam::class);
+    }
+
+    public function room()
+    {
+        return $this->belongsTo(ExamRoomInformation::class);
+    }
+    
 }
