@@ -24,6 +24,10 @@ class ExamRoomInformation extends Model
         'selected_seats',
     ];
 
+    protected $casts = [
+        'selected_seats' => 'array',
+    ];
+
     public function building()
     {
         return $this->belongsTo(Building::class, 'building_code', 'building_code');
