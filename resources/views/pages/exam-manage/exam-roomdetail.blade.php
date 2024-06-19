@@ -196,6 +196,7 @@ function addSeats() {
                         </div>
                     `;
                     applicantIndex++;
+                    validSeatCount--;
                 } else {
                     seatComponent = `
                         <div id="seat-${seatId}" class="seat p-4 text-center cursor-pointer">
@@ -209,6 +210,7 @@ function addSeats() {
             seatComponents += seatComponent;
         }
     }
+    document.getElementById('validSeatCount').textContent = validSeatCount;
     seatContainer.innerHTML = seatComponents;
 }
 
