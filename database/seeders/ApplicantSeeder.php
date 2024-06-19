@@ -20,6 +20,7 @@ class ApplicantSeeder extends Seeder
         $applicant->name = "นาย --------------01";
         $applicant->degree = "ระดับปริญญาตรี";
         $applicant->position = "เจ้าหน้าที่บริหารงานทั่วไประดับปฏิบัติการ";
+        $applicant->department = "งานบริหารระบบเอกสารกลาง";
         $applicant->save();
 
         $applicant = new Applicant();
@@ -28,6 +29,7 @@ class ApplicantSeeder extends Seeder
         $applicant->name = "นาย --------------02";
         $applicant->degree = "ระดับปริญญาตรี";
         $applicant->position = "เจ้าหน้าที่บริหารงานทั่วไประดับปฏิบัติการ";
+        $applicant->department = "งานบริหารระบบเอกสารกลาง";
         $applicant->save();
 
         $applicant = new Applicant();
@@ -36,6 +38,7 @@ class ApplicantSeeder extends Seeder
         $applicant->name = "นาย --------------03";
         $applicant->degree = "ระดับปริญญาตรี";
         $applicant->position = "เจ้าหน้าที่บริหารงานทั่วไประดับปฏิบัติการ";
+        $applicant->department = "งานบริหารระบบเอกสารกลาง";
         $applicant->save();
         
         $applicant = new Applicant();
@@ -44,6 +47,7 @@ class ApplicantSeeder extends Seeder
         $applicant->name = "นาย --------------04";
         $applicant->degree = "ระดับปริญญาตรี";
         $applicant->position = "เจ้าหน้าที่บริหารงานทั่วไประดับปฏิบัติการ";
+        $applicant->department = "งานบริหารระบบเอกสารกลาง";
         $applicant->save();
 
         $applicant = new Applicant();
@@ -52,6 +56,7 @@ class ApplicantSeeder extends Seeder
         $applicant->name = "นาย --------------05";
         $applicant->degree = "ระดับปริญญาตรี";
         $applicant->position = "เจ้าหน้าที่บริหารงานทั่วไประดับปฏิบัติการ";
+        $applicant->department = "งานบริหารระบบเอกสารกลาง";
         $applicant->save();
     }
 }

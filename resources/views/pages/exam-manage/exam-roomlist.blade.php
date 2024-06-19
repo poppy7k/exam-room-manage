@@ -71,6 +71,12 @@
             <x-buttons.primary class="px-5 py-auto my-auto mx-5">
                 ยืนยัน
             </x-buttons.primary>
+            <form id="submit-form" method="POST" action="{{ route('update-exam-status') }}">
+                @csrf
+                <input type="hidden" name="exam_id" value="{{ $exams->id }}">
+                <input type="hidden" name="selected_rooms" id="selected-rooms-input">
+                <button type="submit">Submit</button>
+            </form>
         </div>
     </div>
 
@@ -78,11 +84,11 @@
         function showSelectedRoomsPopup() {
             document.getElementById('selected-rooms-popup').classList.remove('hidden');
         }
-
+    
         function closeSelectedRoomsPopup() {
             document.getElementById('selected-rooms-popup').classList.add('hidden');
         }
-
+    
         document.getElementById('search-input').addEventListener('input', function() {
             var searchQuery = this.value.toLowerCase();
             var roomItems = document.getElementsByClassName('room-item');
@@ -98,6 +104,43 @@
                 }
             });
             document.getElementById('empty-state').style.display = hasVisibleItems ? 'none' : 'block';
+        });
+    
+        document.addEventListener('DOMContentLoaded', function () {
+            const selectedRooms = [];
+    
+            document.querySelectorAll('.select-room-button').forEach(button => {
+                button.addEventListener('click', function () {
+                    const roomItem = this.closest('.room-item');
+                    const roomId = roomItem.getAttribute('data-room-id');
+                    const roomDetails = {
+                        id: roomId,
+                        room: roomItem.querySelector('p.text-2xl').innerText,
+                        floor: roomItem.querySelector('p.text-gray-600').innerText,
+                        validSeat: roomItem.querySelector('p.absolute').innerText,
+                    };
+    
+                    if (!selectedRooms.some(room => room.id === roomId)) {
+                        selectedRooms.push(roomDetails);
+                        updateSelectedRoomsList();
+                    }
+                });
+            });
+    
+            function updateSelectedRoomsList() {
+                const selectedRoomsContainer = document.getElementById('selected-rooms');
+                selectedRoomsContainer.innerHTML = '';
+    
+                selectedRooms.forEach(room => {
+                    const roomElement = document.createElement('div');
+                    roomElement.className = 'selected-room';
+                    roomElement.innerHTML = `<p>${room.room} - ${room.floor} - ${room.validSeat}</p>`;
+                    selectedRoomsContainer.appendChild(roomElement);
+                });
+    
+                // Update hidden input with selected rooms
+                document.getElementById('selected-rooms-input').value = JSON.stringify(selectedRooms);
+            }
         });
     </script>
 @endsection

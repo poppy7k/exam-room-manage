@@ -23,4 +23,14 @@ class Exam extends Model
         'organization',
         'status',
     ];
+
+    public function selectedRooms()
+    {
+        return $this->hasMany(SelectedRoom::class);
+    }
+
+    public function applicants()
+    {
+        return $this->hasMany(Applicant::class, 'exam_id');
+    }
 }

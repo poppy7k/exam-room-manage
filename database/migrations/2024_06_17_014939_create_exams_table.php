@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('exams', function (Blueprint $table) {
             $table->id();
             $table->string('department_name')->nullable();//
-            $table->string('exam_takers_quantity')->nullable();
+            $table->integer('exam_takers_quantity')->default(0);
             $table->string('building_id')->nullable();
             $table->string('room_id')->nullable();
             $table->string('exam_position')->nullable();//
