@@ -85,12 +85,11 @@ document.addEventListener('DOMContentLoaded', function () {
             selectedRoomsContainer.appendChild(roomText);
             selectedSeatsContainer.innerText = seatText.textContent;
         });
+        document.getElementById('selected-rooms-input').value = JSON.stringify(selectedRooms);
     }
 
     function getTotalValidSeat() {
         return selectedRooms.reduce((total, room) => parseInt(total) + parseInt(room.validSeat), 0);
     }
-
-
     });
 </script>

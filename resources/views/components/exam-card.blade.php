@@ -12,14 +12,18 @@
 ])
 
 <div class="room-item relative flex bg-white flex-col bg-clip-border rounded-lg w-[260px] shadow-md mt-6 transition-all duration-500 hover:scale-105 hover:shadow-lg"">
-    <a href="{{ route('exam-buildinglist',['examId' => $examId])}}" class="absolute inset-0 z-0"></a>
-    <div class="px-4 py-3 text-surface text-black">
+    @if ($status == 'ready')
+        <a href="{{ route('exam-selectedroom',['examId' => $examId])}}" class="absolute inset-0 z-0"></a>
+    @else
+        <a href="{{ route('exam-buildinglist',['examId' => $examId])}}" class="absolute inset-0 z-0"></a>   
+    @endif
+    <div class="px-4 py-3 text-surface text-black flex flex-col">
         <div class="group flex">
             <span class="relative group flex hover-trigger">
+                <x-tooltip title="{{ $department_name }}" class="group-hover:translate-y-4 z-20"></x-tooltip>
                 <p class="text-xl my-1 font-semibold max-w-56 truncate">
                     {{ $department_name }}
                 </p>
-                <x-tooltip title="{{ $department_name }}" class="group-hover:-translate-x-20 group-hover:translate-y-4 z-20"></x-tooltip>
             </span> 
         </div>
         <div class="my-2 flex">
@@ -51,13 +55,19 @@
         <div class="flex">
             เวลาสอบ: {{ \Carbon\Carbon::parse($exam_start_time)->format('H:i') }} - {{ \Carbon\Carbon::parse($exam_end_time)->format('H:i') }}
         </div>
-        <div class="flex">
-            ตำแหน่ง: {{ $exam_position }}
-        </div>
-        <div class="mb-2 mt-4 flex">
-            จัดสอบโดย: {{ $organization }}
-        </div>
-        <div class="flex justify-between pb-1 pt-3">
+        <span class="relative group flex hover-trigger w-max">
+            <x-tooltip title="{{ $exam_position }}" class="group-hover:translate-y-4 z-20"></x-tooltip>
+            <p class="truncate max-w-56">
+                ตำแหน่ง: {{ $exam_position }}
+            </p>
+        </span>
+        <span class="relative group flex hover-trigger w-max">
+            <x-tooltip title="{{ $organization }}" class="group-hover:translate-y-4 z-20"></x-tooltip>
+            <p class="mb-2 mt-4 truncate max-w-56">
+                จัดสอบโดย: {{ $organization }}
+            </p>
+        </span>
+        <div class="flex justify-between pb-1 mt-auto pt-3">
             @if ($status == 'ready')
                 <x-buttons.primary type="button" class="py-1.5 px-12 z-10"
                     onclick="window.location.href = '{{ route('exam-selectedroom', ['examId' => $exam_id]) }}'">
