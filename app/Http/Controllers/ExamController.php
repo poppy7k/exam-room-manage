@@ -62,9 +62,13 @@ class ExamController extends Controller
             ['url' => '/exams', 'title' => 'รายการสอบ'],
             ['url' => '/exams', 'title' => 'สร้างการสอบ'],
         ];
+
+        $departments = Applicant::pluck('department');
+        $positions = Applicant::pluck('position');
+
         session()->flash('sidebar', '3');
 
-        return view('pages.exam-manage.exam-create', compact('breadcrumbs'));
+        return view('pages.exam-manage.exam-create', compact('breadcrumbs', 'departments', 'positions'));
     }
 
     public function destroy($examId)

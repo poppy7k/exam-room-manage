@@ -11,10 +11,18 @@
             <label for="department_name" class="block font-semibold">ชื่อฝ่ายงาน</label>
             <input list="department_list" type="text" id="department_name" name="department_name" placeholder="กรอกชื่อฝ่ายงาน" required class="w-full my-2 px-3 py-2 rounded ring-1 shadow-sm ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-green-600 transition-all duration-300 outline-none">
             <datalist id="department_list">
-                <option value="Option 1"></option>
-                <option value="Option 2"></option>
-                <option value="Option 3"></option>
-             </datalist>
+                @php
+                    $addedDepartments = [];
+                @endphp
+                @foreach($departments as $department)
+                    @if (!in_array($department, $addedDepartments))
+                        <option value="{{ $department }}"></option>
+                        @php
+                            $addedDepartments[] = $department;
+                        @endphp
+                    @endif
+                @endforeach
+            </datalist>
         </div>
         <div class="flex mb-4 justify-between">
             <div class="">
@@ -43,9 +51,17 @@
             <label for="exam_position" class="block font-semibold">ตำแหน่ง</label>
             <input type="text" list="exam_position_list" id="exam_position" name="exam_position" placeholder="กรอกชื่อตำแหน่ง" required class="w-full my-2 px-3 py-2 rounded ring-1 shadow-sm ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-green-600 transition-all duration-300 outline-none">
             <datalist id="exam_position_list">
-                <option value="Option 1"></option>
-                <option value="Option 2"></option>
-                <option value="Option 3"></option>
+                @php
+                    $addedPositions = [];
+                @endphp
+                @foreach($positions as $position)
+                    @if (!in_array($position, $addedPositions))
+                        <option value="{{ $position }}"></option>
+                        @php
+                            $addedPositions[] = $position;
+                        @endphp
+                    @endif
+                @endforeach
              </datalist>
         </div>
         <x-buttons.primary type="submit" class="py-2 w-full hover:scale-105 justify-center">
