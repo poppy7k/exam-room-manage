@@ -30,7 +30,7 @@ class ExamRoomInformation extends Model
 
     public function building()
     {
-        return $this->belongsTo(Building::class, 'building_code', 'building_code');
+        return $this->belongsTo(Building::class, 'building_code', 'id');
     }
 
     public function seats()

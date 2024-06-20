@@ -24,7 +24,7 @@
                     :valid_seat="$selectedRoom->room->valid_seat"
                     :total_seat="$selectedRoom->room->total_seat"      
                     :room_id="$selectedRoom->room->id"
-                    :buildingId="$selectedRoom->room->building_code"
+                    :building_name="$selectedRoom->room->building->building_th"
                     :exam_id="$exams->id"
                 />
             @endif
