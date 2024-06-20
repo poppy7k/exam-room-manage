@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BuildingController;
 use App\Http\Controllers\ExamController;
 use App\Http\Controllers\ExamRoomInformationController;
+use App\Http\Controllers\StaffController;
 use App\Models\ExamRoomInformation;
 
 Route::get('/', [BuildingController::class, 'index'])->name('index');
@@ -59,3 +60,5 @@ Route::get('/exams/{examId}/buildings/{buildingId}', [ExamController::class, 'ex
 Route::post('/update-exam-status', [ExamController::class, 'updateExamStatus'])->name('update-exam-status');
 Route::get('/exams/{examId}/selectedrooms', [ExamController::class, 'showSelectedRooms'])->name('exam-selectedroom');
 Route::get('/exams/{examId}/selectedrooms/{roomId}', [ExamController::class, 'showExamRoomDetail'])->name('exam-roomdetail');
+
+Route::get('/staffs', [StaffController::class, 'index'])->name('staffs.index');

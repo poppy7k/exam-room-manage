@@ -18,14 +18,11 @@ class Applicant extends Model
         'degree',
         'position',
         'department',
-        'exam_room_information_id',
-        'row',
-        'column',
     ];
 
     public function seats()
     {
-        return $this->hasMany(Seat::class);
+        return $this->hasMany(Seat::class, 'applicant_id');
     }
 
     public function exam()
@@ -35,7 +32,7 @@ class Applicant extends Model
 
     public function room()
     {
-        return $this->belongsTo(ExamRoomInformation::class);
+        return $this->belongsTo(ExamRoomInformation::class, 'exam_room_information_id');
     }
     
 }

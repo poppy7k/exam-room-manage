@@ -18,9 +18,8 @@ return new class extends Migration
             $table->integer('row');
             $table->integer('column');
             $table->timestamps();
+            $table->unsignedBigInteger('exam_id')->nullable();
 
-            $table->foreign('room_id')->references('id')->on('exam_room_information')->onDelete('cascade');
-            $table->foreign('applicant_id')->references('id')->on('applicants')->onDelete('set null');
         });
     }
 
