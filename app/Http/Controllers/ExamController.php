@@ -67,19 +67,29 @@ class ExamController extends Controller
         return view('pages.exam-manage.exam-create', compact('breadcrumbs'));
     }
 
-    public function destroy($examId) {
-
+    public function destroy($examId)
+    {
         $exam = Exam::find($examId);
-
+    
         if ($exam) {
-
+            $rooms = $exam->selectedRooms->pluck('room_id')->toArray();
+    
+            Applicant::whereIn('exam_room_information_id', $rooms)
+                     ->update([
+                         'exam_room_information_id' => NULL,
+                         'row' => NULL,
+                         'column' => NULL
+                     ]);
+    
             $exam->delete();
-
-            return response()->json(['success' => true, 'message' => 'Room deleted successfully.']);
+    
+            return response()->json(['success' => true, 'message' => 'Exam deleted successfully.']);
         } else {
-            return response()->json(['success' => false, 'message' => 'Room not found.'], 404);
+            return response()->json(['success' => false, 'message' => 'Exam not found.'], 404);
         }
     }
+    
+    
 
     public function exam_building_list($examId)
     {
@@ -113,54 +123,6 @@ class ExamController extends Controller
         return view('pages.exam-manage.exam-roomlist', compact('breadcrumbs', 'exams','buildings','rooms'));
     }
 
-    // public function updateExamStatus(Request $request)
-    // {
-    //     $validatedData = $request->validate([
-    //         'exam_id' => 'required|integer|exists:exams,id',
-    //         'selected_rooms' => 'required|string',
-    //     ]);
-    
-    //     $exam = Exam::findOrFail($validatedData['exam_id']);
-    //     $exam->status = 'ready';
-    //     $exam->save();
-    
-    //     $selectedRooms = json_decode($validatedData['selected_rooms'], true);
-    //     foreach ($selectedRooms as $room) {
-    //         SelectedRoom::create([
-    //             'exam_id' => $exam->id,
-    //             'room_id' => $room['id'],
-    //         ]);
-    //         $this->assignApplicantsToSeats($exam->department_name, $exam->exam_position, $room['id']);
-    //     }
-    
-    //     return redirect()->route('exam-list')->with('status', 'Exam updated to ready and rooms selected!');
-    // }
-
-    // protected function assignApplicantsToSeats($departmentName, $examPosition, $roomId)
-    // {
-    //     $applicants = Applicant::where('department', $departmentName)
-    //                            ->where('position', $examPosition)
-    //                            ->get();
-    
-    //     $room = ExamRoomInformation::findOrFail($roomId);
-    
-    //     $applicantIndex = 0;
-    //     for ($i = 1; $i <= $room->rows; $i++) {
-    //         for ($j = 1; $j <= $room->columns; $j++) {
-    //             if ($applicantIndex >= $applicants->count()) {
-    //                 return;
-    //             }
-    //             $applicant = $applicants[$applicantIndex];
-    //             $applicant->exam_room_information_id = $room->id;
-    //             $applicant->row = $i;
-    //             $applicant->column = $j;
-    //             $applicant->save();
-    //             $applicantIndex++;
-    //         }
-    //     }
-    // }
-
-
     protected function assignApplicantsToSeats($departmentName, $examPosition, $selectedRooms)
     {
         $applicants = Applicant::where('department', $departmentName)
@@ -192,7 +154,6 @@ class ExamController extends Controller
             }
         }
     }
-    
 
     
     public function updateExamStatus(Request $request)
