@@ -10,6 +10,7 @@
         <div class="mb-4">
             <label for="department_name" class="block font-semibold">ชื่อฝ่ายงาน</label>
             <input list="department_list" type="text" id="department_name" name="department_name" placeholder="กรอกชื่อฝ่ายงาน" required class="w-full my-2 px-3 py-2 rounded ring-1 shadow-sm ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-green-600 transition-all duration-300 outline-none">
+            <span id="department_name_error" class="error-message" style="color: red; display: none;">* กรุณากรอกชื่อฝ่ายงานให้ถูกต้อง</span>
             <datalist id="department_list">
                 @php
                     $addedDepartments = [];
@@ -27,7 +28,8 @@
         <div class="flex mb-4 justify-between">
             <div class="">
                 <label for="exam_date" class="block font-semibold">วันที่การสอบ</label>
-                <input type="date" id="exam_date" name="exam_date" class="w-full my-2 px-3 py-1 rounded ring-1 shadow-sm ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-green-600 transition-all duration-300 outline-none">
+                <input type="date" id="exam_date" name="exam_date" required class="w-full my-2 px-3 py-1 rounded ring-1 shadow-sm ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-green-600 transition-all duration-300 outline-none">
+                <span id="exam_date_error" class="error-message" style="color: red; display: none;"></span>
             </div>
             <div class="">
                 <label for="exam_start_time" class="block font-semibold">เวลาเริ่มการสอบ</label>
@@ -50,6 +52,7 @@
         <div class="mb-4">
             <label for="exam_position" class="block font-semibold">ตำแหน่ง</label>
             <input type="text" list="exam_position_list" id="exam_position" name="exam_position" placeholder="กรอกชื่อตำแหน่ง" required class="w-full my-2 px-3 py-2 rounded ring-1 shadow-sm ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-green-600 transition-all duration-300 outline-none">
+            <span id="exam_position_error" class="error-message" style="color: red; display: none;">* กรุณากรอกตำแหน่งให้ถูกต้อง</span>
             <datalist id="exam_position_list">
                 @php
                     $addedPositions = [];
@@ -73,12 +76,39 @@
 <script>
     function validateForm() {
         var isValid = true;
+        
+        var departmentFound = false;
+        var positionFound = false;
+
+        var departmentName = document.getElementById('department_name');
+        var departmentOptions = document.getElementById('department_list').getElementsByTagName('option');
+        var departmentNameError = document.getElementById('department_name_error');
+
+        var positionName = document.getElementById('exam_position');
+        var positionOptions = document.getElementById('exam_position_list').getElementsByTagName('option');
+        var positionNameError = document.getElementById('exam_position_error');
+
         var examStartTime = document.getElementById('exam_start_time');
         var examStartTimeError = document.getElementById('exam_start_time_error');
 
         var examEndTime = document.getElementById('exam_end_time');
         var examEndTimeError = document.getElementById('exam_end_time_error');
         var regex = /^(?:2[0-3]|[01]?[0-9]):(00|30)$/; // เช็ครูปแบบเวลา HH:MM
+
+        var examDate = document.getElementById('exam_date');
+        var examDateError = document.getElementById('exam_date_error');
+        
+        var selectedDate = new Date(examDate.value);
+        var today = new Date();
+
+        var startTimeParts = examStartTime.value.split(':');
+        var endTimeParts = examEndTime.value.split(':');
+
+        var startHour = parseInt(startTimeParts[0]);
+        var startMinute = parseInt(startTimeParts[1]);
+        var endHour = parseInt(endTimeParts[0]);
+        var endMinute = parseInt(endTimeParts[1]);
+
         if (!regex.test(examStartTime.value)) {
             examStartTime.value = "";
             examStartTime.focus();
@@ -94,6 +124,56 @@
             examEndTimeError.style.display = 'block';
         } else {
             examEndTimeError.style.display = 'none';
+        }
+
+        if (startHour > endHour || (startHour === endHour && startMinute >= endMinute)) {
+            examStartTimeError.style.display = 'block';
+            examStartTimeError.textContent = '* เวลาเริ่มต้นการสอบต้องเริ่มก่อนเวลาสิ้นสุดการสอบ';
+            isValid = false;
+        } else {
+            examStartTimeError.style.display = 'none';
+        }
+
+        // Validate department is in datalist
+        for (var i = 0; i < departmentOptions.length; i++) {
+            if (departmentOptions[i].value === departmentName.value) {
+                departmentNameError.style.display = 'none';
+                departmentFound = true;
+                break;
+            }
+        }
+        if (!departmentFound) {
+            departmentNameError.style.display = 'block';
+            departmentName.value = '';
+            isValid = false;
+        } else {
+            departmentNameError.style.display = 'none';
+        }
+
+        // Validate position is in datalist
+        for (var i = 0; i < positionOptions.length; i++) {
+            if (positionOptions[i].value === positionName.value) {
+                positionNameError.style.display = 'none';
+                positionFound = true;
+                break;
+            }
+        }
+        if (!positionFound) {
+            positionNameError.style.display = 'block';
+            positionName.value = '';
+            isValid = false;
+        } else {
+            positionNameError.style.display = 'none';
+        }
+
+        // Validate not before today
+        if (selectedDate < today) {
+            examDateError.textContent = '* ไม่สามารถเลือกวันที่หลังจากวันนี้ได้';
+            examDateError.style.display = 'block';
+            examDate.value = '';
+            isValid = false;
+        } else {
+            examDateError.style.display = 'none';
         }
         
         return isValid;
