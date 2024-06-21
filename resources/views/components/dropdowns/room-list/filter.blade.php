@@ -15,26 +15,18 @@
                     @php
                         $filterItemsSort = [
                             [
-                                'value' => 'number_asc_char',
-                                'label' => 'เรียงตามตัวเลข น้อย - มาก ตามด้วย ก - ฮ',
+                                'value' => 'room_name_asc',
+                                'label' => 'เรียงตามตัวเลข - ตัวอักษร',
                             ],
                             [
-                                'value' => 'number_desc_char',
-                                'label' => 'เรียงตามตัวอักษร มาก - น้อย ตามด้วย ก - ฮ',
+                                'value' => 'room_name_desc',
+                                'label' => 'เรียงตามตัวอักษร - ตัวเลข',
                             ],
-                            [
-                                'value' => 'number',
-                                'label' => 'เรียงตามจำนวนที่นั่ง มาก - น้อย',
-                            ],
-                            [
-                                'value' => 'seat_asc',
-                                'label' => 'เรียงตามจำนวนที่นั่ง น้อย - มาก',
-                            ],  
                         ];
-                        $currentSort = request()->get('sort', 'alphabet_th');
+                        $currentSort = request()->get('sort', 'room_name_asc');
                     @endphp
                     @foreach($filterItemsSort as $index => $item)
-                    <label onclick="window.location.href='{{ route('building-list', ['sort' => $item['value']]) }}'" for="filter-{{ $item['value'] }}" class="flex items-center w-full px-3 py-1.5 cursor-pointer transition-all duration-300 hover:bg-gray-200 rounded-md">
+                    <label onclick="window.location.href='{{ route('pages.room-list', ['buildingId' => $buildingId, 'sort' => $item['value']]) }}'" for="filter-{{ $item['value'] }}" class="flex items-center w-full px-3 py-1.5 cursor-pointer transition-all duration-300 hover:bg-gray-200 rounded-md">
                         <div class="grid mr-3 place-items-center">
                             <div class="inline-flex items-center">
                                 <label for="filter-{{ $item['value'] }}" class="relative flex items-center p-0 rounded-full cursor-pointer">

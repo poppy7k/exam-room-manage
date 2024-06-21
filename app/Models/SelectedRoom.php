@@ -9,21 +9,21 @@ class SelectedRoom extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['exam_id', 'room_id', 'exam_date', 'exam_start_time', 'exam_end_time'];
+    protected $fillable = ['exam_id', 'room_id'];
 
     public function exam()
     {
-        return $this->belongsTo(Exam::class, 'exam_id');
+        return $this->belongsTo(Exam::class);
     }
 
     public function room()
     {
-        return $this->belongsTo(ExamRoomInformation::class, 'room_id');
+        return $this->belongsTo(ExamRoomInformation::class);
     }
 
     public function applicants()
     {
-        return $this->hasManyThrough(Applicant::class, Seat::class, 'room_id', 'id', 'room_id', 'applicant_id');
+        return $this->hasMany(Applicant::class, 'room_id', 'room_id');
     }
 
     public function staffs()
