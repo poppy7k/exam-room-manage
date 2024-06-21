@@ -46,8 +46,8 @@
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    const selectedRooms = [];
+    document.addEventListener('DOMContentLoaded', function () {
+        const selectedRooms = [];
 
     document.querySelectorAll('.select-room-button').forEach(button => {
         button.addEventListener('click', function () {

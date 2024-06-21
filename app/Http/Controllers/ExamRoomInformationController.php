@@ -62,13 +62,13 @@ class ExamRoomInformationController extends Controller
         // $nextRoomId = $latestRoomId + 1;
         $rooms = $building->examRoomInformation();
 
-        $sort = $request->get('sort', 'number_asc');
+        $sort = $request->get('sort', 'room_name_asc');
         switch ($sort) {
-            case 'number_asc':
+            case 'room_name_asc':
                 $rooms = $rooms->orderBy('room');
                 break;
-            case 'seat_asc':
-                $rooms = $rooms->orderBy('total_valid_seats');
+            case 'room_name_desc':
+                $rooms = $rooms->orderByDesc('room');
                 break;
             default:
                 $rooms = $rooms->orderBy('room');
