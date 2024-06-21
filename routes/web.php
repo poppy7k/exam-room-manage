@@ -26,7 +26,7 @@ Route::put('/buildings/{buildingId}', [BuildingController::class, 'update'])->na
 
 Route::put('/buildings/{buildingId}/ajax', [BuildingController::class, 'updateAjax'])->name('buildings.updateAjax');
 
-Route::get('/buildings/{buildingId}/room-list', [BuildingController::class, 'showRoomList'])->name('pages.room-list');
+Route::get('/buildings/{buildingId}/room-list', [ExamRoomInformationController::class, 'showRoomList'])->name('pages.room-list');
 
 Route::get('/buildings/{buildingId}/addinfo/{roomId}/addseat', [ExamRoomInformationController::class, 'addSeat'])->name('addseat');
 Route::put('/rooms/{roomId}/update', [ExamRoomInformationController::class, 'updateRoom'])->name('examroominfo.update');
@@ -47,15 +47,16 @@ Route::get('/exams/create', [ExamController::class, 'create'])->name('exam-creat
 Route::post('/exams', [ExamController::class, 'store'])->name('exams.store');
 Route::delete('/exams/{examId}', [ExamController::class, 'destroy'])->name('exams.destroy');
 
-// Alert //
-Route::post('/set-alert-message', function (Illuminate\Http\Request $request) {
-    session()->flash('status', 'success');
-    session()->flash('message', $request->message);
-});
-
 Route::get('/exams/{examId}/buildings', [ExamController::class, 'exam_building_list'])->name('exam-buildinglist');
 Route::get('/exams/{examId}/buildings/{buildingId}', [ExamController::class, 'exam_room_list'])->name('exam-roomlist');
 
 Route::post('/update-exam-status', [ExamController::class, 'updateExamStatus'])->name('update-exam-status');
 Route::get('/exams/{examId}/selectedrooms', [ExamController::class, 'showSelectedRooms'])->name('exam-selectedroom');
 Route::get('/exams/{examId}/selectedrooms/{roomId}', [ExamController::class, 'showExamRoomDetail'])->name('exam-roomdetail');
+
+// Alert //
+Route::post('/set-alert-message', function (Illuminate\Http\Request $request) {
+    session()->flash('status', 'success');
+    session()->flash('message', $request->message);
+});
+

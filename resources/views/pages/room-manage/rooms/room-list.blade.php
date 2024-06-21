@@ -23,12 +23,12 @@
                         </x-buttons.icon-primary>
                         @include('components.dropdowns.building-list.date-time')
                     </div>
-                    <div x-data="{ showFilterBuilding: false }" class="z-40"> 
-                        <x-buttons.icon-primary @click="showFilterBuilding = !showFilterBuilding" id="filter-building" onclick="event.stopPropagation();" class="px-[5px] pt-1.5 pb-1 z-40">
+                    <div x-data="{ showFilterRoom: false }" class="z-40"> 
+                        <x-buttons.icon-primary @click="showFilterRoom = !showFilterRoom" id="filter-room" onclick="event.stopPropagation();" class="px-[5px] pt-1.5 pb-1 z-40">
                             <svg id="Layer_1" class="w-5 h-5" height="512" viewBox="0 0 24 24" width="512" xmlns="http://www.w3.org/2000/svg" data-name="Layer 1"><path d="m14 24a1 1 0 0 1 -.6-.2l-4-3a1 1 0 0 1 -.4-.8v-5.62l-7.016-7.893a3.9 3.9 0 0 1 2.916-6.487h14.2a3.9 3.9 0 0 1 2.913 6.488l-7.013 7.892v8.62a1 1 0 0 1 -1 1zm-3-4.5 2 1.5v-7a1 1 0 0 1 .253-.664l7.268-8.177a1.9 1.9 0 0 0 -1.421-3.159h-14.2a1.9 1.9 0 0 0 -1.421 3.158l7.269 8.178a1 1 0 0 1 .252.664z"/></svg>
                             <x-tooltip title="ฟิลเตอร์ห้องสอบ" class="group-hover:-translate-x-9"></x-tooltip>
                         </x-buttons.icon-primary>
-                        @include('components.dropdowns.building-list.filter')
+                        @include('components.dropdowns.room-list.filter')
                     </div>
                     <div class="search-container">
                         <input type="text" id="search-input" placeholder="ค้นหาห้องสอบ" class="w-full px-5 py-2 rounded-full ring-1 shadow-sm ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-green-600 transition-all duration-300 outline-none">

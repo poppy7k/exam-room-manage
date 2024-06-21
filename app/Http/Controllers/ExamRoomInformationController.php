@@ -54,6 +54,39 @@ class ExamRoomInformationController extends Controller
         return redirect()->route('pages.room-list', ['buildingId' => $buildingId])->with('success', 'Room created successfully.');
     }
 
+    public function showRoomList($buildingId, Request $request)
+    {
+        $building = Building::findOrFail($buildingId);
+        $nextRoomId = ExamRoomInformation::where('building_code', $buildingId)->latest()->first();
+        // $latestRoomId = ExamRoomInformation::where('building_code', $buildingId)->max('id');
+        // $nextRoomId = $latestRoomId + 1;
+        $rooms = $building->examRoomInformation();
+
+        $sort = $request->get('sort', 'number_asc');
+        switch ($sort) {
+            case 'number_asc':
+                $rooms = $rooms->orderBy('room');
+                break;
+            case 'seat_asc':
+                $rooms = $rooms->orderBy('total_valid_seats');
+                break;
+            default:
+                $rooms = $rooms->orderBy('room');
+        }
+
+        $rooms = $rooms->paginate(12);
+
+        $breadcrumbs = [
+            ['url' => '/', 'title' => 'หน้าหลัก'],
+            ['url' => '/buildings', 'title' => 'รายการอาคารสอบ'],
+            ['url' => '/buildings/'.$buildingId.'/room-list', 'title' => ''.$building->building_th],
+        ];
+
+        session()->flash('sidebar', '2');
+    
+        return view('pages.room-manage.rooms.room-list', compact('building', 'rooms','nextRoomId', 'breadcrumbs'));
+    }
+
     public function updateRoom(Request $request, $roomId)
     {
         $request->validate([

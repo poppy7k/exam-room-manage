@@ -12,5 +12,14 @@
             จัดการการสอบ
         </div>
     </a>
-</div>
+    <a href="#">
+        <div class ="bg-white text-2xl px-16 py-32 font-bold w-max rounded-lg shadow-md transition-all duration-500 hover:scale-110">
+            ปฏิทินการสอบ
+        </div>
+    </a>
+</div> 
 @endsection()
+
+<!-- 
+เลือกห้องสอบแบบหลายๆตึกได้
+การจัดคนใส่ห้องสอบสามารถเลือกการใส่ได้แบบ แนวตั้งหรือแนวนอน

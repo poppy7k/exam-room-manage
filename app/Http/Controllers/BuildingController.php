@@ -166,23 +166,6 @@ class BuildingController extends Controller
         return response()->json(['success' => 'ข้อมูลอาคารสอบถูกแก้ไข้เรียบร้อยแล้ว']);
     }
 
-    public function showRoomList($buildingId)
-    {
-        $building = Building::findOrFail($buildingId);
-        $nextRoomId = ExamRoomInformation::where('building_code', $buildingId)->latest()->first();
-        // $latestRoomId = ExamRoomInformation::where('building_code', $buildingId)->max('id');
-        // $nextRoomId = $latestRoomId + 1;
-        $rooms = $building->examRoomInformation()->paginate(12);
-        $breadcrumbs = [
-            ['url' => '/', 'title' => 'หน้าหลัก'],
-            ['url' => '/buildings', 'title' => 'รายการอาคารสอบ'],
-            ['url' => '/buildings/'.$buildingId.'/room-list', 'title' => ''.$building->building_th],
-        ];
-        session()->flash('sidebar', '2');
-    
-        return view('pages.room-manage.rooms.room-list', compact('building', 'rooms','nextRoomId', 'breadcrumbs'));
-    }
-
     public function index()
     {
         $breadcrumbs = [
