@@ -18,7 +18,6 @@ return new class extends Migration
             $table->integer('row');
             $table->integer('column');
             $table->timestamps();
-            $table->unsignedBigInteger('exam_id')->nullable();
 
         });
     }

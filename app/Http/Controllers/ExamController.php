@@ -118,7 +118,7 @@ class ExamController extends Controller
         return view('pages.exam-manage.exam-roomlist', compact('breadcrumbs', 'exams','buildings','rooms'));
     }
 
-    protected function assignApplicantsToSeats($departmentName, $examPosition, $selectedRooms)
+    protected function assignApplicantsToSeats($departmentName, $examPosition, $selectedRooms, $exam)
     {
         $applicants = Applicant::where('department', $departmentName)
                                ->where('position', $examPosition)
@@ -126,32 +126,55 @@ class ExamController extends Controller
                                ->get();
     
         $applicantIndex = 0;
+        $conflictedApplicants = [];
     
-        foreach ($selectedRooms as $room) {
-            $room = ExamRoomInformation::findOrFail($room['id']);
+        foreach ($selectedRooms as $roomData) {
+            $room = ExamRoomInformation::findOrFail($roomData['id']);
+            $selectedRoom = SelectedRoom::where('room_id', $room->id)->where('exam_id', $exam->id)->first();
+    
+            if (!$selectedRoom) {
+                // Log::warning('Selected Room not found for Room ID: ' . $room->id . ' and Exam ID: ' . $exam->id);
+                continue;
+            }
+    
             $selectedSeats = json_decode($room->selected_seats, true) ?? [];
     
             for ($i = 1; $i <= $room->rows; $i++) {
                 for ($j = 1; $j <= $room->columns; $j++) {
                     if ($applicantIndex >= $applicants->count()) {
-                        return;
+                        return $conflictedApplicants;
                     }
+    
                     $seatId = "$i-" . chr(64 + $j);
                     if (!in_array($seatId, $selectedSeats)) {
                         $applicant = $applicants[$applicantIndex];
-                        Seat::create([
-                            'room_id' => $room->id,
-                            'applicant_id' => $applicant->id,
-                            'row' => $i,
-                            'column' => $j
-                        ]);
+    
+                        $conflictExists = Seat::whereHas('applicant', function($query) use ($applicant) {
+                            $query->where('id_card', $applicant->id_card);
+                        })->whereHas('room.selectedRooms', function($query) use ($selectedRoom) {
+                            $query->where('exam_date', $selectedRoom->exam_date)
+                                  ->where('exam_start_time', $selectedRoom->exam_start_time)
+                                  ->where('exam_end_time', $selectedRoom->exam_end_time);
+                        })->exists();
+    
+                        if ($conflictExists) {
+                            $conflictedApplicants[] = $applicant->name;
+                        } else {
+                            Seat::create([
+                                'room_id' => $room->id,
+                                'applicant_id' => $applicant->id,
+                                'row' => $i,
+                                'column' => $j
+                            ]);
+                        }
                         $applicantIndex++;
                     }
                 }
             }
         }
+        return $conflictedApplicants;
     }
-    
+
     public function updateExamStatus(Request $request)
     {
         $validatedData = $request->validate([
@@ -160,22 +183,29 @@ class ExamController extends Controller
         ]);
     
         $exam = Exam::findOrFail($validatedData['exam_id']);
-        $exam->status = 'ready';
-        $exam->save();
     
         $selectedRooms = json_decode($validatedData['selected_rooms'], true);
     
-        $this->assignApplicantsToSeats($exam->department_name, $exam->exam_position, $selectedRooms);
+        SelectedRoom::where('exam_id', $exam->id)->delete();
     
-        foreach ($selectedRooms as $room) {
+        foreach ($selectedRooms as $roomData) {
             SelectedRoom::create([
                 'exam_id' => $exam->id,
-                'room_id' => $room['id'],
+                'room_id' => $roomData['id'],
                 'exam_date' => $exam->exam_date,
                 'exam_start_time' => $exam->exam_start_time,
                 'exam_end_time' => $exam->exam_end_time,
             ]);
         }
+    
+        $conflictedApplicants = $this->assignApplicantsToSeats($exam->department_name, $exam->exam_position, $selectedRooms, $exam);
+    
+        if (count($conflictedApplicants) > 0) {
+            return redirect()->back()->with('status', 'conflict')->with('conflictedApplicants', $conflictedApplicants);
+        }
+    
+        $exam->status = 'ready';
+        $exam->save();
     
         return redirect()->route('exam-list')->with('status', 'Exam updated to ready and rooms selected!');
     }

@@ -13,7 +13,6 @@ return new class extends Migration
     {
         Schema::create('exam_room_information', function (Blueprint $table) {
             $table->id();
-            // $table->string('orders')->nullable();
             $table->string('building_name')->nullable();
             $table->string('building_code')->nullable();
             $table->string('floor')->nullable();
