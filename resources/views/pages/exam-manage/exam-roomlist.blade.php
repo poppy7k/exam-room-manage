@@ -2,16 +2,6 @@
 
 @section('content')
 
-@if(session('conflict'))
-    <div class="alert alert-danger">
-        <ul>
-            @foreach(session('conflict') as $conflict)
-                <li>{{ $conflict }}</li>
-            @endforeach
-        </ul>
-    </div>
-@endif
-
 <div class="flex flex-col divide-gray-300 w-full">
     <div class="flex justify-between items-center">
         <div class="flex"> 
@@ -59,6 +49,17 @@
         {{ $rooms->links('pagination::bootstrap-4') }}
     </div>
 </div>
+
+@if(session('status') == 'conflict')
+    <div class="bg-red-500 text-white p-4 rounded mb-4">
+        <p>พบปัญหาการจองห้องสำหรับผู้เข้าสอบต่อไปนี้:</p>
+        <ul>
+            @foreach(session('conflictedApplicants') as $conflictedApplicant)
+                <li>{{ $conflictedApplicant }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
 
 <div class="flex items-center justify-center fixed rounded-lg bottom-0 transform w-10/12 z-20 ">
     <div class="flex gap-3 bg-white rounded-lg border-1 border-gray-50 my-[84px] text-black shadow-xl">

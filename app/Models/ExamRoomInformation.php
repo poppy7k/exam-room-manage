@@ -12,7 +12,6 @@ class ExamRoomInformation extends Model
     protected $table = 'exam_room_information';
 
     protected $fillable = [
-        // 'orders',
         'building_name',
         'building_code',
         'floor',
@@ -32,6 +31,7 @@ class ExamRoomInformation extends Model
     {
         return $this->belongsTo(Building::class, 'building_code', 'building_code');
     }
+
     public function seats()
     {
         return $this->hasMany(Seat::class, 'room_id');
@@ -42,4 +42,13 @@ class ExamRoomInformation extends Model
         return $this->hasManyThrough(Applicant::class, Seat::class, 'room_id', 'id', 'id', 'applicant_id');
     }
 
+    public function selectedRooms()
+    {
+        return $this->hasMany(SelectedRoom::class, 'room_id');
+    }
+
+    public function exams()
+    {
+        return $this->hasManyThrough(Exam::class, SelectedRoom::class, 'room_id', 'id', 'id', 'exam_id');
+    }
 }
