@@ -29,7 +29,11 @@
     </div>
     <div class="bg-white shadow-md my-3 rounded-lg max-h-screen flex flex-col p-4">
         <h2 class="text-xl font-semibold mb-4">ผู้คุมสอบ</h2>
-        <ul id="selected-examiners-list"></ul>
+        <ul id="selected-examiners-list">
+            @foreach($staffs as $staff)
+                <li>{{ $staff->name }}</li>
+            @endforeach
+        </ul>
     </div>
 </div>
 <!-- Examiner selection modal -->
@@ -156,6 +160,7 @@ document.getElementById('save-examiners-btn').addEventListener('click', function
         selectedExaminersList.appendChild(li);
     });
 
+    saveStaffs(selectedExaminers);
     document.getElementById('examiners-modal').classList.add('hidden');
 });
 
@@ -191,9 +196,38 @@ function loadStaffs() {
             });
         });
 }
-</script>
 
+function saveStaffs(selectedExaminers) {
+    const roomId = {{ $room->id }};
+    fetch('/save-staffs', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+        body: JSON.stringify({
+            room_id: roomId,
+            examiners: selectedExaminers
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Staff saved successfully.');
+        } else {
+            console.error('Server response:', data);
+            alert('Failed to save staff.');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while saving staff.');
+    });
+}
+</script>
 @endsection
+
+
 
 
 

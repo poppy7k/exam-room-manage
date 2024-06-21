@@ -9,6 +9,7 @@ use App\Models\Applicant;
 use App\Models\ExamRoomInformation;
 use App\Models\SelectedRoom;
 use App\Models\Seat;
+use App\Models\Staff;
 use Illuminate\Support\Facades\Log;
 
 class ExamController extends Controller
@@ -229,6 +230,9 @@ class ExamController extends Controller
         $exams = Exam::findOrFail($examId);
         $room = ExamRoomInformation::findOrFail($roomId);
         $applicants = $room->applicants;
+
+        $selectedRoom = SelectedRoom::where('room_id', $roomId)->first();
+        $staffs = Staff::where('selected_room_id', $selectedRoom->id)->get();
         $breadcrumbs = [
             ['url' => '/', 'title' => 'หน้าหลัก'],
             ['url' => '/exams', 'title' => 'รายการสอบ'],
@@ -236,7 +240,7 @@ class ExamController extends Controller
             ['url' => '/exams/'.$examId.'/selectedrooms/'.$roomId, 'title' => ''.$room->room],
         ];
 
-        return view('pages.exam-manage.exam-roomdetail', compact('exams', 'room','breadcrumbs','applicants'));
+        return view('pages.exam-manage.exam-roomdetail', compact('exams', 'room','breadcrumbs','applicants','staffs'));
     }
 }
 

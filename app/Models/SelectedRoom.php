@@ -25,4 +25,9 @@ class SelectedRoom extends Model
     {
         return $this->hasMany(Applicant::class, 'room_id', 'room_id');
     }
+
+    public function staffs()
+    {
+        return $this->hasMany(Staff::class, 'selected_room_id');
+    }
 }

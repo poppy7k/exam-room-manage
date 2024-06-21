@@ -14,5 +14,11 @@ class Staff extends Model
     protected $fillable = [
         'id_number',
         'name',
+        'selected_room_id',
     ];
+
+    public function selectedRoom()
+    {
+        return $this->belongsTo(SelectedRoom::class, 'selected_room_id');
+    }
 }

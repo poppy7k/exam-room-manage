@@ -15,7 +15,9 @@ return new class extends Migration
             $table->id();
             $table->string('id_number')->nullable();
             $table->string('name')->nullable();
+            $table->unsignedBigInteger('selected_room_id')->nullable();
             $table->timestamps();
+            $table->foreign('selected_room_id')->references('id')->on('selected_rooms')->onDelete('cascade');
         });
     }
 
