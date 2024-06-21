@@ -16,11 +16,11 @@
                         $filterItemsSort = [
                             [
                                 'value' => 'room_name_asc',
-                                'label' => 'เรียงตามตัวเลข - ตัวอักษร',
+                                'label' => 'เรียงตามหน้า - หลัง',
                             ],
                             [
                                 'value' => 'room_name_desc',
-                                'label' => 'เรียงตามตัวอักษร - ตัวเลข',
+                                'label' => 'เรียงตามหลัง - หน้า',
                             ],
                         ];
                         $currentSort = request()->get('sort', 'room_name_asc');

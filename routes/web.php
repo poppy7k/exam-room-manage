@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BuildingController;
+use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\ExamController;
 use App\Http\Controllers\ExamRoomInformationController;
 use App\Http\Controllers\StaffController;
@@ -61,7 +62,8 @@ Route::post('/set-alert-message', function (Illuminate\Http\Request $request) {
     session()->flash('message', $request->message);
 });
 
-
+// Calendar //
+Route::get('/calendar', [CalendarController::class, 'index'])->name('pages.calendar');
 
 Route::get('/staffs', [StaffController::class, 'index'])->name('staffs.index');
 Route::post('/save-staffs', [StaffController::class, 'saveStaffs']);

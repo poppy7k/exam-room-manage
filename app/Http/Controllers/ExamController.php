@@ -239,6 +239,8 @@ class ExamController extends Controller
             ['url' => '/exams/'.$examId.'/selectedrooms', 'title' => ''.$exams->department_name],
             ['url' => '/exams/'.$examId.'/selectedrooms/'.$roomId, 'title' => ''.$room->room],
         ];
+        
+        session()->flash('sidebar', '3');
 
         return view('pages.exam-manage.exam-roomdetail', compact('exams', 'room','breadcrumbs','applicants','staffs'));
     }

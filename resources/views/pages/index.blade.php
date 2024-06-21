@@ -12,7 +12,7 @@
             จัดการการสอบ
         </div>
     </a>
-    <a href="#">
+    <a href="{{ route('pages.calendar') }}">
         <div class ="bg-white text-2xl px-16 py-32 font-bold w-max rounded-lg shadow-md transition-all duration-500 hover:scale-110">
             ปฏิทินการสอบ
         </div>

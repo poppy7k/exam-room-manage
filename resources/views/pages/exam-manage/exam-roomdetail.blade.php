@@ -19,7 +19,9 @@
             <p id="column-count" class="font-bold ml-1 mt-1.5 text-black"> {{ $room->columns }}</p>
         </div>
         <div class="flex">
-            <button id="select-examiners-btn" class="px-5 py-2 bg-blue-500 text-white rounded">เลือกผู้คุมสอบ</button>
+            <x-buttons.primary id="select-examiners-btn" class="px-5 py-2 rounded-lg bg-blue-500 text-white">
+                เลือกผู้คุมสอบ
+            </x-buttons.primary>
         </div>
     </div>
     <div class="bg-white shadow-md my-3 rounded-lg max-h-screen flex flex-col">
@@ -34,22 +36,6 @@
                 <li>{{ $staff->name }}</li>
             @endforeach
         </ul>
-    </div>
-</div>
-<!-- Examiner selection modal -->
-<div id="examiners-modal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
-    <div class="bg-white rounded-lg p-6 w-1/2">
-        <div class="flex justify-between items-center mb-4">
-            <h3 class="text-xl font-semibold">เลือกผู้คุมสอบ</h3>
-            <button id="close-modal-btn" class="text-red-500">&times;</button>
-        </div>
-        <input type="text" id="search-staff-input" class="w-full p-2 border border-gray-300 rounded mb-4" placeholder="ค้นหาชื่อผู้คุมสอบ">
-        <div id="staff-list" class="max-h-64 overflow-y-auto">
-            <!-- Staff list will be populated here -->
-        </div>
-        <div class="flex justify-end mt-4">
-            <button id="save-examiners-btn" class="px-5 py-2 bg-blue-500 text-white rounded">บันทึก</button>
-        </div>
     </div>
 </div>
 
