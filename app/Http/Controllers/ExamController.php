@@ -244,5 +244,93 @@ class ExamController extends Controller
 
         return view('pages.exam-manage.exam-roomdetail', compact('exams', 'room','breadcrumbs','applicants','staffs'));
     }
+
+    public function getApplicantsWithoutSeats($roomId)
+    {
+        // Log::info('Fetching applicants without seats for room:', ['room_id' => $roomId]);
+        $room = ExamRoomInformation::findOrFail($roomId);
+        $applicantsWithoutSeats = Applicant::whereDoesntHave('seats', function($query) use ($roomId) {
+            $query->where('room_id', $roomId);
+        })->get();
+        
+        // Log::info('Applicants without seats:', $applicantsWithoutSeats->toArray());
+        
+        return response()->json($applicantsWithoutSeats);
+    }
+    
+    
+    
+    public function saveApplicantToSeat(Request $request)
+    {
+        $validatedData = $request->validate([
+            'seat_id' => 'required|string',
+            'applicant_id' => 'required|exists:applicants,id',
+        ]);
+
+        $seatId = $validatedData['seat_id'];
+        $applicantId = $validatedData['applicant_id'];
+
+        $seatParts = explode('-', $seatId);
+        $row = $seatParts[0];
+        $column = ord($seatParts[1]) - 64;
+
+        $seat = Seat::where('row', $row)->where('column', $column)->first();
+        if (!$seat) {
+            return response()->json(['success' => false, 'message' => 'Seat not found.'], 404);
+        }
+
+        $roomId = $seat->room_id;
+
+        Seat::where('row', $row)
+            ->where('column', $column)
+            ->where('room_id', $roomId)
+            ->delete();
+
+        Seat::create([
+            'room_id' => $roomId,
+            'applicant_id' => $applicantId,
+            'row' => $row,
+            'column' => $column,
+        ]);
+
+        return response()->json(['success' => true]);
+    }
+
+    public function removeApplicantFromSeat(Request $request)
+    {
+        // Log::info('Starting to remove applicant from seat', ['request_data' => $request->all()]);
+    
+        try {
+            $validatedData = $request->validate([
+                'seat_id' => 'required|integer',
+                'room_id' => 'required|integer|exists:selected_rooms,room_id' // Change table to selected_rooms
+            ]);
+    
+            // Log::info('Request data validated successfully', ['validated_data' => $validatedData]);
+
+            $seat = Seat::where('id', $validatedData['seat_id'])
+                        ->where('room_id', $validatedData['room_id'])
+                        ->first();
+    
+            if ($seat) {
+                // Log::info('Seat found', ['seat' => $seat]);
+    
+                $seat->applicant_id = null;
+                $seat->save();
+    
+                // Log::info('Applicant removed from seat successfully');
+                return response()->json(['success' => true]);
+            } else {
+                Log::warning('Seat not found', ['seat_id' => $validatedData['seat_id'], 'room_id' => $validatedData['room_id']]);
+                return response()->json(['success' => false, 'message' => 'Seat not found.'], 404);
+            }
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            Log::error('Validation failed', ['errors' => $e->errors()]);
+            return response()->json(['success' => false, 'message' => 'Validation failed.', 'errors' => $e->errors()], 422);
+        } catch (\Exception $e) {
+            Log::error('Error removing applicant from seat', ['exception' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
+            return response()->json(['success' => false, 'message' => 'Failed to remove applicant from seat.'], 500);
+        }
+    }
 }
 

@@ -67,3 +67,7 @@ Route::get('/calendar', [CalendarController::class, 'index'])->name('pages.calen
 
 Route::get('/staffs', [StaffController::class, 'index'])->name('staffs.index');
 Route::post('/save-staffs', [StaffController::class, 'saveStaffs']);
+
+Route::get('/get-applicants-without-seats/{roomId}', [ExamController::class, 'getApplicantsWithoutSeats']);
+Route::post('/save-applicant-to-seat', [ExamController::class, 'saveApplicantToSeat']);
+Route::post('/remove-applicant-from-seat', [ExamController::class, 'removeApplicantFromSeat']);
