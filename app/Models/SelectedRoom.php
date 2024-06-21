@@ -25,4 +25,9 @@ class SelectedRoom extends Model
     {
         return $this->hasManyThrough(Applicant::class, Seat::class, 'room_id', 'id', 'room_id', 'applicant_id');
     }
+
+    public function staffs()
+    {
+        return $this->hasMany(Staff::class, 'selected_room_id');
+    }
 }

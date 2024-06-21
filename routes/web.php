@@ -64,3 +64,4 @@ Route::post('/set-alert-message', function (Illuminate\Http\Request $request) {
 
 
 Route::get('/staffs', [StaffController::class, 'index'])->name('staffs.index');
+Route::post('/save-staffs', [StaffController::class, 'saveStaffs']);

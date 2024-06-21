@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Staff;
+use App\Models\SelectedRoom;
+use Illuminate\Support\Facades\Log;
 
 class StaffController extends Controller
 {
@@ -64,4 +66,45 @@ class StaffController extends Controller
     {
         //
     }
+
+    public function saveStaffs(Request $request)
+    {
+        try {
+            // Log::info('Received request to save staffs', ['room_id' => $request->input('room_id'), 'examiners' => $request->input('examiners')]);
+    
+            $roomId = $request->input('room_id');
+            $examiners = $request->input('examiners');
+    
+            $selectedRoom = SelectedRoom::where('room_id', $roomId)->first();
+    
+            $oldStaffs = Staff::where('selected_room_id', $selectedRoom->id)->get();
+    
+            foreach ($oldStaffs as $oldStaff) {
+                $oldStaff->selected_room_id = null;
+                $oldStaff->save();
+            }
+    
+            foreach ($examiners as $examiner) {
+                $staff = Staff::find($examiner['id']);
+                if ($staff) {
+                    $staff->selected_room_id = $selectedRoom->id;
+                    $staff->save();
+                }
+            }
+    
+            return response()->json(['success' => true]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            Log::error('Validation failed', ['errors' => $e->errors()]);
+            return response()->json(['success' => false, 'message' => 'Validation failed.', 'errors' => $e->errors()], 422);
+        } catch (\Exception $e) {
+            Log::error('Error saving staff: ' . $e->getMessage(), ['exception' => $e]);
+            return response()->json(['success' => false, 'message' => 'Failed to save staff.'], 500);
+        }
+    }
+    
+    
+    
+    
+    
+    
 }
