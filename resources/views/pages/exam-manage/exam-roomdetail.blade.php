@@ -53,11 +53,29 @@
     </div>
 </div>
 
+<!-- Applicants modal -->
+<div id="applicants-modal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
+    <div class="bg-white rounded-lg p-6 w-1/2">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-xl font-semibold">เลือกผู้เข้าสอบ</h3>
+            <button id="close-applicants-modal-btn" class="text-red-500">&times;</button>
+        </div>
+        <div id="applicant-list" class="max-h-64 overflow-y-auto">
+            <!-- Applicant list will be populated here -->
+        </div>
+        <div class="flex justify-end mt-4">
+            <button id="save-applicant-to-seat-btn" class="px-5 py-2 bg-blue-500 text-white rounded">บันทึก</button>
+        </div>
+    </div>
+</div>
+
 <script>
 let validSeatCount = {{ $room->valid_seat }};
-const applicants = {!! json_encode($applicants) !!};
-const seats = {!! json_encode($room->seats) !!};
+const roomId = {{ $room->id }};
+let applicants = {!! json_encode($applicants) !!};
+let seats = {!! json_encode($room->seats) !!};
 const selectedSeats = JSON.parse(@json($room->selected_seats) || "[]");
+let currentSeatId = '';
 
 console.log('Applicants:', applicants);
 console.log('Seats:', seats);
@@ -101,7 +119,7 @@ function addSeats() {
             } else if (seat) {
                 if (applicant) {
                     seatComponent = `
-                        <div id="seat-${seatId}" class="seat p-4 text-center cursor-pointer">
+                        <div id="seat-${seatId}" class="seat p-4 text-center cursor-pointer" onclick="showApplicantModal('${seatId}', ${seat.id}, true)">
                             <x-seats.assigned applicant="${applicant.id_number}">
                                 ${seatId}
                             </x-seats.assigned>
@@ -109,7 +127,7 @@ function addSeats() {
                     `;
                 } else {
                     seatComponent = `
-                        <div id="seat-${seatId}" class="seat p-4 text-center cursor-pointer">
+                        <div id="seat-${seatId}" class="seat p-4 text-center cursor-pointer" onclick="showApplicantModal('${seatId}', null, false)">
                             <x-seats.primary>
                                 ${seatId}
                             </x-seats.primary>
@@ -119,7 +137,7 @@ function addSeats() {
                 validSeatCount--;
             } else {
                 seatComponent = `
-                    <div id="seat-${seatId}" class="seat p-4 text-center cursor-pointer">
+                    <div id="seat-${seatId}" class="seat p-4 text-center cursor-pointer" onclick="showApplicantModal('${seatId}', null, false)">
                         <x-seats.primary>
                             ${seatId}
                         </x-seats.primary>
@@ -164,18 +182,17 @@ document.getElementById('save-examiners-btn').addEventListener('click', function
     document.getElementById('examiners-modal').classList.add('hidden');
 });
 
-document.getElementById('search-staff-input').addEventListener('input', function() {
-    const searchQuery = this.value.toLowerCase();
-    const staffItems = document.querySelectorAll('.staff-item');
+document.getElementById('close-applicants-modal-btn').addEventListener('click', function() {
+    document.getElementById('applicants-modal').classList.add('hidden');
+});
 
-    staffItems.forEach(item => {
-        const staffName = item.textContent.toLowerCase();
-        if (staffName.includes(searchQuery)) {
-            item.classList.remove('hidden');
-        } else {
-            item.classList.add('hidden');
-        }
-    });
+document.getElementById('save-applicant-to-seat-btn').addEventListener('click', function() {
+    const selectedApplicant = document.querySelector('.applicant-radio:checked');
+    if (selectedApplicant) {
+        const applicantId = selectedApplicant.value;
+        saveApplicantToSeat(currentSeatId, applicantId);
+    }
+    document.getElementById('applicants-modal').classList.add('hidden');
 });
 
 function loadStaffs() {
@@ -224,16 +241,134 @@ function saveStaffs(selectedExaminers) {
         alert('An error occurred while saving staff.');
     });
 }
+
+function showApplicantModal(seatId, seatRecordId, hasApplicant) {
+    currentSeatId = seatId;
+
+    const applicantList = document.getElementById('applicant-list');
+    applicantList.innerHTML = '';
+
+    let availableApplicants = applicants.filter(applicant => !seats.find(seat => seat.applicant_id === applicant.id));
+
+    availableApplicants.forEach(applicant => {
+        const div = document.createElement('div');
+        div.classList.add('flex', 'items-center', 'gap-2', 'mb-2', 'applicant-item');
+        div.innerHTML = `
+            <input type="radio" name="applicant" value="${applicant.id}" class="applicant-radio">
+            <p>${applicant.name}</p>
+        `;
+        applicantList.appendChild(div);
+    });
+
+    if (hasApplicant) {
+        const removeButton = document.createElement('button');
+        removeButton.textContent = 'Remove Applicant';
+        removeButton.classList.add('px-4', 'py-2', 'bg-red-500', 'text-white', 'rounded', 'mt-4');
+        removeButton.onclick = () => removeApplicantFromSeat(seatRecordId);
+        applicantList.appendChild(removeButton);
+    }else{
+        fetchApplicantsWithoutSeats();
+    }
+
+
+    document.getElementById('applicants-modal').classList.remove('hidden');
+}
+
+function saveApplicantToSeat(seatId, applicantId) {
+    console.log('Saving applicant to seat:', { seatId, applicantId, roomId });
+    fetch(`/save-applicant-to-seat`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+        body: JSON.stringify({
+            seat_id: seatId,
+            applicant_id: applicantId,
+            room_id: roomId
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('Save applicant response:', data);
+        if (data.success) {
+            alert('Applicant assigned to seat successfully.');
+            location.reload();
+        } else {
+            console.error('Server response:', data);
+            alert('Failed to assign applicant to seat.');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while assigning applicant to seat.');
+    });
+}
+
+function removeApplicantFromSeat(seatId) {
+    console.log('Removing applicant from seat:', {seatId: seatId, roomId});
+    fetch(`/remove-applicant-from-seat`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+        body: JSON.stringify({
+            seat_id: seatId,
+            room_id: roomId
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('Remove applicant response:', data);
+        if (data.success) {
+            alert('Applicant removed from seat successfully.');
+            location.reload();
+        } else {
+            console.error('Server response:', data);
+            alert('Failed to remove applicant from seat.');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while removing applicant from seat.');
+    });
+}
+
+function fetchApplicantsWithoutSeats() {
+    console.log('Fetching applicants without seats for room:', roomId);
+    fetch(`/get-applicants-without-seats/${roomId}`)
+        .then(response => {
+            console.log('Fetch response:', response);
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(applicantsWithoutSeats => {
+            console.log('Applicants without seats:', applicantsWithoutSeats);
+            const applicantList = document.getElementById('applicant-list');
+            applicantList.innerHTML = '';
+
+            applicantsWithoutSeats.forEach(applicant => {
+                const div = document.createElement('div');
+                div.classList.add('flex', 'items-center', 'gap-2', 'mb-2', 'applicant-item');
+                div.innerHTML = `
+                    <input type="radio" name="applicant" value="${applicant.id}" class="applicant-radio">
+                    <p>${applicant.name}</p>
+                `;
+                applicantList.appendChild(div);
+            });
+        })
+        .catch(error => {
+            console.error('Error fetching applicants without seats:', error);
+            alert('An error occurred while fetching applicants.');
+        });
+}
+
+
 </script>
 @endsection
-
-
-
-
-
-
-
-
 
 
 
