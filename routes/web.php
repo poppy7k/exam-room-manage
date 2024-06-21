@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BuildingController;
 use App\Http\Controllers\ExamController;
 use App\Http\Controllers\ExamRoomInformationController;
+use App\Http\Controllers\StaffController;
 use App\Models\ExamRoomInformation;
 
 Route::get('/', [BuildingController::class, 'index'])->name('index');
@@ -60,3 +61,6 @@ Route::post('/set-alert-message', function (Illuminate\Http\Request $request) {
     session()->flash('message', $request->message);
 });
 
+
+
+Route::get('/staffs', [StaffController::class, 'index'])->name('staffs.index');

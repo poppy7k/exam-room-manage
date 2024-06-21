@@ -32,15 +32,14 @@ class ExamRoomInformation extends Model
     {
         return $this->belongsTo(Building::class, 'building_code', 'id');
     }
-
     public function seats()
     {
-        return $this->hasMany(Seat::class);
+        return $this->hasMany(Seat::class, 'room_id');
     }
 
     public function applicants()
     {
-        return $this->hasMany(Applicant::class);
+        return $this->hasManyThrough(Applicant::class, Seat::class, 'room_id', 'id', 'id', 'applicant_id');
     }
 
 }

@@ -77,24 +77,17 @@ class ExamController extends Controller
     
         if ($exam) {
             $rooms = $exam->selectedRooms->pluck('room_id')->toArray();
-    
-            Applicant::whereIn('exam_room_information_id', $rooms)
-                     ->update([
-                         'exam_room_information_id' => NULL,
-                         'row' => NULL,
-                         'column' => NULL
-                     ]);
-    
+            
+            Seat::whereIn('room_id', $rooms)->delete();
+            
             $exam->delete();
-    
-            return response()->json(['success' => true, 'message' => 'Exam deleted successfully.']);
+            
+            return response()->json(['success' => true, 'message' => 'Exam and associated seats deleted successfully.']);
         } else {
             return response()->json(['success' => false, 'message' => 'Exam not found.'], 404);
         }
     }
     
-    
-
     public function exam_building_list($examId)
     {
         $buildings = Building::paginate(8);
@@ -103,7 +96,6 @@ class ExamController extends Controller
             ['url' => '/', 'title' => 'หน้าหลัก'],
             ['url' => '/exams', 'title' => 'รายการสอบ'],
             ['url' => '/exams/'.$examId.'/buildings', 'title' => ''.$exams->department_name],
-
         ];
         session()->flash('sidebar', '3');
 
@@ -120,7 +112,6 @@ class ExamController extends Controller
             ['url' => '/exams', 'title' => 'รายการสอบ'],
             ['url' => '/exams/'.$examId.'/buildings', 'title' => ''.$exams->department_name],
             ['url' => '/exams/'.$examId.'/buildings/'.$buildingId, 'title' => ''.$buildings->building_th],
-
         ];
         session()->flash('sidebar', '3');
 
@@ -131,7 +122,7 @@ class ExamController extends Controller
     {
         $applicants = Applicant::where('department', $departmentName)
                                ->where('position', $examPosition)
-                               ->whereNull('exam_room_information_id')
+                               ->whereDoesntHave('seats')
                                ->get();
     
         $applicantIndex = 0;
@@ -148,17 +139,18 @@ class ExamController extends Controller
                     $seatId = "$i-" . chr(64 + $j);
                     if (!in_array($seatId, $selectedSeats)) {
                         $applicant = $applicants[$applicantIndex];
-                        $applicant->exam_room_information_id = $room->id;
-                        $applicant->row = $i;
-                        $applicant->column = $j;
-                        $applicant->save();
+                        Seat::create([
+                            'room_id' => $room->id,
+                            'applicant_id' => $applicant->id,
+                            'row' => $i,
+                            'column' => $j
+                        ]);
                         $applicantIndex++;
                     }
                 }
             }
         }
     }
-
     
     public function updateExamStatus(Request $request)
     {
@@ -179,6 +171,9 @@ class ExamController extends Controller
             SelectedRoom::create([
                 'exam_id' => $exam->id,
                 'room_id' => $room['id'],
+                'exam_date' => $exam->exam_date,
+                'exam_start_time' => $exam->exam_start_time,
+                'exam_end_time' => $exam->exam_end_time,
             ]);
         }
     
@@ -189,13 +184,10 @@ class ExamController extends Controller
     {
         $exams = Exam::findOrFail($examId);
         $selectedRooms = $exams->selectedRooms;
-
-        // Log::info('selectedRooms: ' . $selectedRooms);
         $breadcrumbs = [
             ['url' => '/', 'title' => 'หน้าหลัก'],
             ['url' => '/exams', 'title' => 'รายการสอบ'],
             ['url' => '/exams/'.$examId.'/buildings', 'title' => ''.$exams->department_name],
-            
         ];
         session()->flash('sidebar', '3');
     
@@ -207,15 +199,14 @@ class ExamController extends Controller
         $exams = Exam::findOrFail($examId);
         $room = ExamRoomInformation::findOrFail($roomId);
         $applicants = $room->applicants;
-        Log::info('$applicants: ' . $applicants);
         $breadcrumbs = [
             ['url' => '/', 'title' => 'หน้าหลัก'],
             ['url' => '/exams', 'title' => 'รายการสอบ'],
             ['url' => '/exams/'.$examId.'/selectedrooms', 'title' => ''.$exams->department_name],
             ['url' => '/exams/'.$examId.'/selectedrooms/'.$roomId, 'title' => ''.$room->room],
-            
         ];
 
         return view('pages.exam-manage.exam-roomdetail', compact('exams', 'room','breadcrumbs','applicants'));
     }
 }
+

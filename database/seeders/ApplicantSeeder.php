@@ -14,14 +14,23 @@ class ApplicantSeeder extends Seeder
     public function run(): void
     {
         // \App\Models\Applicant::factory(5)->create();
-        // $applicant = new Applicant();
-        // $applicant->id_number = "010001";
-        // $applicant->id_card = "5 6485 54823 48 6";
-        // $applicant->name = "นาย --------------01";
-        // $applicant->degree = "ระดับปริญญาตรี";
-        // $applicant->position = "เจ้าหน้าที่บริหารงานทั่วไประดับปฏิบัติการ";
-        // $applicant->department = "งานบริหารระบบเอกสารกลาง";
-        // $applicant->save();
+        $applicant = new Applicant();
+        $applicant->id_number = "020001";
+        $applicant->id_card = "5 6485 54823 48 6";
+        $applicant->name = "นาย --------------01";
+        $applicant->degree = "ระดับปริญญาตรี";
+        $applicant->position = "เจ้าหน้าที่บริหารงานทั่วไประดับปฏิบัติการ1";
+        $applicant->department = "งานบริหารระบบเอกสารกลาง1";
+        $applicant->save();
+
+        $applicant = new Applicant();
+        $applicant->id_number = "010001";
+        $applicant->id_card = "5 6485 54823 48 6";
+        $applicant->name = "นาย --------------01";
+        $applicant->degree = "ระดับปริญญาตรี";
+        $applicant->position = "เจ้าหน้าที่บริหารงานทั่วไประดับปฏิบัติการ";
+        $applicant->department = "งานบริหารระบบเอกสารกลาง";
+        $applicant->save();
 
         // $applicant = new Applicant();
         // $applicant->id_number = "010002";
@@ -61,7 +70,7 @@ class ApplicantSeeder extends Seeder
 
         $faker = \Faker\Factory::create('th_TH'); // Use Thai locale for more realistic data
 
-        for ($i = 1; $i <= 150; $i++) {
+        for ($i = 2; $i <= 150; $i++) {
             $id_number = str_pad($i, 3, '0', STR_PAD_LEFT); // Pad the number to 6 digits
             $applicant = new Applicant();
             $applicant->id_number = "010" . $id_number;

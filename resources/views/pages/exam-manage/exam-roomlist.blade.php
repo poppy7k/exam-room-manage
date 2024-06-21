@@ -2,6 +2,16 @@
 
 @section('content')
 
+@if(session('conflict'))
+    <div class="alert alert-danger">
+        <ul>
+            @foreach(session('conflict') as $conflict)
+                <li>{{ $conflict }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+
 <div class="flex flex-col divide-gray-300 w-full">
     <div class="flex justify-between items-center">
         <div class="flex"> 

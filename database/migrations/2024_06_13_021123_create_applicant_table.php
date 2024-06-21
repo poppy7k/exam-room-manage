@@ -19,9 +19,9 @@ return new class extends Migration
             $table->string('degree')->nullable();
             $table->string('position')->nullable();
             $table->string('department')->nullable();
-            $table->string('exam_room_information_id')->nullable();
-            $table->integer('row')->nullable();
-            $table->integer('column')->nullable();
+            // $table->string('exam_room_information_id')->nullable();
+            // $table->integer('row')->nullable();
+            // $table->integer('column')->nullable();
             $table->timestamps();
         });
     }
