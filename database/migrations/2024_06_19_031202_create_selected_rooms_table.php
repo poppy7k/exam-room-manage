@@ -17,12 +17,12 @@ return new class extends Migration
             $table->unsignedBigInteger('room_id');
             $table->datetime('exam_date')->nullable();//
             $table->datetime('exam_start_time')->nullable();//
-            $table->datetime('exam_end_time')->nullable();//
+            $table->datetime('exam_end_time')->nullable();
             $table->timestamps();
     
             // Foreign key constraints
             $table->foreign('exam_id')->references('id')->on('exams')->onDelete('cascade');
-            $table->foreign('room_id')->references('id')->on('exam_room_information')->onDelete('cascade'); // Assuming you have a `rooms` table
+            $table->foreign('room_id')->references('id')->on('exam_room_information')->onDelete('cascade');
         });
     }
     

@@ -73,13 +73,11 @@
 let validSeatCount = {{ $room->valid_seat }};
 const roomId = {{ $room->id }};
 let applicants = {!! json_encode($applicants) !!};
-let seats = {!! json_encode($room->seats) !!};
-const selectedSeats = JSON.parse(@json($room->selected_seats) || "[]");
+let seats = {!! json_encode($seats) !!};
 let currentSeatId = '';
 
 console.log('Applicants:', applicants);
 console.log('Seats:', seats);
-console.log('Selected Seats:', selectedSeats);
 
 function toExcelColumn(n) {
     let result = '';
@@ -98,25 +96,15 @@ function addSeats() {
     seatContainer.style.gridTemplateColumns = `repeat(${columns}, minmax(4rem, 1fr))`;
 
     let seatComponents = '';
-    let applicantIndex = 0;
 
     for (let i = 0; i < rows; i++) {
         for (let j = 0; j < columns; j++) {
             const seatId = `${i + 1}-${toExcelColumn(j)}`;
             let seatComponent = '';
-            const isDeactivated = selectedSeats.includes(seatId);
             const seat = seats.find(seat => seat.row === (i + 1) && seat.column === (j + 1));
             const applicant = seat ? applicants.find(applicant => applicant.id === seat.applicant_id) : null;
 
-            if (isDeactivated) {
-                seatComponent = `
-                    <div id="seat-${seatId}" class="seat p-4 text-center cursor-pointer">
-                        <x-seats.unavailable>
-                            ${seatId}
-                        </x-seats.unavailable>
-                    </div>
-                `;
-            } else if (seat) {
+            if (seat) {
                 if (applicant) {
                     seatComponent = `
                         <div id="seat-${seatId}" class="seat p-4 text-center cursor-pointer" onclick="showApplicantModal('${seatId}', ${seat.id}, true)">
@@ -147,11 +135,16 @@ function addSeats() {
             seatComponents += seatComponent;
         }
     }
-    document.getElementById('validSeatCount').textContent = validSeatCount;
     seatContainer.innerHTML = seatComponents;
+    updateValidSeatCountUI(validSeatCount);
+}
+
+function updateValidSeatCountUI(validSeatCount) {
+    document.getElementById('validSeatCount').textContent = validSeatCount;
 }
 
 document.addEventListener('DOMContentLoaded', addSeats);
+
 document.getElementById('select-examiners-btn').addEventListener('click', function() {
     document.getElementById('examiners-modal').classList.remove('hidden');
     loadStaffs();
@@ -215,7 +208,6 @@ function loadStaffs() {
 }
 
 function saveStaffs(selectedExaminers) {
-    const roomId = {{ $room->id }};
     fetch('/save-staffs', {
         method: 'POST',
         headers: {
@@ -266,10 +258,9 @@ function showApplicantModal(seatId, seatRecordId, hasApplicant) {
         removeButton.classList.add('px-4', 'py-2', 'bg-red-500', 'text-white', 'rounded', 'mt-4');
         removeButton.onclick = () => removeApplicantFromSeat(seatRecordId);
         applicantList.appendChild(removeButton);
-    }else{
+    } else {
         fetchApplicantsWithoutSeats();
     }
-
 
     document.getElementById('applicants-modal').classList.remove('hidden');
 }
@@ -292,6 +283,8 @@ function saveApplicantToSeat(seatId, applicantId) {
     .then(data => {
         console.log('Save applicant response:', data);
         if (data.success) {
+            validSeatCount = data.valid_seat;
+            updateValidSeatCountUI(validSeatCount);
             alert('Applicant assigned to seat successfully.');
             location.reload();
         } else {
@@ -305,8 +298,9 @@ function saveApplicantToSeat(seatId, applicantId) {
     });
 }
 
+
 function removeApplicantFromSeat(seatId) {
-    console.log('Removing applicant from seat:', {seatId: seatId, roomId});
+    console.log('Removing applicant from seat:', { seatId: seatId, roomId });
     fetch(`/remove-applicant-from-seat`, {
         method: 'POST',
         headers: {
@@ -322,6 +316,8 @@ function removeApplicantFromSeat(seatId) {
     .then(data => {
         console.log('Remove applicant response:', data);
         if (data.success) {
+            validSeatCount = data.valid_seat;
+            updateValidSeatCountUI(validSeatCount);
             alert('Applicant removed from seat successfully.');
             location.reload();
         } else {
@@ -366,10 +362,5 @@ function fetchApplicantsWithoutSeats() {
         });
 }
 
-
 </script>
 @endsection
-
-
-
-
