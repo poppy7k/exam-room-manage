@@ -16,7 +16,7 @@ class ApplicantSeeder extends Seeder
         // \App\Models\Applicant::factory(5)->create();
         $applicant = new Applicant();
         $applicant->id_number = "020001";
-        $applicant->id_card = "5 6485 54823 48 6";
+        $applicant->id_card = "5 6485 54823 48 7";
         $applicant->name = "นาย --------------01";
         $applicant->degree = "ระดับปริญญาตรี";
         $applicant->position = "เจ้าหน้าที่บริหารงานทั่วไประดับปฏิบัติการ1";

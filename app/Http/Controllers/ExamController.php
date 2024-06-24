@@ -89,9 +89,35 @@ class ExamController extends Controller
         }
     }
     
-    public function exam_building_list($examId)
+    public function exam_building_list($examId, Request $request)
     {
-        $buildings = Building::paginate(8);
+        $sort = $request->get('sort', 'alphabet_th'); // Default sort by building_th
+        $buildings = Building::query()
+            ->select('buildings.*')
+            ->selectSub(
+                ExamRoomInformation::query()
+                    ->selectRaw('SUM(valid_seat)')
+                    ->whereColumn('building_code', 'buildings.id'),
+                'total_valid_seats'
+            );
+        switch ($sort) {
+            case 'alphabet_th':
+                $buildings->orderBy('building_th');
+                break;
+            case 'alphabet_en':
+                $buildings->orderBy('building_en');
+                break;
+            case 'seat_desc':
+                $buildings->orderByDesc('total_valid_seats');
+                break;
+            case 'seat_asc':
+                $buildings->orderBy('total_valid_seats');
+                break;
+            default:
+                $buildings->orderBy('building_th');
+        }
+        $buildings = $buildings->paginate(8);
+        
         $exams = Exam::findOrFail($examId);
         $breadcrumbs = [
             ['url' => '/', 'title' => 'หน้าหลัก'],
@@ -103,11 +129,25 @@ class ExamController extends Controller
         return view('pages.exam-manage.exam-buildinglist', compact('breadcrumbs', 'exams','buildings'));
     }
 
-    public function exam_room_list($examId,$buildingId)
+    public function exam_room_list($examId,$buildingId, Request $request)
     {
         $exams = Exam::findOrFail($examId);
         $buildings = Building::findOrFail($buildingId);
-        $rooms = $buildings->examRoomInformation()->paginate(12);
+        $rooms = $buildings->examRoomInformation();
+
+        $sort = $request->get('sort', 'room_name_asc');
+        switch ($sort) {
+            case 'room_name_asc':
+                $rooms = $rooms->orderBy('room');
+                break;
+            case 'room_name_desc':
+                $rooms = $rooms->orderByDesc('room');
+                break;
+            default:
+                $rooms = $rooms->orderBy('room');
+        }
+
+        $rooms = $rooms->paginate(12);
         $breadcrumbs = [
             ['url' => '/', 'title' => 'หน้าหลัก'],
             ['url' => '/exams', 'title' => 'รายการสอบ'],
@@ -184,6 +224,10 @@ class ExamController extends Controller
         ]);
     
         $exam = Exam::findOrFail($validatedData['exam_id']);
+
+        if (is_null($exam->exam_date) || is_null($exam->exam_start_time) || is_null($exam->exam_end_time)) {
+            return redirect()->back()->with('status', 'Exam date or time is missing');
+        }
     
         $selectedRooms = json_decode($validatedData['selected_rooms'], true);
     
@@ -239,7 +283,7 @@ class ExamController extends Controller
             ['url' => '/exams/'.$examId.'/selectedrooms', 'title' => ''.$exams->department_name],
             ['url' => '/exams/'.$examId.'/selectedrooms/'.$roomId, 'title' => ''.$room->room],
         ];
-        
+
         session()->flash('sidebar', '3');
 
         return view('pages.exam-manage.exam-roomdetail', compact('exams', 'room','breadcrumbs','applicants','staffs'));

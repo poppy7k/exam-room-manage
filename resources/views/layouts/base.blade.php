@@ -19,6 +19,7 @@
 
         <!-- Script -->
         <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.14/index.global.min.js"></script>
     </head>
     <body class="flex min-h-screen bg-gray-200">
         @yield('body')
