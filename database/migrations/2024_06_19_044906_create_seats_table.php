@@ -17,6 +17,9 @@ return new class extends Migration
             $table->unsignedBigInteger('applicant_id')->nullable();
             $table->integer('row');
             $table->integer('column');
+            $table->datetime('exam_date')->nullable();
+            $table->datetime('exam_start_time')->nullable();
+            $table->datetime('exam_end_time')->nullable();
             $table->timestamps();
 
         });

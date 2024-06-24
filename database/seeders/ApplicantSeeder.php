@@ -15,9 +15,18 @@ class ApplicantSeeder extends Seeder
     {
         // \App\Models\Applicant::factory(5)->create();
         $applicant = new Applicant();
+        $applicant->id_number = "030001";
+        $applicant->id_card = "5 6485 54823 48 3";
+        $applicant->name = "นาย --------------01(03)";
+        $applicant->degree = "ระดับปริญญาตรี";
+        $applicant->position = "เจ้าหน้าที่บริหารงานทั่วไประดับปฏิบัติการ2";
+        $applicant->department = "งานบริหารระบบเอกสารกลาง2";
+        $applicant->save();
+
+        $applicant = new Applicant();
         $applicant->id_number = "020001";
-        $applicant->id_card = "5 6485 54823 48 7";
-        $applicant->name = "นาย --------------01";
+        $applicant->id_card = "5 6485 54823 48 6";
+        $applicant->name = "นาย --------------01(02)";
         $applicant->degree = "ระดับปริญญาตรี";
         $applicant->position = "เจ้าหน้าที่บริหารงานทั่วไประดับปฏิบัติการ1";
         $applicant->department = "งานบริหารระบบเอกสารกลาง1";

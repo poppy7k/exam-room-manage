@@ -10,7 +10,7 @@ class Seat extends Model
     use HasFactory;
 
     protected $fillable = [
-        'room_id', 'applicant_id', 'row', 'column'
+        'room_id', 'applicant_id', 'row', 'column','exam_date','exam_start_time','exam_end_time'
     ];
 
     public function room()

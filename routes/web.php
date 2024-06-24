@@ -71,3 +71,4 @@ Route::post('/save-staffs', [StaffController::class, 'saveStaffs']);
 Route::get('/get-applicants-without-seats/{roomId}', [ExamController::class, 'getApplicantsWithoutSeats']);
 Route::post('/save-applicant-to-seat', [ExamController::class, 'saveApplicantToSeat']);
 Route::post('/remove-applicant-from-seat', [ExamController::class, 'removeApplicantFromSeat']);
+// Route::put('/update-valid-seat-count/{roomId}', [ExamController::class, 'updateValidSeatCount']);
