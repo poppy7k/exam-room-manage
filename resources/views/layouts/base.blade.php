@@ -17,9 +17,12 @@
             [x-cloak] { display: none !important; }
         </style>
 
+        <meta name="csrf-token" content="{{ csrf_token() }}">
+
         <!-- Script -->
         <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.14/index.global.min.js"></script>
+        <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
     </head>
     <body class="flex min-h-screen bg-gray-200">
         @yield('body')

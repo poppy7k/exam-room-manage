@@ -408,4 +408,19 @@ class ExamController extends Controller
             return response()->json(['success' => false, 'message' => 'Failed to remove applicant from seat.'], 500);
         }
     }
+
+    public function getExam() {
+
+        $exams = Exam::all();
+
+        $events = $exams->map(function ($exam) {
+            return [
+                'title' => $exam->department_name, // ปรับตามชื่อฟิลด์ที่ต้องการแสดงเป็นชื่อของ event
+                'start' => $exam->exam_date . 'T' . $exam->exam_start_time,
+                'end' => $exam->exam_date . 'T' . $exam->exam_end_time,
+            ];
+        });
+
+        return response()->json($exams);
+    }
 }

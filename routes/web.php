@@ -64,6 +64,7 @@ Route::post('/set-alert-message', function (Illuminate\Http\Request $request) {
 
 // Calendar //
 Route::get('/calendar', [CalendarController::class, 'index'])->name('pages.calendar');
+Route::get('/calendar/exams', [ExamController::class, 'getExam'])->name('exam.getExam');
 
 Route::get('/staffs', [StaffController::class, 'index'])->name('staffs.index');
 Route::post('/save-staffs', [StaffController::class, 'saveStaffs']);
