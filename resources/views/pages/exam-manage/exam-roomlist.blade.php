@@ -35,7 +35,8 @@
                 :room="$room->room"
                 :floor="$room->floor"
                 :valid_seat="$room->valid_seat"
-                :total_seat="$room->total_seat"      
+                :total_seat="$room->total_seat"
+                :exam_valid_seat="$room->exam_valid_seat ?? 0"      
                 :room_id="$room->id"
                 :buildingId="$room->building_code"
             />
@@ -98,62 +99,69 @@
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const selectedRooms = [];
+document.addEventListener('DOMContentLoaded', function () {
+    const selectedRooms = [];
 
-        document.querySelectorAll('.select-room-button').forEach(button => {
-            button.addEventListener('click', function () {
-                const roomItem = this.closest('.room-item');
-                const roomChecked = roomItem.querySelector('.room-checked');
-                const roomId = roomItem.getAttribute('data-room-id');
-                const roomDetails = {
-                    id: roomId,
-                    room: roomItem.querySelector('p.text-2xl').innerText,
-                    floor: roomItem.querySelector('p.text-gray-600').innerText,
-                    validSeat: roomItem.querySelector('p.absolute').innerText,
-                };
+    document.querySelectorAll('.select-room-button').forEach(button => {
+        button.addEventListener('click', function () {
+            const roomItem = this.closest('.room-item');
+            const roomChecked = roomItem.querySelector('.room-checked');
+            const roomId = roomItem.getAttribute('data-room-id');
+            const roomDetails = {
+                id: roomId,
+                room: roomItem.querySelector('p.text-2xl').innerText,
+                floor: roomItem.querySelector('p.text-gray-600').innerText,
+                validSeat: parseInt(roomItem.querySelector('p.absolute').innerText),
+            };
 
-                if (!selectedRooms.some(room => room.id === roomId)) {
-                    selectedRooms.push(roomDetails);
-                    updateSelectedRoomsList();
-                    roomChecked.classList.remove('hidden');
-                } else {
-                    selectedRooms.splice(selectedRooms.findIndex(room => room.id === roomId), 1);
-                    updateSelectedRoomsList();
-                    roomChecked.classList.add('hidden');
-                }
-            });
-        });
-
-        function updateSelectedRoomsList() {
-            const selectedRoomsContainer = document.getElementById('selected-rooms');
-            const selectedSeatsContainer = document.getElementById('selected-seats');
-            selectedRoomsContainer.innerText = '';
-            selectedSeatsContainer.innerText = '0';
-
-            selectedRooms.forEach(room => {
-                const roomText = document.createTextNode(`${room.room}, `);
-                var seatText = document.createTextNode(getTotalValidSeat());
-                selectedRoomsContainer.appendChild(roomText);
-                selectedSeatsContainer.innerText = seatText.textContent;
-            });
-            document.getElementById('selected-rooms-input').value = JSON.stringify(selectedRooms);
-        }
-
-        function getTotalValidSeat() {
-            return selectedRooms.reduce((total, room) => parseInt(total) + parseInt(room.validSeat), 0);
-        }
-
-        document.getElementById('submit-form').addEventListener('submit', function(event) {
-            const selectedSeats = parseInt(document.getElementById('selected-seats').innerText);
-            const requiredSeats = parseInt(document.getElementById('applicant-quantity').innerText);
-
-            if (selectedSeats < requiredSeats) {
-                event.preventDefault();
-                alert('จำนวนที่นั่งไม่เพียงพอสำหรับผู้เข้าสอบ');
+            if (!selectedRooms.some(room => room.id === roomId)) {
+                selectedRooms.push(roomDetails);
+                updateSelectedRoomsList();
+                roomChecked.classList.remove('hidden');
+            } else {
+                selectedRooms.splice(selectedRooms.findIndex(room => room.id === roomId), 1);
+                updateSelectedRoomsList();
+                roomChecked.classList.add('hidden');
             }
         });
     });
+
+    function updateSelectedRoomsList() {
+        const selectedRoomsContainer = document.getElementById('selected-rooms');
+        const selectedSeatsContainer = document.getElementById('selected-seats');
+        selectedRoomsContainer.innerText = '';
+        selectedSeatsContainer.innerText = '0';
+
+        selectedRooms.forEach(room => {
+            const roomText = document.createTextNode(`${room.room}, `);
+            selectedRoomsContainer.appendChild(roomText);
+        });
+        selectedSeatsContainer.innerText = getTotalValidSeat();
+        document.getElementById('selected-rooms-input').value = JSON.stringify(selectedRooms);
+    }
+
+    function getTotalValidSeat() {
+        return selectedRooms.reduce((total, room) => total + room.validSeat, 0);
+    }
+
+    document.getElementById('submit-form').addEventListener('submit', function (event) {
+        const selectedSeats = parseInt(document.getElementById('selected-seats').innerText);
+        const requiredSeats = parseInt(document.getElementById('applicant-quantity').innerText);
+
+        selectedRooms.forEach(room => {
+            room.validSeat = Math.min(room.validSeat, requiredSeats);
+        });
+
+        if (selectedSeats < requiredSeats) {
+            event.preventDefault();
+            alert('จำนวนที่นั่งไม่เพียงพอสำหรับผู้เข้าสอบ');
+        } else {
+            document.getElementById('selected-rooms-input').value = JSON.stringify(selectedRooms);
+        }
+    });
+});
+
+
 
 </script>
 
