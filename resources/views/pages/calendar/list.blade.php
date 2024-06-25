@@ -239,16 +239,6 @@
                                     title: `${statusCount[date][status]}`,
                                     start: date,
                                     allDay: true,
-                                    extendedProps: {
-                                        department_name: exam.department_name,
-                                        organization: exam.organization,
-                                        exam_position: exam.exam_position,
-                                        exam_start_time: exam.exam_start_time,
-                                        exam_end_time: exam.exam_end_time,
-                                        status: exam.status,
-                                        building_name: 'ศูนย์เรียนรวม 3',
-                                        room_numbers: '213, 214'
-                                    }
                                 });
                             }
                         }
@@ -272,22 +262,9 @@
                 `;
                 return { domNodes: [content] };
             }
-            eventClick: function(info) {
-                fetchExams(info.dateStr);
-            }
         });
 
         calendar.render();
-        function fetchExams(date) {
-            $.ajax({
-                url: '/calendar/exams',
-                method: 'GET',
-                data: { date: date },
-                success: function (data) {
-                    displayExams(data);
-                }
-            });
-        }
     });
 
 

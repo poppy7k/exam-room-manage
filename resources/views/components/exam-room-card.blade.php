@@ -35,7 +35,7 @@
         </div>
         <div class="flex justify-end">
             <p class="absolute justify-end -mx-1 -my-7 px-2 py-1 bg-gradient-to-tr from-green-600 to-green-400 rounded-lg text-sm text-white shadow-md">
-                {{ $exam_valid_seat > 0 ? $exam_valid_seat : $valid_seat }} ที่นั่ง
+                {{ $valid_seat - $exam_valid_seat }} ที่นั่ง
             </p>
         </div>
         <div class="flex justify-between pb-1 pt-3">

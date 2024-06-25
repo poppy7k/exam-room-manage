@@ -181,9 +181,9 @@ class ExamController extends Controller
     
         $selectedRooms = SelectedRoom::where('exam_id', $examId)->get()->keyBy('room_id');
     
-        $rooms->getCollection()->transform(function ($room) use ($selectedRooms) {
-            $selectedRoom = $selectedRooms->get($room->id);
-            $room->exam_valid_seat = $selectedRoom ? $selectedRoom->exam_valid_seat : $room->valid_seat;
+        $rooms->getCollection()->transform(function ($room) {
+            $selectedRoom = SelectedRoom::where('room_id', $room->id)->first();
+            $room->exam_valid_seat = $selectedRoom ? $selectedRoom->exam_valid_seat : 0;
             Log::info('Room ID: '.$room->id.' Exam Valid Seat: '.$room->exam_valid_seat);
             return $room;
         });
