@@ -82,6 +82,7 @@ function addSeats() {
     seatContainer.style.gridTemplateColumns = `repeat(${columns}, minmax(4rem, 1fr))`;
 
     let seatComponents = '';
+    let assignedSeats = 0;
 
     for (let i = 0; i < rows; i++) {
         for (let j = 0; j < columns; j++) {
@@ -99,6 +100,7 @@ function addSeats() {
                             </x-seats.assigned>
                         </div>
                     `;
+                    assignedSeats++; 
                 } else {
                     seatComponent = `
                         <div id="seat-${seatId}" class="seat p-4 text-center cursor-pointer" onclick="showApplicantModal('${seatId}', null, false)">
@@ -108,7 +110,6 @@ function addSeats() {
                         </div>
                     `;
                 }
-                validSeatCount--;
             } else {
                 seatComponent = `
                     <div id="seat-${seatId}" class="seat p-4 text-center cursor-pointer" onclick="showApplicantModal('${seatId}', null, false)">
@@ -121,8 +122,10 @@ function addSeats() {
             seatComponents += seatComponent;
         }
     }
+    validSeatCount = {{ $room->total_seat }} - assignedSeats; 
     seatContainer.innerHTML = seatComponents;
     updateValidSeatCountUI(validSeatCount);
+    updateValidSeatCountInDB(validSeatCount);
 }
 
 function updateValidSeatCountUI(validSeatCount) {
@@ -269,10 +272,11 @@ function saveApplicantToSeat(seatId, applicantId) {
     .then(data => {
         console.log('Save applicant response:', data);
         if (data.success) {
-            validSeatCount = data.valid_seat;
+            validSeatCount--;
             updateValidSeatCountUI(validSeatCount);
-            alert('Applicant assigned to seat successfully.');
+            updateValidSeatCountInDB(validSeatCount);
             location.reload();
+            alert('Applicant assigned to seat successfully.');
         } else {
             console.error('Server response:', data);
             alert('Failed to assign applicant to seat.');
@@ -302,10 +306,11 @@ function removeApplicantFromSeat(seatId) {
     .then(data => {
         console.log('Remove applicant response:', data);
         if (data.success) {
-            validSeatCount = data.valid_seat;
+            validSeatCount++;
             updateValidSeatCountUI(validSeatCount);
-            alert('Applicant removed from seat successfully.');
+            updateValidSeatCountInDB(validSeatCount);
             location.reload();
+            alert('Applicant removed from seat successfully.');
         } else {
             console.error('Server response:', data);
             alert('Failed to remove applicant from seat.');
@@ -346,6 +351,30 @@ function fetchApplicantsWithoutSeats() {
             console.error('Error fetching applicants without seats:', error);
             alert('An error occurred while fetching applicants.');
         });
+}
+function updateValidSeatCountInDB(validSeatCount) {
+    fetch(`/update-valid-seat-count`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+        body: JSON.stringify({
+            room_id: roomId,
+            valid_seat_count: validSeatCount
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            console.log('Valid seat count updated successfully in the database.');
+        } else {
+            console.error('Failed to update valid seat count in the database.', data);
+        }
+    })
+    .catch(error => {
+        console.error('Error updating valid seat count in the database:', error);
+    });
 }
 
 </script>

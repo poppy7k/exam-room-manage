@@ -14,7 +14,8 @@ class SelectedRoom extends Model
         'room_id', 
         'exam_date', 
         'exam_start_time', 
-        'exam_end_time'
+        'exam_end_time',
+        'exam_valid_seat'
     ];
 
     public function exam()

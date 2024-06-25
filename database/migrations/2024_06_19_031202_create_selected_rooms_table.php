@@ -18,6 +18,7 @@ return new class extends Migration
             $table->datetime('exam_date')->nullable();//
             $table->datetime('exam_start_time')->nullable();//
             $table->datetime('exam_end_time')->nullable();
+            $table->integer('exam_valid_seat')->nullable();
             $table->timestamps();
     
             // Foreign key constraints
