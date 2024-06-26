@@ -148,8 +148,8 @@
                 document.getElementById('edit-department_name').value = departmentName;
                 document.getElementById('edit-exam_position').value = examPosition;
                 document.getElementById('edit-exam_date').value = examDate;
-                document.getElementById('edit-exam_start_time').value = examStartTime.substr(11, 5); // Extract time part
-                document.getElementById('edit-exam_end_time').value = examEndTime.substr(11, 5); // Extract time part
+                document.getElementById('edit-exam_start_time').value = examStartTime.substr(11, 5);
+                document.getElementById('edit-exam_end_time').value = examEndTime.substr(11, 5); 
 
                 document.getElementById('edit-exam-modal').classList.remove('hidden');
             });
@@ -158,6 +158,8 @@
         document.getElementById('close-edit-exam-modal-btn').addEventListener('click', function () {
             document.getElementById('edit-exam-modal').classList.add('hidden');
         });
+
+        window.applicants = @json($applicants);
     });
 
     function validateForm() {
@@ -257,6 +259,21 @@
             isValid = false;
         } else {
             examDateError.style.display = 'none';
+        }
+
+        if (departmentFound && positionFound) {
+            var examTakersQuantity = window.applicants.filter(applicant => 
+                applicant.department === departmentName.value && 
+                applicant.position === positionName.value
+            ).length;
+
+            if (examTakersQuantity === 0) {
+                departmentNameError.textContent = 'โปรดเลือกชื่อฝ่ายงานและตำแหน่งให้ตรงกัน';
+                departmentNameError.style.display = 'block';
+                isValid = false;
+            } else {
+                departmentNameError.style.display = 'none';
+            }
         }
         
         return isValid;

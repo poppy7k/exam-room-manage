@@ -18,13 +18,14 @@ class ExamController extends Controller
         $exams = Exam::paginate(8);
         $departments = Applicant::pluck('department');
         $positions = Applicant::pluck('position');
+        $applicants = Applicant::all();
         $breadcrumbs = [
             ['url' => '/', 'title' => 'หน้าหลัก'],
             ['url' => '/exams', 'title' => 'รายการสอบ'],
         ];
         session()->flash('sidebar', '3');
 
-        return view('pages.exam-manage.exam-list', compact('breadcrumbs','exams','departments', 'positions'));
+        return view('pages.exam-manage.exam-list', compact('breadcrumbs','exams','departments', 'positions','applicants'));
     }
 
     public function store(Request $request)
@@ -68,10 +69,11 @@ class ExamController extends Controller
 
         $departments = Applicant::pluck('department');
         $positions = Applicant::pluck('position');
+        $applicants = Applicant::all();
 
         session()->flash('sidebar', '3');
 
-        return view('pages.exam-manage.exam-create', compact('breadcrumbs', 'departments', 'positions'));
+        return view('pages.exam-manage.exam-create', compact('breadcrumbs', 'departments', 'positions','applicants'));
     }
 
     public function destroy($examId)
