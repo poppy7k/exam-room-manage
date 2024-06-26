@@ -83,22 +83,26 @@ class ExamController extends Controller
     
         if ($exam) {
             $rooms = $exam->selectedRooms->pluck('room_id')->toArray();
-            
+    
+            Staff::whereIn('selected_room_id', $rooms)->update(['selected_room_id' => null]);
+    
             Seat::whereIn('room_id', $rooms)
                 ->where('exam_date', $exam->exam_date)
                 ->where('exam_start_time', $exam->exam_start_time)
                 ->where('exam_end_time', $exam->exam_end_time)
                 ->where('exam_id', $exam->id)
                 ->delete();
-            
+    
+            SelectedRoom::where('exam_id', $exam->id)->delete();
+
             $exam->delete();
-            
+    
             return response()->json(['success' => true, 'message' => 'Exam and associated seats deleted successfully.']);
         } else {
             return response()->json(['success' => false, 'message' => 'Exam not found.'], 404);
         }
     }
-    
+
     public function exam_building_list($examId, Request $request)
     {
         $exams = Exam::findOrFail($examId);
@@ -295,16 +299,18 @@ class ExamController extends Controller
         $selectedRoom = SelectedRoom::where('room_id', $roomId)->where('exam_id', $examId)->first();
         $staffs = Staff::where('selected_room_id', $selectedRoom->id)->get();
     
+        $assignedStaffIds = Staff::whereNotNull('selected_room_id')->pluck('id')->toArray();
+    
         $breadcrumbs = [
             ['url' => '/', 'title' => 'หน้าหลัก'],
             ['url' => '/exams', 'title' => 'รายการสอบ'],
             ['url' => '/exams/'.$examId.'/selectedrooms', 'title' => ''.$exams->department_name],
             ['url' => '/exams/'.$examId.'/selectedrooms/'.$roomId, 'title' => ''.$room->room],
         ];
-
+    
         session()->flash('sidebar', '3');
     
-        return view('pages.exam-manage.exam-roomdetail', compact('exams', 'room', 'breadcrumbs', 'applicants', 'staffs', 'seats'));
+        return view('pages.exam-manage.exam-roomdetail', compact('exams', 'room', 'breadcrumbs', 'applicants', 'staffs', 'seats', 'assignedStaffIds'));
     }
     public function updateExamStatus(Request $request)
     {

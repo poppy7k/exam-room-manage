@@ -135,94 +135,104 @@ function updateValidSeatCountUI(validSeatCount) {
 
 document.addEventListener('DOMContentLoaded', addSeats);
 
-document.getElementById('select-examiners-btn').addEventListener('click', function() {
-    document.getElementById('examiners-modal').classList.remove('hidden');
-    loadStaffs();
-});
-
-document.getElementById('close-modal-btn').addEventListener('click', function() {
-    document.getElementById('examiners-modal').classList.add('hidden');
-});
-
-document.getElementById('save-examiners-btn').addEventListener('click', function() {
-    const selectedExaminers = Array.from(document.querySelectorAll('.staff-checkbox:checked')).map(checkbox => {
-        return {
-            id: checkbox.value,
-            name: checkbox.dataset.name
-        };
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('select-examiners-btn').addEventListener('click', function() {
+        document.getElementById('examiners-modal').classList.remove('hidden');
+        loadStaffs();
     });
 
-    const selectedExaminersList = document.getElementById('selected-examiners-list');
-    selectedExaminersList.innerHTML = '';
-
-    selectedExaminers.forEach(examiner => {
-        const li = document.createElement('li');
-        li.textContent = examiner.name;
-        selectedExaminersList.appendChild(li);
+    document.getElementById('close-modal-btn').addEventListener('click', function() {
+        document.getElementById('examiners-modal').classList.add('hidden');
     });
 
-    saveStaffs(selectedExaminers);
-    document.getElementById('examiners-modal').classList.add('hidden');
-});
-
-document.getElementById('close-applicants-modal-btn').addEventListener('click', function() {
-    document.getElementById('applicants-modal').classList.add('hidden');
-});
-
-document.getElementById('save-applicant-to-seat-btn').addEventListener('click', function() {
-    const selectedApplicant = document.querySelector('.applicant-radio:checked');
-    if (selectedApplicant) {
-        const applicantId = selectedApplicant.value;
-        saveApplicantToSeat(currentSeatId, applicantId);
-    }
-    document.getElementById('applicants-modal').classList.add('hidden');
-});
-
-function loadStaffs() {
-    fetch('/staffs')
-        .then(response => response.json())
-        .then(staffs => {
-            const staffList = document.getElementById('staff-list');
-            staffList.innerHTML = '';
-
-            staffs.forEach(staff => {
-                const div = document.createElement('div');
-                div.classList.add('flex', 'items-center', 'gap-2', 'mb-2', 'staff-item');
-                div.innerHTML = `
-                    <input type="checkbox" value="${staff.id}" class="staff-checkbox" data-name="${staff.name}">
-                    <p>${staff.name}</p>
-                `;
-                staffList.appendChild(div);
-            });
+    document.getElementById('save-examiners-btn').addEventListener('click', function() {
+        const selectedExaminers = Array.from(document.querySelectorAll('.staff-checkbox:checked')).map(checkbox => {
+            return {
+                id: checkbox.value,
+                name: checkbox.dataset.name
+            };
         });
-}
 
-function saveStaffs(selectedExaminers) {
-    fetch('/save-staffs', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-        },
-        body: JSON.stringify({
-            room_id: roomId,
-            examiners: selectedExaminers
-        })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            alert('Staff saved successfully.');
-        } else {
-            console.error('Server response:', data);
-            alert('Failed to save staff.');
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('An error occurred while saving staff.');
+        saveStaffs(selectedExaminers);
     });
-}
+
+    function loadStaffs() {
+        fetch('/staffs')
+            .then(response => response.json())
+            .then(staffs => {
+                const staffList = document.getElementById('staff-list');
+                staffList.innerHTML = '';
+
+                const selectedStaffIds = {!! json_encode($staffs->pluck('id')) !!};
+                const assignedStaffIds = {!! json_encode($assignedStaffIds) !!}; // Assuming you pass assignedStaffIds from the backend
+
+                staffs.forEach(staff => {
+                    const isAssignedToAnotherRoom = assignedStaffIds.includes(staff.id) && !selectedStaffIds.includes(staff.id);
+                    const div = document.createElement('div');
+                    div.classList.add('flex', 'items-center', 'gap-2', 'mb-2', 'staff-item');
+                    div.innerHTML = `
+                        <input type="checkbox" value="${staff.id}" class="staff-checkbox" data-name="${staff.name}" ${selectedStaffIds.includes(staff.id) ? 'checked' : ''} ${isAssignedToAnotherRoom ? 'disabled' : ''}>
+                        <p>${staff.name}</p>
+                    `;
+                    staffList.appendChild(div);
+                });
+
+                // Add event listeners to checkboxes for deselection logic
+                document.querySelectorAll('.staff-checkbox').forEach(checkbox => {
+                    checkbox.addEventListener('change', function() {
+                        if (checkbox.checked) {
+                            selectedStaffIds.push(parseInt(checkbox.value));
+                        } else {
+                            const index = selectedStaffIds.indexOf(parseInt(checkbox.value));
+                            if (index > -1) {
+                                selectedStaffIds.splice(index, 1);
+                            }
+                        }
+                    });
+                });
+            });
+    }
+
+    function saveStaffs(selectedExaminers) {
+        fetch('/save-staffs', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify({
+                room_id: roomId,
+                examiners: selectedExaminers
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const selectedExaminersList = document.getElementById('selected-examiners-list');
+                selectedExaminersList.innerHTML = '';
+
+                if (Array.isArray(data.staffs)) {
+                    data.staffs.forEach(examiner => {
+                        const li = document.createElement('li');
+                        li.textContent = examiner.name;
+                        selectedExaminersList.appendChild(li);
+                    });
+                }
+
+                alert('Staff saved successfully.');
+                document.getElementById('examiners-modal').classList.add('hidden');
+                location.reload();
+            } else {
+                console.error('Server response:', data);
+                alert('Failed to save staff.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while saving staff.');
+        });
+    }
+});
 
 function showApplicantModal(seatId, seatRecordId, hasApplicant) {
     currentSeatId = seatId;

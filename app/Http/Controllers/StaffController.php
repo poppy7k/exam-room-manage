@@ -92,7 +92,9 @@ class StaffController extends Controller
                 }
             }
     
-            return response()->json(['success' => true]);
+            $updatedStaffs = Staff::where('selected_room_id', $selectedRoom->id)->get();
+    
+            return response()->json(['success' => true, 'staffs' => $updatedStaffs]);
         } catch (\Illuminate\Validation\ValidationException $e) {
             Log::error('Validation failed', ['errors' => $e->errors()]);
             return response()->json(['success' => false, 'message' => 'Validation failed.', 'errors' => $e->errors()], 422);
@@ -101,10 +103,5 @@ class StaffController extends Controller
             return response()->json(['success' => false, 'message' => 'Failed to save staff.'], 500);
         }
     }
-    
-    
-    
-    
-    
-    
+
 }
