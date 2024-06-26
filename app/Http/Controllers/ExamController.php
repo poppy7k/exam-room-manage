@@ -203,7 +203,7 @@ class ExamController extends Controller
                                         })
                                         ->first();
             $originalExamValidSeat = $selectedRoom ? $selectedRoom->exam_valid_seat : 0;
-            $room->exam_valid_seat = $originalExamValidSeat;
+            $room->valid_seat = $room->valid_seat - $originalExamValidSeat;
             Log::info('Room ID: '.$room->id.' Exam Valid Seat: '.$room->exam_valid_seat);
             return $room;
         });

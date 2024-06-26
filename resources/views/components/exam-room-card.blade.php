@@ -10,7 +10,7 @@
 ])
 
 <div class="room-item relative flex bg-white flex-col bg-clip-border rounded-lg w-[260px] shadow-md mt-6 transition-all duration-500 hover:scale-105 hover:shadow-lg" data-room-id="{{ $room_id }}">
-    @if ($valid_seat - $exam_valid_seat > 0 )
+    @if ($valid_seat > 0 )
     <a class="select-room-button absolute inset-0 z-0 cursor-pointer"></a>
     @endif
     <div class="hidden select-room-button room-checked absolute flex flex-col gap-2 justify-center items-center inset-0 z-40 bg-green-300/90 rounded-lg cursor-pointer transition-all duration-100 group hover:bg-red-300/90">
@@ -36,9 +36,9 @@
             </span> 
         </div>
         <div class="flex justify-end">
-            @if ($valid_seat - $exam_valid_seat > 0 )
+            @if ($valid_seat > 0 )
             <p class="absolute justify-end -mx-1 -my-7 px-2 py-1 bg-gradient-to-tr from-green-600 to-green-400 rounded-lg text-sm text-white shadow-md">
-                {{ $valid_seat - $exam_valid_seat }} ที่นั่ง
+                {{ $valid_seat }} ที่นั่ง
             </p>
             @else
             <p class="absolute justify-end -mx-1 -my-7 px-2 py-1 bg-gradient-to-tr from-red-600 to-red-400 rounded-lg text-sm text-white shadow-md">
@@ -47,7 +47,7 @@
             @endif
         </div>
         <div class="flex justify-between pb-1 pt-3">
-            @if ($valid_seat - $exam_valid_seat > 0 )
+            @if ($valid_seat > 0 )
             <x-buttons.primary type="button" class="py-1.5 px-12 z-10 select-room-button">
                 เลือก
             </x-buttons.primary>
