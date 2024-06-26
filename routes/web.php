@@ -73,3 +73,4 @@ Route::get('/get-applicants-without-seats/{roomId}', [ExamController::class, 'ge
 Route::post('/save-applicant-to-seat', [ExamController::class, 'saveApplicantToSeat']);
 Route::post('/remove-applicant-from-seat', [ExamController::class, 'removeApplicantFromSeat']);
 Route::post('/update-valid-seat-count', [ExamController::class, 'updateValidSeatCount']);
+Route::put('/exams/update', [ExamController::class, 'updateExam'])->name('update-exam');

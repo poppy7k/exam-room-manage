@@ -2,9 +2,7 @@
 
 @section('content')
 <div class="bg-white w-full shadow-lg px-16 py-10 my-3 border-1 rounded-lg divide-y-2">
-    <p class ="pb-2 text-2xl font-bold">
-        สร้างการสอบ
-    </p>
+    <p class="pb-2 text-2xl font-bold">สร้างการสอบ</p>
     <form method="POST" class="pt-4" action="{{ route('exams.store') }}" enctype="multipart/form-data" onsubmit="return validateForm()">
         @csrf
         <div class="mb-4">
@@ -166,6 +164,16 @@
             positionNameError.style.display = 'none';
         }
 
+        // Validate department and position combination
+        var examTakersQuantity = calculateExamTakers(departmentName.value, positionName.value);
+        if (examTakersQuantity === 0) {
+            departmentNameError.textContent = '* โปรดเลือกชื่อฝ่ายงานและตำแหน่งให้ตรงกัน';
+            departmentNameError.style.display = 'block';
+            isValid = false;
+        } else {
+            departmentNameError.style.display = 'none';
+        }
+
         // Validate not before today
         if (selectedDate < today) {
             examDateError.textContent = '* ไม่สามารถเลือกวันที่หลังจากวันนี้ได้';
@@ -177,6 +185,16 @@
         }
         
         return isValid;
+    }
+
+    function calculateExamTakers(department, position) {
+        var examTakersQuantity = 0;
+        @foreach($applicants as $applicant)
+            if ('{{ $applicant->department }}' === department && '{{ $applicant->position }}' === position) {
+                examTakersQuantity++;
+            }
+        @endforeach
+        return examTakersQuantity;
     }
 </script>
 @endsection
