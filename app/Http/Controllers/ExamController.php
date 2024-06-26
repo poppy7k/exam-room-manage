@@ -107,7 +107,7 @@ class ExamController extends Controller
             ->select('buildings.*')
             ->selectSub(
                 ExamRoomInformation::query()
-                    ->selectRaw('SUM(valid_seat) - COALESCE(SUM(selected_rooms.exam_valid_seat), 0) as total_valid_seats')
+                    ->selectRaw('SUM(COALESCE(selected_rooms.exam_valid_seat, valid_seat)) as total_valid_seats')
                     ->leftJoin('selected_rooms', function($join) use ($exams) {
                         $join->on('exam_room_information.id', '=', 'selected_rooms.room_id')
                             ->where('selected_rooms.exam_date', $exams->exam_date)
@@ -320,11 +320,13 @@ class ExamController extends Controller
         }
     
         $selectedRooms = json_decode($validatedData['selected_rooms'], true);
+        // debug
+        Log::info('Decoded Selected Rooms: ', $selectedRooms);
     
         SelectedRoom::where('exam_id', $exam->id)->delete();
     
         foreach ($selectedRooms as $roomData) {
-            $examValidSeat = min($roomData['validSeat'], $exam->exam_takers_quantity);
+            $examValidSeat =  $roomData['validSeat'] - $roomData['usedSeat'];
             
             SelectedRoom::create([
                 'exam_id' => $exam->id,

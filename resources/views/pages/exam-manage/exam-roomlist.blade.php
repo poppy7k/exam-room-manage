@@ -149,7 +149,8 @@ document.addEventListener('DOMContentLoaded', function () {
         const requiredSeats = parseInt(document.getElementById('applicant-quantity').innerText);
 
         selectedRooms.forEach(room => {
-            room.validSeat = Math.min(room.validSeat, requiredSeats);
+            room.validSeat = room.validSeat;
+            room.usedSeat = Math.min(room.validSeat, requiredSeats);
         });
 
         if (selectedSeats < requiredSeats) {
