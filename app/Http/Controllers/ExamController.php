@@ -91,13 +91,22 @@ class ExamController extends Controller
     
     public function exam_building_list($examId, Request $request)
     {
+        $exams = Exam::findOrFail($examId);
         $sort = $request->get('sort', 'alphabet_th'); // Default sort by building_th
         $buildings = Building::query()
             ->select('buildings.*')
             ->selectSub(
                 ExamRoomInformation::query()
-                    ->selectRaw('SUM(valid_seat)')
-                    ->whereColumn('building_code', 'buildings.id'),
+                    ->selectRaw('SUM(valid_seat) - COALESCE(SUM(selected_rooms.exam_valid_seat), 0) as total_valid_seats')
+                    ->leftJoin('selected_rooms', function($join) use ($exams) {
+                        $join->on('exam_room_information.id', '=', 'selected_rooms.room_id')
+                            ->where('selected_rooms.exam_date', $exams->exam_date)
+                            ->where(function($query) use ($exams) {
+                                $query->where('selected_rooms.exam_start_time', '<', $exams->exam_end_time)
+                                    ->where('selected_rooms.exam_end_time', '>', $exams->exam_start_time);
+                            });
+                    })
+                    ->whereColumn('exam_room_information.building_code', 'buildings.id'),
                 'total_valid_seats'
             );
         switch ($sort) {
@@ -117,8 +126,7 @@ class ExamController extends Controller
                 $buildings->orderBy('building_th');
         }
         $buildings = $buildings->paginate(8);
-        
-        $exams = Exam::findOrFail($examId);
+    
         $breadcrumbs = [
             ['url' => '/', 'title' => 'หน้าหลัก'],
             ['url' => '/exams', 'title' => 'รายการสอบ'],
@@ -181,12 +189,21 @@ class ExamController extends Controller
     
         $selectedRooms = SelectedRoom::where('exam_id', $examId)->get()->keyBy('room_id');
     
-        $rooms->getCollection()->transform(function ($room) {
-            $selectedRoom = SelectedRoom::where('room_id', $room->id)->first();
-            $room->exam_valid_seat = $selectedRoom ? $selectedRoom->exam_valid_seat : 0;
+        $rooms->getCollection()->transform(function ($room) use ($selectedRooms, $exams) {
+            $selectedRoom = SelectedRoom::where('room_id', $room->id)
+                                        ->where('exam_date', $exams->exam_date)
+                                        ->where(function($query) use ($exams) {
+                                            $query
+                                                ->where('exam_start_time', '<', $exams->exam_end_time)
+                                                ->where('exam_end_time', '>', $exams->exam_start_time);
+                                        })
+                                        ->first();
+            $originalExamValidSeat = $selectedRoom ? $selectedRoom->exam_valid_seat : 0;
+            $room->exam_valid_seat = $originalExamValidSeat;
             Log::info('Room ID: '.$room->id.' Exam Valid Seat: '.$room->exam_valid_seat);
             return $room;
         });
+        
     
         $breadcrumbs = [
             ['url' => '/', 'title' => 'หน้าหลัก'],
@@ -198,9 +215,6 @@ class ExamController extends Controller
     
         return view('pages.exam-manage.exam-roomlist', compact('breadcrumbs', 'exams', 'buildings', 'rooms'));
     }
-    
-    
-    
 
     protected function assignApplicantsToSeats($departmentName, $examPosition, $selectedRooms, $exam)
     {

@@ -34,7 +34,7 @@
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-4 mt-2">
         @forelse ($buildings as $building)
             @php
-                $totalValidSeats = $building->examRoomInformation->sum('valid_seat');
+                $totalValidSeats = $building->total_valid_seats;
             @endphp
             <x-exam-building-card
                 :building_image="asset('storage/building_images/' . ($building->building_image ?? 'default/default-building-image.jpg'))"
