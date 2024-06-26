@@ -16,6 +16,7 @@ class ExamController extends Controller
 {
     public function index() {
         $exams = Exam::paginate(8);
+        $totalExams = $exams->total();
         $departments = Applicant::pluck('department');
         $positions = Applicant::pluck('position');
         $applicants = Applicant::all();
@@ -25,7 +26,7 @@ class ExamController extends Controller
         ];
         session()->flash('sidebar', '3');
 
-        return view('pages.exam-manage.exam-list', compact('breadcrumbs','exams','departments', 'positions','applicants'));
+        return view('pages.exam-manage.exam-list', compact('breadcrumbs','exams','departments', 'positions','applicants', 'totalExams'));
     }
 
     public function store(Request $request)
@@ -176,6 +177,7 @@ class ExamController extends Controller
         $exams = Exam::findOrFail($examId);
         $buildings = Building::findOrFail($buildingId);
         $roomsQuery = $buildings->examRoomInformation();
+        $totalRoom = $roomsQuery->total();
     
         $sort = $request->get('sort', 'room_name_asc');
         switch ($sort) {

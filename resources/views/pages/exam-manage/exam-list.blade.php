@@ -85,7 +85,7 @@
                 -
             </p>
             <p class="font-normal text-md mt-1.5">
-                ทั้งหมด {{{ count($exams)}}}
+                ทั้งหมด {{{ $totalExams }}}
             </p>
         </div> 
         <div class="flex gap-4">
@@ -131,6 +131,9 @@
         <p class ="pb-2 text-center text-gray-500">
             ไม่พบอาคารสอบ
         </p>
+    </div>
+    <div class="mt-4 col-span-4 mx-auto">
+        {{ $exams->links('pagination::bootstrap-4') }}
     </div>
 </div>
 <script>
