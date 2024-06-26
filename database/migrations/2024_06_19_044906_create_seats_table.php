@@ -20,8 +20,9 @@ return new class extends Migration
             $table->datetime('exam_date')->nullable();
             $table->datetime('exam_start_time')->nullable();
             $table->datetime('exam_end_time')->nullable();
+            $table->unsignedBigInteger('exam_id')->nullable();
+            $table->foreign('exam_id')->references('id')->on('exams')->onDelete('cascade');
             $table->timestamps();
-
         });
     }
 
@@ -30,3 +31,4 @@ return new class extends Migration
         Schema::dropIfExists('seats');
     }
 };
+
