@@ -16,13 +16,15 @@ class ExamController extends Controller
 {
     public function index() {
         $exams = Exam::paginate(8);
+        $departments = Applicant::pluck('department');
+        $positions = Applicant::pluck('position');
         $breadcrumbs = [
             ['url' => '/', 'title' => 'หน้าหลัก'],
             ['url' => '/exams', 'title' => 'รายการสอบ'],
         ];
         session()->flash('sidebar', '3');
 
-        return view('pages.exam-manage.exam-list', compact('breadcrumbs','exams'));
+        return view('pages.exam-manage.exam-list', compact('breadcrumbs','exams','departments', 'positions'));
     }
 
     public function store(Request $request)
@@ -517,4 +519,42 @@ class ExamController extends Controller
     
         return response()->json(['success' => true]);
     }
+
+    public function updateExam(Request $request)
+    {
+        // Log::info('Update exam request received', $request->all());
+    
+        try {
+    
+            $exam = Exam::findOrFail($request->exam_id);
+    
+            // Log::info('Exam found', ['exam' => $exam]);
+
+            $applicantCount = Applicant::where('department', $request->department_name)
+            ->where('position', $request->exam_position)
+            ->count();
+    
+            $exam->update([
+                'department_name' => $request->department_name,
+                'exam_position' => $request->exam_position,
+                'exam_date' => $request->exam_date,
+                'exam_start_time' => $request->exam_date . ' ' . $request->exam_start_time,
+                'exam_end_time' => $request->exam_date . ' ' . $request->exam_end_time,
+                'exam_takers_quantity' => $applicantCount,
+            ]);
+    
+            // Log::info('Exam updated', ['exam' => $exam]);
+    
+            return redirect()->route('exam-list')->with('status', 'Exam updated successfully');
+    
+        } catch (\Exception $e) {
+            Log::error('Error updating exam', [
+                'exception' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+    
+            return redirect()->back()->withErrors(['error' => 'Failed to update exam. Please try again.']);
+        }
+    }
+    
 }
