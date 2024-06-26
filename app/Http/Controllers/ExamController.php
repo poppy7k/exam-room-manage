@@ -83,7 +83,12 @@ class ExamController extends Controller
         if ($exam) {
             $rooms = $exam->selectedRooms->pluck('room_id')->toArray();
             
-            Seat::whereIn('room_id', $rooms)->delete();
+            Seat::whereIn('room_id', $rooms)
+                ->where('exam_date', $exam->exam_date)
+                ->where('exam_start_time', $exam->exam_start_time)
+                ->where('exam_end_time', $exam->exam_end_time)
+                ->where('exam_id', $exam->id)
+                ->delete();
             
             $exam->delete();
             
@@ -140,36 +145,6 @@ class ExamController extends Controller
 
         return view('pages.exam-manage.exam-buildinglist', compact('breadcrumbs', 'exams','buildings'));
     }
-
-    // public function exam_room_list($examId,$buildingId, Request $request)
-    // {
-    //     $exams = Exam::findOrFail($examId);
-    //     $buildings = Building::findOrFail($buildingId);
-    //     $rooms = $buildings->examRoomInformation();
-
-    //     $sort = $request->get('sort', 'room_name_asc');
-    //     switch ($sort) {
-    //         case 'room_name_asc':
-    //             $rooms = $rooms->orderBy('room');
-    //             break;
-    //         case 'room_name_desc':
-    //             $rooms = $rooms->orderByDesc('room');
-    //             break;
-    //         default:
-    //             $rooms = $rooms->orderBy('room');
-    //     }
-
-    //     $rooms = $rooms->paginate(12);
-    //     $breadcrumbs = [
-    //         ['url' => '/', 'title' => 'หน้าหลัก'],
-    //         ['url' => '/exams', 'title' => 'รายการสอบ'],
-    //         ['url' => '/exams/'.$examId.'/buildings', 'title' => ''.$exams->department_name],
-    //         ['url' => '/exams/'.$examId.'/buildings/'.$buildingId, 'title' => ''.$buildings->building_th],
-    //     ];
-    //     session()->flash('sidebar', '3');
-
-    //     return view('pages.exam-manage.exam-roomlist', compact('breadcrumbs', 'exams','buildings','rooms'));
-    // } 
     
     public function exam_room_list($examId, $buildingId, Request $request)
     {
@@ -278,6 +253,7 @@ class ExamController extends Controller
                                 'exam_date' => $exam->exam_date,
                                 'exam_start_time' => $exam->exam_start_time,
                                 'exam_end_time' => $exam->exam_end_time,
+                                'exam_id' => $exam->id,
                             ]);
                         }
                         $applicantIndex++;
@@ -287,48 +263,6 @@ class ExamController extends Controller
         }
         return $conflictedApplicants;
     }
-    
-    
-    
-
-    // public function updateExamStatus(Request $request)
-    // {
-    //     $validatedData = $request->validate([
-    //         'exam_id' => 'required|integer|exists:exams,id',
-    //         'selected_rooms' => 'required|string',
-    //     ]);
-    
-    //     $exam = Exam::findOrFail($validatedData['exam_id']);
-
-    //     if (is_null($exam->exam_date) || is_null($exam->exam_start_time) || is_null($exam->exam_end_time)) {
-    //         return redirect()->back()->with('status', 'Exam date or time is missing');
-    //     }
-    
-    //     $selectedRooms = json_decode($validatedData['selected_rooms'], true);
-    
-    //     SelectedRoom::where('exam_id', $exam->id)->delete();
-    
-    //     foreach ($selectedRooms as $roomData) {
-    //         SelectedRoom::create([
-    //             'exam_id' => $exam->id,
-    //             'room_id' => $roomData['id'],
-    //             'exam_date' => $exam->exam_date,
-    //             'exam_start_time' => $exam->exam_start_time,
-    //             'exam_end_time' => $exam->exam_end_time,
-    //         ]);
-    //     }
-    
-    //     $conflictedApplicants = $this->assignApplicantsToSeats($exam->department_name, $exam->exam_position, $selectedRooms, $exam);
-    
-    //     if (count($conflictedApplicants) > 0) {
-    //         return redirect()->back()->with('status', 'conflict')->with('conflictedApplicants', $conflictedApplicants);
-    //     }
-    
-    //     $exam->status = 'ready';
-    //     $exam->save();
-    
-    //     return redirect()->route('exam-list')->with('status', 'Exam updated to ready and rooms selected!');
-    // }
     
     public function showSelectedRooms($examId)
     {
