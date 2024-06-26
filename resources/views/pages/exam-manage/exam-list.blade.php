@@ -7,7 +7,7 @@
             <h3 class="text-xl font-semibold">แก้ไขข้อมูลการสอบ</h3>
             <button id="close-edit-exam-modal-btn" class="text-red-500">&times;</button>
         </div>
-        <form id="edit-exam-form" method="POST" action="{{ route('update-exam') }}">
+        <form id="edit-exam-form" method="POST" action="{{ route('update-exam') }}" onsubmit="return validateForm()">
             @csrf
             @method('PUT')
             <input type="hidden" name="exam_id" id="edit-exam-id">
@@ -148,8 +148,8 @@
                 document.getElementById('edit-department_name').value = departmentName;
                 document.getElementById('edit-exam_position').value = examPosition;
                 document.getElementById('edit-exam_date').value = examDate;
-                document.getElementById('edit-exam_start_time').value = examStartTime.substr(11, 5);
-                document.getElementById('edit-exam_end_time').value = examEndTime.substr(11, 5);
+                document.getElementById('edit-exam_start_time').value = examStartTime.substr(11, 5); // Extract time part
+                document.getElementById('edit-exam_end_time').value = examEndTime.substr(11, 5); // Extract time part
 
                 document.getElementById('edit-exam-modal').classList.remove('hidden');
             });
@@ -159,5 +159,107 @@
             document.getElementById('edit-exam-modal').classList.add('hidden');
         });
     });
+
+    function validateForm() {
+        var isValid = true;
+        
+        var departmentFound = false;
+        var positionFound = false;
+
+        var departmentName = document.getElementById('edit-department_name');
+        var departmentOptions = document.getElementById('department_list').getElementsByTagName('option');
+        var departmentNameError = document.getElementById('edit-department_name_error');
+
+        var positionName = document.getElementById('edit-exam_position');
+        var positionOptions = document.getElementById('exam_position_list').getElementsByTagName('option');
+        var positionNameError = document.getElementById('edit-exam_position_error');
+
+        var examStartTime = document.getElementById('edit-exam_start_time');
+        var examStartTimeError = document.getElementById('edit-exam_start_time_error');
+
+        var examEndTime = document.getElementById('edit-exam_end_time');
+        var examEndTimeError = document.getElementById('edit-exam_end_time_error');
+        var regex = /^(?:2[0-3]|[01]?[0-9]):(00|30)$/; // เช็ครูปแบบเวลา HH:MM
+
+        var examDate = document.getElementById('edit-exam_date');
+        var examDateError = document.getElementById('edit-exam_date_error');
+        
+        var selectedDate = new Date(examDate.value);
+        var today = new Date();
+
+        var startTimeParts = examStartTime.value.split(':');
+        var endTimeParts = examEndTime.value.split(':');
+
+        var startHour = parseInt(startTimeParts[0]);
+        var startMinute = parseInt(startTimeParts[1]);
+        var endHour = parseInt(endTimeParts[0]);
+        var endMinute = parseInt(endTimeParts[1]);
+
+        if (!regex.test(examStartTime.value)) {
+            examStartTime.value = "";
+            examStartTime.focus();
+            isValid = false;
+            examStartTimeError.style.display = 'block';
+        } else {
+            examStartTimeError.style.display = 'none';
+        }
+        if (!regex.test(examEndTime.value)) {
+            examEndTime.value = "";
+            examEndTime.focus();
+            isValid = false;
+            examEndTimeError.style.display = 'block';
+        } else {
+            examEndTimeError.style.display = 'none';
+        }
+
+        if (startHour > endHour || (startHour === endHour && startMinute >= endMinute)) {
+            examStartTimeError.style.display = 'block';
+            examStartTimeError.textContent = '* เวลาเริ่มต้นการสอบต้องเริ่มก่อนเวลาสิ้นสุดการสอบ';
+            isValid = false;
+        } else {
+            examStartTimeError.style.display = 'none';
+        }
+
+        for (var i = 0; i < departmentOptions.length; i++) {
+            if (departmentOptions[i].value === departmentName.value) {
+                departmentNameError.style.display = 'none';
+                departmentFound = true;
+                break;
+            }
+        }
+        if (!departmentFound) {
+            departmentNameError.style.display = 'block';
+            departmentName.value = '';
+            isValid = false;
+        } else {
+            departmentNameError.style.display = 'none';
+        }
+
+        for (var i = 0; i < positionOptions.length; i++) {
+            if (positionOptions[i].value === positionName.value) {
+                positionNameError.style.display = 'none';
+                positionFound = true;
+                break;
+            }
+        }
+        if (!positionFound) {
+            positionNameError.style.display = 'block';
+            positionName.value = '';
+            isValid = false;
+        } else {
+            positionNameError.style.display = 'none';
+        }
+
+        if (selectedDate < today) {
+            examDateError.textContent = '* ไม่สามารถเลือกวันที่ก่อนวันนี้ได้';
+            examDateError.style.display = 'block';
+            examDate.value = '';
+            isValid = false;
+        } else {
+            examDateError.style.display = 'none';
+        }
+        
+        return isValid;
+    }
 </script>
 @endsection
