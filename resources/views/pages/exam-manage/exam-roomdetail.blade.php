@@ -58,6 +58,7 @@
 <script>
 let validSeatCount = {{ $room->valid_seat }};
 const roomId = {{ $room->id }};
+const examId = {{ $exams->id }};
 let applicants = {!! json_encode($applicants) !!};
 let seats = {!! json_encode($seats) !!};
 let currentSeatId = '';
@@ -361,6 +362,7 @@ function updateValidSeatCountInDB(validSeatCount) {
         },
         body: JSON.stringify({
             room_id: roomId,
+            exam_id: examId,
             valid_seat_count: validSeatCount
         })
     })

@@ -12,7 +12,7 @@
                 -
             </p>
             <p class="font-normal text-md mt-1.5">
-                ทั้งหมด {{ count($rooms) }}
+                ทั้งหมด {{ $totalRoom }}
             </p>
         </div> 
         <div class="flex">

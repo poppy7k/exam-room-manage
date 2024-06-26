@@ -152,7 +152,6 @@ class ExamController extends Controller
         $exams = Exam::findOrFail($examId);
         $buildings = Building::findOrFail($buildingId);
         $roomsQuery = $buildings->examRoomInformation();
-        $totalRoom = $roomsQuery->total();
     
         $sort = $request->get('sort', 'room_name_asc');
         switch ($sort) {
@@ -167,6 +166,7 @@ class ExamController extends Controller
         }
     
         $rooms = $roomsQuery->paginate(12);
+        $totalRoom = $rooms->total();
     
         $selectedRooms = SelectedRoom::where('exam_id', $examId)->get()->keyBy('room_id');
     
@@ -179,8 +179,7 @@ class ExamController extends Controller
                                                 ->where('exam_end_time', '>', $exams->exam_start_time);
                                         })
                                         ->first();
-            $originalExamValidSeat = $selectedRoom ? $selectedRoom->exam_valid_seat : 0;
-            $room->valid_seat = $room->valid_seat - $originalExamValidSeat;
+            $room->valid_seat = $selectedRoom ? $selectedRoom->exam_valid_seat : $room->valid_seat;
             Log::info('Room ID: '.$room->id.' Exam Valid Seat: '.$room->exam_valid_seat);
             return $room;
         });
@@ -194,7 +193,7 @@ class ExamController extends Controller
         ];
         session()->flash('sidebar', '3');
     
-        return view('pages.exam-manage.exam-roomlist', compact('breadcrumbs', 'exams', 'buildings', 'rooms'));
+        return view('pages.exam-manage.exam-roomlist', compact('breadcrumbs', 'exams', 'buildings', 'rooms', 'totalRoom'));
     }
 
     protected function assignApplicantsToSeats($departmentName, $examPosition, $selectedRooms, $exam)
@@ -326,7 +325,7 @@ class ExamController extends Controller
     
         foreach ($selectedRooms as $roomData) {
             $examValidSeat = min($roomData['validSeat'], $exam->exam_takers_quantity);
-    
+            
             SelectedRoom::create([
                 'exam_id' => $exam->id,
                 'room_id' => $roomData['id'],
@@ -470,10 +469,11 @@ class ExamController extends Controller
     {
         $validatedData = $request->validate([
             'room_id' => 'required|integer|exists:exam_room_information,id',
+            'exam_id' => 'required|integer|exists:exams,id',
             'valid_seat_count' => 'required|integer',
         ]);
     
-        $selectedRooms = SelectedRoom::where('room_id', $validatedData['room_id'])->get();
+        $selectedRooms = SelectedRoom::where('room_id', $validatedData['room_id'])->where('exam_id', $validatedData['exam_id'])->get();
     
         if ($selectedRooms->isEmpty()) {
             return response()->json(['success' => false, 'message' => 'Selected rooms not found.'], 404);
@@ -485,7 +485,7 @@ class ExamController extends Controller
         }
     
         return response()->json(['success' => true]);
-    }
+    }   
 
     public function updateExam(Request $request)
     {
