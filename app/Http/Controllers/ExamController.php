@@ -184,7 +184,7 @@ class ExamController extends Controller
                                         })
                                         ->first();
             $room->valid_seat = $selectedRoom ? $selectedRoom->exam_valid_seat : $room->valid_seat;
-            Log::info('Room ID: '.$room->id.' Exam Valid Seat: '.$room->exam_valid_seat);
+            // Log::info('Room ID: '.$room->id.' Exam Valid Seat: '.$room->exam_valid_seat);
             return $room;
         });
         
@@ -285,33 +285,51 @@ class ExamController extends Controller
 
     public function showExamRoomDetail($examId, $roomId)
     {
-        $exams = Exam::findOrFail($examId);
+        $exam = Exam::findOrFail($examId);
         $room = ExamRoomInformation::findOrFail($roomId);
     
         $seats = Seat::where('room_id', $roomId)
-                     ->where('exam_date', $exams->exam_date)
-                     ->where('exam_start_time', $exams->exam_start_time)
-                     ->where('exam_end_time', $exams->exam_end_time)
+                     ->where('exam_date', $exam->exam_date)
+                     ->where('exam_start_time', $exam->exam_start_time)
+                     ->where('exam_end_time', $exam->exam_end_time)
                      ->get();
     
         $applicants = Applicant::whereIn('id', $seats->pluck('applicant_id'))->get();
     
         $selectedRoom = SelectedRoom::where('room_id', $roomId)->where('exam_id', $examId)->first();
-        $staffs = Staff::where('selected_room_id', $selectedRoom->id)->get();
+        $staffs = $selectedRoom ? $selectedRoom->staffs : collect();
     
-        $assignedStaffIds = Staff::whereNotNull('selected_room_id')->pluck('id')->toArray();
+        // Get all staff who are assigned to any room at the same time as this exam
+        $assignedStaffs = Staff::whereHas('selectedRooms', function ($query) use ($exam) {
+            $query->where('exam_date', $exam->exam_date)
+                  ->where('exam_start_time', '<=', $exam->exam_end_time)
+                  ->where('exam_end_time', '>=', $exam->exam_start_time);
+        })->get()->map(function ($staff) use ($exam) {
+            return [
+                'staff_id' => $staff->id,
+                'name' => $staff->name,
+                'exam_date' => $exam->exam_date,
+                'exam_start_time' => $exam->exam_start_time,
+                'exam_end_time' => $exam->exam_end_time
+            ];
+        });
+    
+        // Log the assigned staffs for debugging
+        Log::info('Assigned Staffs Query Result: ', ['query' => $assignedStaffs->toArray()]);
     
         $breadcrumbs = [
             ['url' => '/', 'title' => 'หน้าหลัก'],
             ['url' => '/exams', 'title' => 'รายการสอบ'],
-            ['url' => '/exams/'.$examId.'/selectedrooms', 'title' => ''.$exams->department_name],
-            ['url' => '/exams/'.$examId.'/selectedrooms/'.$roomId, 'title' => ''.$room->room],
+            ['url' => '/exams/'.$examId.'/selectedrooms', 'title' => $exam->department_name],
+            ['url' => '/exams/'.$examId.'/selectedrooms/'.$roomId, 'title' => $room->room],
         ];
     
         session()->flash('sidebar', '3');
     
-        return view('pages.exam-manage.exam-roomdetail', compact('exams', 'room', 'breadcrumbs', 'applicants', 'staffs', 'seats', 'assignedStaffIds'));
+        return view('pages.exam-manage.exam-roomdetail', compact('exam', 'room', 'breadcrumbs', 'applicants', 'staffs', 'seats', 'assignedStaffs'));
     }
+    
+
     public function updateExamStatus(Request $request)
     {
         $validatedData = $request->validate([
@@ -327,7 +345,7 @@ class ExamController extends Controller
     
         $selectedRooms = json_decode($validatedData['selected_rooms'], true);
         // debug
-        Log::info('Decoded Selected Rooms: ', $selectedRooms);
+        // Log::info('Decoded Selected Rooms: ', $selectedRooms);
     
         SelectedRoom::where('exam_id', $exam->id)->delete();
     
@@ -356,11 +374,6 @@ class ExamController extends Controller
         return redirect()->route('exam-list')->with('status', 'Exam updated to ready and rooms selected!');
     }
     
-    
-    
-    
-    
-
     public function getApplicantsWithoutSeats($roomId)
     {
         // Log::info('Fetching applicants without seats for room:', ['room_id' => $roomId]);
