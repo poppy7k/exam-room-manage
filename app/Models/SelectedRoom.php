@@ -37,8 +37,6 @@ class SelectedRoom extends Model
 
     public function staffs()
     {
-        return $this->belongsToMany(Staff::class, 'room_staff')
-            ->withPivot('exam_id')
-            ->withTimestamps();
+        return $this->belongsToMany(Staff::class, 'room_staff', 'selected_room_id', 'staff_id')->withPivot('exam_id');
     }
 }

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Staff;
 use App\Models\SelectedRoom;
 use Illuminate\Support\Facades\Log;
+use App\Models\Exam;
 
 class StaffController extends Controller
 {
@@ -87,6 +88,32 @@ class StaffController extends Controller
                         $selectedRoom->staffs()->attach($staff->id, ['exam_id' => $examId]);
                     }
                 }
+    
+                // Find other exams with the same date and time
+                $existingExams = Exam::where('exam_date', $selectedRoom->exam_date)
+                                     ->where('exam_start_time', $selectedRoom->exam_start_time)
+                                     ->where('exam_end_time', $selectedRoom->exam_end_time)
+                                     ->where('id', '!=', $examId)
+                                     ->get();
+    
+                foreach ($existingExams as $existingExam) {
+                    $existingSelectedRoom = SelectedRoom::where('room_id', $roomId)
+                                                         ->where('exam_id', $existingExam->id)
+                                                         ->first();
+    
+                    if ($existingSelectedRoom) {
+                        // Detach all current staff for the existing room and exam
+                        $existingSelectedRoom->staffs()->detach();
+    
+                        // Attach the new staff members
+                        foreach ($examiners as $examiner) {
+                            $staff = Staff::find($examiner['id']);
+                            if ($staff) {
+                                $existingSelectedRoom->staffs()->attach($staff->id, ['exam_id' => $existingExam->id]);
+                            }
+                        }
+                    }
+                }
             }
     
             return response()->json(['success' => true]);
@@ -95,8 +122,5 @@ class StaffController extends Controller
             return response()->json(['success' => false, 'message' => 'Failed to save staff.'], 500);
         }
     }
-    
-    
-    
-    
+        
 }
