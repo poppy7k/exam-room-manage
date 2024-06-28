@@ -154,8 +154,6 @@ class ExamController extends Controller
         if ($exam) {
             $rooms = $exam->selectedRooms->pluck('room_id')->toArray();
     
-            Staff::whereIn('selected_room_id', $rooms)->update(['selected_room_id' => null]);
-    
             Seat::whereIn('room_id', $rooms)
                 ->where('exam_date', $exam->exam_date)
                 ->where('exam_start_time', $exam->exam_start_time)
@@ -163,15 +161,23 @@ class ExamController extends Controller
                 ->where('exam_id', $exam->id)
                 ->delete();
     
+            DB::table('room_staff')
+                ->whereIn('selected_room_id', function($query) use ($exam) {
+                    $query->select('id')
+                          ->from('selected_rooms')
+                          ->where('exam_id', $exam->id);
+                })
+                ->delete();
+    
             SelectedRoom::where('exam_id', $exam->id)->delete();
-
+    
             $exam->delete();
     
-            return response()->json(['success' => true, 'message' => 'Exam and associated seats deleted successfully.']);
+            return response()->json(['success' => true, 'message' => 'Exam and associated records deleted successfully.']);
         } else {
             return response()->json(['success' => false, 'message' => 'Exam not found.'], 404);
         }
-    }
+    }    
 
     public function exam_building_list($examId, Request $request)
     {
