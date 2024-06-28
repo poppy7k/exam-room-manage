@@ -33,19 +33,8 @@ class SelectedRoom extends Model
         return $this->hasMany(Applicant::class, 'room_id', 'room_id');
     }
 
-    // public function staffs()
-    // {
-    //     return $this->belongsToMany(Staff::class, 'selected_room_id','room_staff');
-    // }
-    // public function staffs()
-    // {
-    //     return $this->belongsToMany(Staff::class, 'room_staff', 'room_id', 'staff_id')
-    //                 ->withTimestamps();
-    // }
     public function staffs()
     {
-        return $this->belongsToMany(Staff::class, 'room_staff')
-            ->withPivot('exam_id')
-            ->withTimestamps();
+        return $this->belongsToMany(Staff::class, 'room_staff', 'selected_room_id', 'staff_id')->withPivot('exam_id');
     }
 }

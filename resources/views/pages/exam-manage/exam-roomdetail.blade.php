@@ -176,6 +176,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 staffs.forEach(staff => {
                     let isAssigned = false;
+                    let isAlreadySelected = selectedStaffIds.includes(staff.id);
 
                     assignedStaffs.forEach(assignment => {
                         if (assignment.staff_id === staff.id) {
@@ -185,20 +186,24 @@ document.addEventListener('DOMContentLoaded', function() {
                             console.log(`Checking staff ${staff.name} (${staff.id}) against exam times.`);
                             console.log(`Staff Start: ${staffStartTimeStr}, Staff End: ${staffEndTimeStr}`);
 
-                            if ((examStartTimeStr < staffEndTimeStr && examStartTimeStr >= staffStartTimeStr) || 
-                                (examEndTimeStr <= staffEndTimeStr && examEndTimeStr > staffStartTimeStr) || 
-                                (examStartTimeStr <= staffStartTimeStr && examEndTimeStr >= staffEndTimeStr)) {
-                                isAssigned = true;
-                                console.log(`Staff ${staff.name} (${staff.id}) is assigned: ${isAssigned}`);
+                            if ((examStartTimeStr < staffEndTimeStr && examEndTimeStr > staffStartTimeStr) || 
+                                (examStartTimeStr < staffEndTimeStr && examEndTimeStr >= staffEndTimeStr) || 
+                                (examStartTimeStr <= staffStartTimeStr && examEndTimeStr > staffStartTimeStr)) {
+                                console.log(`Time overlap detected for staff ${staff.name} (${staff.id}).`);
+                                
+                                if ((assignment.exam_id !== examId || assignment.room_id !== roomId) && !isAlreadySelected) {
+                                    isAssigned = true;
+                                    console.log(`Staff ${staff.name} (${staff.id}) is assigned: ${isAssigned} due to different room or exam.`);
+                                }
                             }
                         }
                     });
 
-                    console.log(`Staff ${staff.name} (${staff.id}) assigned: ${isAssigned}`);
+                    console.log(`Final assignment status for staff ${staff.name} (${staff.id}): ${isAssigned}`);
                     const div = document.createElement('div');
                     div.classList.add('flex', 'items-center', 'gap-2', 'mb-2', 'staff-item');
                     div.innerHTML = `
-                        <input type="checkbox" value="${staff.id}" class="staff-checkbox" data-name="${staff.name}" ${selectedStaffIds.includes(staff.id) ? 'checked' : ''} ${isAssigned && !selectedStaffIds.includes(staff.id) ? 'disabled' : ''}>
+                        <input type="checkbox" value="${staff.id}" class="staff-checkbox" data-name="${staff.name}" ${isAlreadySelected ? 'checked' : ''} ${isAssigned ? 'disabled' : ''}>
                         <p>${staff.name}</p>
                     `;
                     staffList.appendChild(div);
