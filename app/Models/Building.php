@@ -19,6 +19,6 @@ class Building extends Model
 
     public function examRoomInformation()
     {
-        return $this->hasMany(ExamRoomInformation::class, 'building_code', 'id');
+        return $this->hasMany(ExamRoomInformation::class, 'building_id', 'id');
     }
 }

@@ -12,10 +12,7 @@ class SelectedRoom extends Model
     protected $fillable = [
         'exam_id', 
         'room_id', 
-        'exam_date', 
-        'exam_start_time', 
-        'exam_end_time',
-        'exam_valid_seat'
+        'applicant_seat_quantity'
     ];
 
     public function exam()
@@ -28,13 +25,8 @@ class SelectedRoom extends Model
         return $this->belongsTo(ExamRoomInformation::class);
     }
 
-    public function applicants()
+    public function seats()
     {
-        return $this->hasMany(Applicant::class, 'room_id', 'room_id');
-    }
-
-    public function staffs()
-    {
-        return $this->hasMany(Staff::class, 'selected_room_id');
+        return $this->hasMany(Seat::class, 'selected_room_id');
     }
 }

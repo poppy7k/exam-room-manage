@@ -13,15 +13,12 @@ return new class extends Migration
     {
         Schema::create('seats', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('room_id');
+            $table->unsignedBigInteger('selected_room_id');
             $table->unsignedBigInteger('applicant_id')->nullable();
             $table->integer('row');
             $table->integer('column');
-            $table->datetime('exam_date')->nullable();
-            $table->datetime('exam_start_time')->nullable();
-            $table->datetime('exam_end_time')->nullable();
-            $table->unsignedBigInteger('exam_id')->nullable();
-            $table->foreign('exam_id')->references('id')->on('exams')->onDelete('cascade');
+            $table->foreign('selected_room_id')->references('id')->on('selected_rooms')->onDelete('cascade');
+            $table->foreign('applicant_id')->references('id')->on('applicants')->onDelete('cascade');
             $table->timestamps();
         });
     }

@@ -123,7 +123,7 @@ function addSeats() {
             seatComponents += seatComponent;
         }
     }
-    validSeatCount = {{ $room->total_seat }} - assignedSeats; 
+    validSeatCount = assignedSeats; 
     seatContainer.innerHTML = seatComponents;
     updateValidSeatCountUI(validSeatCount);
     updateValidSeatCountInDB(validSeatCount);

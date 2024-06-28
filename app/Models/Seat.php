@@ -10,20 +10,19 @@ class Seat extends Model
     use HasFactory;
 
     protected $fillable = [
-        'room_id', 'applicant_id', 'row', 'column','exam_date','exam_start_time','exam_end_time','exam_id'
+        'selected_room_id', 
+        'applicant_id', 
+        'row', 
+        'column',
     ];
 
-    public function room()
+    public function selected_room()
     {
-        return $this->belongsTo(ExamRoomInformation::class, 'room_id');
+        return $this->belongsTo(SelectedRoom::class, 'selected_room_id');
     }
 
     public function applicant()
     {
         return $this->belongsTo(Applicant::class, 'applicant_id');
-    }
-    public function exam()
-    {
-        return $this->belongsTo(Exam::class);
     }
 }

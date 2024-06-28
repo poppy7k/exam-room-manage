@@ -8,6 +8,7 @@
     'exam_end_time' => 'null',
     'status' => 'null',
     'organization' => 'null',
+    'exam_takers_quantity' => 'null',
     'exam_id',
 ])
 
@@ -61,12 +62,16 @@
                 ตำแหน่ง: {{ $exam_position }}
             </p>
         </span>
+        <div class="flex">
+            จำนวนผู้เข้าสอบ: {{ $exam_takers_quantity }} คน
+        </div>
         <span class="relative group flex hover-trigger w-max">
             <x-tooltip title="{{ $organization }}" class="group-hover:translate-y-4 z-20"></x-tooltip>
             <p class="mb-2 mt-4 truncate max-w-56">
                 จัดสอบโดย: {{ $organization }}
             </p>
         </span>
+
         <div class="flex justify-between pb-1 mt-auto pt-3">
             @if ($status == 'ready')
                 <x-buttons.primary type="button" class="py-1.5 px-12 z-10"
@@ -91,6 +96,13 @@
                     <path d="M22.853,1.148a3.626,3.626,0,0,0-5.124,0L1.465,17.412A4.968,4.968,0,0,0,0,20.947V23a1,1,0,0,0,1,1H3.053a4.966,4.966,0,0,0,3.535-1.464L22.853,6.271A3.626,3.626,0,0,0,22.853,1.148ZM5.174,21.122A3.022,3.022,0,0,1,3.053,22H2V20.947a2.98,2.98,0,0,1,.879-2.121L15.222,6.483l2.3,2.3ZM21.438,4.857,18.932,7.364l-2.3-2.295,2.507-2.507a1.623,1.623,0,1,1,2.295,2.3Z"/>
                 </svg>
                 <x-tooltip title="แก้ไขข้อมูล" class="group-hover:-translate-x-6"></x-tooltip>
+            </x-buttons.icon-info>
+            @else
+            <x-buttons.icon-info type="button" class="px-1 py-1 z-10 hover:from-white hover:to-white hover:shadow-none">
+                <svg xmlns="http://www.w3.org/2000/svg" class="opacity-30 group-hover:fill-black" id="Outline" viewBox="0 0 24 24" width="20" height="20">
+                    <path d="M22.853,1.148a3.626,3.626,0,0,0-5.124,0L1.465,17.412A4.968,4.968,0,0,0,0,20.947V23a1,1,0,0,0,1,1H3.053a4.966,4.966,0,0,0,3.535-1.464L22.853,6.271A3.626,3.626,0,0,0,22.853,1.148ZM5.174,21.122A3.022,3.022,0,0,1,3.053,22H2V20.947a2.98,2.98,0,0,1,.879-2.121L15.222,6.483l2.3,2.3ZM21.438,4.857,18.932,7.364l-2.3-2.295,2.507-2.507a1.623,1.623,0,1,1,2.295,2.3Z"/>
+                </svg>
+                <x-tooltip title="ไม่สามารถแก้ไขได้" class="-translate-x-10"></x-tooltip>
             </x-buttons.icon-info>
             @endif
             <x-buttons.icon-danger type="button" onclick="event.stopPropagation(); deleteExam('{{ $exam_id }}')" class="px-1 py-1 z-10">

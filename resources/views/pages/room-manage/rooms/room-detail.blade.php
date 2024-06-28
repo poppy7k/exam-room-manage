@@ -138,10 +138,10 @@
         </div>
     </div>
 </div>
-<form id="addSeatForm" method="POST" action="{{ route('examroominfo.saveSelectedSeats', ['buildingId' => $room->building_code, 'roomId' => $room->id]) }}" class="pt-4" enctype="multipart/form-data" onsubmit="saveSeats()">
+<form id="addSeatForm" method="POST" action="{{ route('examroominfo.saveInvalidSeats', ['buildingId' => $room->building_id, 'roomId' => $room->id]) }}" class="pt-4" enctype="multipart/form-data" onsubmit="saveSeats()">
     @csrf
     @method('PUT')
-    <input type="hidden" id="selectedSeatsInput" name="selected_seats">
+    <input type="hidden" id="invalidSeatsInput" name="invalid_seats">
     <input type="hidden" id="validSeatCountInput" name="valid_seat">
     <input type="hidden" id="rowsInput" name="rows">
     <input type="hidden" id="columnsInput" name="columns">
@@ -152,7 +152,7 @@
 
 <script>
 let validSeatCount = {{ $room->valid_seat }};
-let selectedSeats = JSON.parse(@json($room->selected_seats) || "[]");
+let invalidSeats = JSON.parse(@json($room->invalid_seats) || "[]");
 
 function toExcelColumn(n) {
     let result = '';
@@ -175,7 +175,7 @@ function addSeats() {
         for (let j = 0; j < columns; j++) {
             const seatId = `${i + 1}-${toExcelColumn(j)}`;
             let seatComponent = '';
-            if (selectedSeats.includes(seatId)) {
+            if (invalidSeats.includes(seatId)) {
                 seatComponent = `
                     <div onclick="toggleSeat(${i + 1}, '${toExcelColumn(j)}')" id="seat-${seatId}" class="seat p-4 text-center cursor-pointer">
                         <x-seats.unavailable>
@@ -200,10 +200,10 @@ function addSeats() {
 
 function toggleSeat(row, column) {
     const seatId = `${row}-${column}`;
-    console.log('Before Toggle:', selectedSeats);
+    console.log('Before Toggle:', invalidSeats);
 
-    if (selectedSeats.includes(seatId)) {
-        selectedSeats = selectedSeats.filter(id => id !== seatId);
+    if (invalidSeats.includes(seatId)) {
+        invalidSeats = invalidSeats.filter(id => id !== seatId);
         validSeatCount++;
         document.getElementById(`seat-${seatId}`).innerHTML = `
             <x-seats.primary>
@@ -211,7 +211,7 @@ function toggleSeat(row, column) {
             </x-seats.primary>
         `;
     } else {
-        selectedSeats.push(seatId);
+        invalidSeats.push(seatId);
         validSeatCount--;
         document.getElementById(`seat-${seatId}`).innerHTML = `
             <x-seats.unavailable>
@@ -220,16 +220,16 @@ function toggleSeat(row, column) {
         `;
     }
 
-    console.log('After Toggle:', selectedSeats);
+    console.log('After Toggle:', invalidSeats);
 
     document.getElementById('validSeatCount').textContent = validSeatCount;
 
-    document.getElementById('selectedSeatsInput').value = JSON.stringify(selectedSeats);
+    document.getElementById('invalidSeatsInput').value = JSON.stringify(invalidSeats);
     document.getElementById('validSeatCountInput').value = validSeatCount;
 }
 
 function saveSeats() {
-    document.getElementById('selectedSeatsInput').value = JSON.stringify(selectedSeats);
+    document.getElementById('invalidSeatsInput').value = JSON.stringify(invalidSeats);
     document.getElementById('validSeatCountInput').value = validSeatCount;
     document.getElementById('rowsInput').value = document.getElementById('row-count').textContent;
     document.getElementById('columnsInput').value = document.getElementById('column-count').textContent;
@@ -241,7 +241,7 @@ function addColumn(position) {
     document.getElementById('column-count').textContent = columns;
 
     if (position === 'left') {
-        selectedSeats = selectedSeats.map(seat => {
+        invalidSeats = invalidSeats.map(seat => {
             const [row, col] = seat.split('-');
             const colIndex = col.charCodeAt(0) - 65 + 1;
             return `${row}-${toExcelColumn(colIndex)}`;
@@ -260,12 +260,12 @@ function removeColumn(position) {
         document.getElementById('column-count').textContent = columns;
 
         if (position === 'right') {
-            selectedSeats = selectedSeats.filter(seat => {
+            invalidSeats = invalidSeats.filter(seat => {
                 const col = seat.split('-')[1];
                 return col.charCodeAt(0) - 65 < columns;
             });
         } else if (position === 'left') {
-            selectedSeats = selectedSeats.map(seat => {
+            invalidSeats = invalidSeats.map(seat => {
                 const [row, col] = seat.split('-');
                 const colIndex = col.charCodeAt(0) - 65 - 1;
                 return `${row}-${toExcelColumn(colIndex)}`;
@@ -287,7 +287,7 @@ function addRow(position) {
     document.getElementById('row-count').textContent = rows;
 
     if (position === 'top') {
-        selectedSeats = selectedSeats.map(seat => {
+        invalidSeats = invalidSeats.map(seat => {
             const [row, col] = seat.split('-');
             return `${parseInt(row) + 1}-${col}`;
         });
@@ -305,12 +305,12 @@ function removeRow(position) {
         document.getElementById('row-count').textContent = rows;
 
         if (position === 'bottom') {
-            selectedSeats = selectedSeats.filter(seat => {
+            invalidSeats = invalidSeats.filter(seat => {
                 const row = seat.split('-')[0];
                 return parseInt(row) <= rows;
             });
         } else if (position === 'top') {
-            selectedSeats = selectedSeats.map(seat => {
+            invalidSeats = invalidSeats.map(seat => {
                 const [row, col] = seat.split('-');
                 return `${parseInt(row) - 1}-${col}`;
             }).filter(seat => {
@@ -329,7 +329,7 @@ function updateValidSeatCount() {
     const rows = parseInt(document.getElementById('row-count').textContent);
     const columns = parseInt(document.getElementById('column-count').textContent);
     const totalSeats = rows * columns;
-    const occupiedSeats = selectedSeats.length;
+    const occupiedSeats = invalidSeats.length;
     validSeatCount = totalSeats - occupiedSeats;
     document.getElementById('validSeatCount').textContent = validSeatCount;
 }

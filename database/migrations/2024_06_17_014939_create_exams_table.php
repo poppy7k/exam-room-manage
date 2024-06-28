@@ -15,8 +15,6 @@ return new class extends Migration
             $table->id();
             $table->string('department_name')->nullable();//
             $table->integer('exam_takers_quantity')->default(0);
-            $table->string('building_id')->nullable();
-            $table->string('room_id')->nullable();
             $table->string('exam_position')->nullable();//
             $table->datetime('exam_date')->nullable();//
             $table->datetime('exam_start_time')->nullable();//

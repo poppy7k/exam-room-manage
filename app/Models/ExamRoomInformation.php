@@ -12,15 +12,14 @@ class ExamRoomInformation extends Model
     protected $table = 'exam_room_information';
 
     protected $fillable = [
-        'building_name',
-        'building_code',
+        'building_id',
         'floor',
         'room',
         'rows',
         'columns',
         'valid_seat',
         'total_seat',
-        'selected_seats',
+        'invalid_seats',
     ];
 
     protected $casts = [
@@ -29,7 +28,7 @@ class ExamRoomInformation extends Model
 
     public function building()
     {
-        return $this->belongsTo(Building::class, 'building_code', 'id');
+        return $this->belongsTo(Building::class, 'building_id', 'id');
     }
 
     public function seats()

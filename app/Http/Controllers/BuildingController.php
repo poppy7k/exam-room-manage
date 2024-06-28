@@ -65,7 +65,7 @@ class BuildingController extends Controller
             ->selectSub(
                 ExamRoomInformation::query()
                     ->selectRaw('SUM(valid_seat)')
-                    ->whereColumn('building_code', 'buildings.id'),
+                    ->whereColumn('building_id', 'buildings.id'),
                 'total_valid_seats'
             );
     

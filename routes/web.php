@@ -40,7 +40,7 @@ Route::post('/buildings/{buildingId}/room-list/store', [ExamRoomInformationContr
 Route::delete('/examrooms/{roomId}', [ExamRoomInformationController::class, 'destroy'])->name('examroominfo.destory');
 Route::get('/buildings/{buildingId}/room-list/{roomId}', [ExamRoomInformationController::class, 'showRoomDetail'])->name('room-detail');
 
-Route::put('/buildings/{buildingId}/room-list/{roomId}', [ExamRoomInformationController::class, 'saveSelectedSeats'])->name('examroominfo.saveSelectedSeats');
+Route::put('/buildings/{buildingId}/room-list/{roomId}', [ExamRoomInformationController::class, 'saveInvalidSeats'])->name('examroominfo.saveInvalidSeats');
 // Route::match(['post', 'put'], '/buildings/{buildingId}/room-list/{roomId}/save-selected-seats', [ExamRoomInformationController::class, 'saveSelectedSeats'])->name('examroominfo.saveSelectedSeats');
 
 // Exam-Manage //
@@ -54,7 +54,7 @@ Route::get('/exams/{examId}/buildings/{buildingId}', [ExamController::class, 'ex
 
 Route::post('/update-exam-status', [ExamController::class, 'updateExamStatus'])->name('update-exam-status');
 Route::get('/exams/{examId}/selectedrooms', [ExamController::class, 'showSelectedRooms'])->name('exam-selectedroom');
-Route::get('/exams/{examId}/selectedrooms/{roomId}', [ExamController::class, 'showExamRoomDetail'])->name('exam-roomdetail');
+Route::get('/exams/{examId}/selectedrooms/{selected_room_id}', [ExamController::class, 'showExamRoomDetail'])->name('exam-roomdetail');
 
 // Alert //
 Route::post('/set-alert-message', function (Illuminate\Http\Request $request) {

@@ -18,8 +18,6 @@ class Exam extends Model
         'exam_start_time',
         'exam_end_time',
         'exam_takers_quantity',
-        'building_id',
-        'room_id',
         'organization',
         'status',
     ];

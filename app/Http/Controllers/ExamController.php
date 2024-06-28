@@ -11,6 +11,7 @@ use App\Models\SelectedRoom;
 use App\Models\Seat;
 use App\Models\Staff;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 
 class ExamController extends Controller
 {
@@ -82,21 +83,7 @@ class ExamController extends Controller
         $exam = Exam::find($examId);
     
         if ($exam) {
-            $rooms = $exam->selectedRooms->pluck('room_id')->toArray();
-    
-            Staff::whereIn('selected_room_id', $rooms)->update(['selected_room_id' => null]);
-    
-            Seat::whereIn('room_id', $rooms)
-                ->where('exam_date', $exam->exam_date)
-                ->where('exam_start_time', $exam->exam_start_time)
-                ->where('exam_end_time', $exam->exam_end_time)
-                ->where('exam_id', $exam->id)
-                ->delete();
-    
-            SelectedRoom::where('exam_id', $exam->id)->delete();
-
             $exam->delete();
-    
             return response()->json(['success' => true, 'message' => 'Exam and associated seats deleted successfully.']);
         } else {
             return response()->json(['success' => false, 'message' => 'Exam not found.'], 404);
@@ -111,16 +98,15 @@ class ExamController extends Controller
             ->select('buildings.*')
             ->selectSub(
                 ExamRoomInformation::query()
-                    ->selectRaw('SUM(COALESCE(selected_rooms.exam_valid_seat, valid_seat)) as total_valid_seats')
+                    ->selectRaw('SUM(valid_seat) - COALESCE(SUM(selected_rooms.applicant_seat_quantity), 0) as total_valid_seats')
                     ->leftJoin('selected_rooms', function($join) use ($exams) {
                         $join->on('exam_room_information.id', '=', 'selected_rooms.room_id')
-                            ->where('selected_rooms.exam_date', $exams->exam_date)
-                            ->where(function($query) use ($exams) {
-                                $query->where('selected_rooms.exam_start_time', '<', $exams->exam_end_time)
-                                    ->where('selected_rooms.exam_end_time', '>', $exams->exam_start_time);
-                            });
+                            ->leftJoin('exams', 'selected_rooms.exam_id', '=', 'exams.id')
+                            ->where('exams.exam_date', $exams->exam_date)
+                            ->where('exams.exam_start_time', '<', $exams->exam_end_time)
+                            ->where('exams.exam_end_time', '>', $exams->exam_start_time);
                     })
-                    ->whereColumn('exam_room_information.building_code', 'buildings.id'),
+                    ->whereColumn('exam_room_information.building_id', 'buildings.id'),
                 'total_valid_seats'
             );
         switch ($sort) {
@@ -175,16 +161,17 @@ class ExamController extends Controller
         $selectedRooms = SelectedRoom::where('exam_id', $examId)->get()->keyBy('room_id');
     
         $rooms->getCollection()->transform(function ($room) use ($selectedRooms, $exams) {
-            $selectedRoom = SelectedRoom::where('room_id', $room->id)
-                                        ->where('exam_date', $exams->exam_date)
+            $selectedRoom = SelectedRoom::join('exams', 'selected_rooms.exam_id', '=', 'exams.id')
+                                        ->where('selected_rooms.room_id', $room->id)
+                                        ->where('exams.exam_date', $exams->exam_date)
                                         ->where(function($query) use ($exams) {
                                             $query
-                                                ->where('exam_start_time', '<', $exams->exam_end_time)
-                                                ->where('exam_end_time', '>', $exams->exam_start_time);
+                                                ->where('exams.exam_start_time', '<', $exams->exam_end_time)
+                                                ->where('exams.exam_end_time', '>', $exams->exam_start_time);
                                         })
                                         ->first();
-            $room->valid_seat = $selectedRoom ? $selectedRoom->exam_valid_seat : $room->valid_seat;
-            Log::info('Room ID: '.$room->id.' Exam Valid Seat: '.$room->exam_valid_seat);
+            $room->valid_seat = $selectedRoom ? $selectedRoom->applicant_seat_quantity - $room->valid_seat : $room->valid_seat;
+            Log::info('Room ID: '.$room->id.' Exam Valid Seat: '.$room->valid_seat);
             return $room;
         });
         
@@ -204,11 +191,6 @@ class ExamController extends Controller
     {
         $applicants = Applicant::where('department', $departmentName)
                                ->where('position', $examPosition)
-                               ->whereDoesntHave('seats', function($query) use ($exam) {
-                                   $query->where('exam_date', $exam->exam_date)
-                                         ->where('exam_start_time', $exam->exam_start_time)
-                                         ->where('exam_end_time', $exam->exam_end_time);
-                               })
                                ->get();
     
         $applicantIndex = 0;
@@ -230,10 +212,7 @@ class ExamController extends Controller
     
                     $seatExists = Seat::where('row', $i)
                                       ->where('column', $j)
-                                      ->where('room_id', $room->id)
-                                      ->where('exam_date', $exam->exam_date)
-                                      ->where('exam_start_time', $exam->exam_start_time)
-                                      ->where('exam_end_time', $exam->exam_end_time)
+                                      ->where('selected_room_id', $selectedRoom->id)
                                       ->exists();
     
                     if (!$seatExists) {
@@ -241,24 +220,24 @@ class ExamController extends Controller
     
                         $conflictExists = Seat::whereHas('applicant', function($query) use ($applicant) {
                                             $query->where('id_card', $applicant->id_card);
-                                        })
-                                        ->where('exam_date', $exam->exam_date)
-                                        ->where('exam_start_time', $exam->exam_start_time)
-                                        ->where('exam_end_time', $exam->exam_end_time)
-                                        ->exists();
+                                    })->whereHas('selected_room', function ($query) use ($exam) {
+                                        $query->where('exam_id', $exam->exam_id)
+                                        ->whereHas('exam', function ($query) use ($exam) {
+                                            $query->where('exam_date', $exam->exam_date)
+                                                  ->where('exam_start_time', $exam->exam_start_time)
+                                                  ->where('exam_end_time', $exam->exam_end_time);
+                                        });
+                              })
+                              ->exists();
     
                         if ($conflictExists) {
                             $conflictedApplicants[] = $applicant->name;
                         } else {
                             Seat::create([
-                                'room_id' => $room->id,
+                                'selected_room_id' => $selectedRoom->id,
                                 'applicant_id' => $applicant->id,
                                 'row' => $i,
                                 'column' => $j,
-                                'exam_date' => $exam->exam_date,
-                                'exam_start_time' => $exam->exam_start_time,
-                                'exam_end_time' => $exam->exam_end_time,
-                                'exam_id' => $exam->id,
                             ]);
                         }
                         $applicantIndex++;
@@ -283,21 +262,19 @@ class ExamController extends Controller
         return view('pages.exam-manage.exam-selectedroom', compact('exams', 'selectedRooms','breadcrumbs'));
     }
 
-    public function showExamRoomDetail($examId, $roomId)
+    public function showExamRoomDetail($examId, $selectedRoomId)
     {
         $exams = Exam::findOrFail($examId);
-        $room = ExamRoomInformation::findOrFail($roomId);
+        $selectedRooms = SelectedRoom::findOrFail($selectedRoomId);
+        $room = ExamRoomInformation::findOrFail($selectedRooms->room_id);
     
-        $seats = Seat::where('room_id', $roomId)
-                     ->where('exam_date', $exams->exam_date)
-                     ->where('exam_start_time', $exams->exam_start_time)
-                     ->where('exam_end_time', $exams->exam_end_time)
+        $seats = Seat::where('selected_room_id', $selectedRoomId)
                      ->get();
+        Log::info('Seats:', $seats->toArray());
     
         $applicants = Applicant::whereIn('id', $seats->pluck('applicant_id'))->get();
     
-        $selectedRoom = SelectedRoom::where('room_id', $roomId)->where('exam_id', $examId)->first();
-        $staffs = Staff::where('selected_room_id', $selectedRoom->id)->get();
+        $staffs = Staff::where('selected_room_id', $selectedRoomId)->get();
     
         $assignedStaffIds = Staff::whereNotNull('selected_room_id')->pluck('id')->toArray();
     
@@ -305,7 +282,7 @@ class ExamController extends Controller
             ['url' => '/', 'title' => 'หน้าหลัก'],
             ['url' => '/exams', 'title' => 'รายการสอบ'],
             ['url' => '/exams/'.$examId.'/selectedrooms', 'title' => ''.$exams->department_name],
-            ['url' => '/exams/'.$examId.'/selectedrooms/'.$roomId, 'title' => ''.$room->room],
+            ['url' => '/exams/'.$examId.'/selectedrooms/'.$selectedRooms->room_id, 'title' => ''.$room->room],
         ];
     
         session()->flash('sidebar', '3');
@@ -332,15 +309,12 @@ class ExamController extends Controller
         SelectedRoom::where('exam_id', $exam->id)->delete();
     
         foreach ($selectedRooms as $roomData) {
-            $examValidSeat =  $roomData['validSeat'] - $roomData['usedSeat'];
+            $examValidSeat = $roomData['usedSeat'];
             
             SelectedRoom::create([
                 'exam_id' => $exam->id,
                 'room_id' => $roomData['id'],
-                'exam_date' => $exam->exam_date,
-                'exam_start_time' => $exam->exam_start_time,
-                'exam_end_time' => $exam->exam_end_time,
-                'exam_valid_seat' => $examValidSeat,
+                'applicant_seat_quantity' => $examValidSeat,
             ]);
         }
     
@@ -488,7 +462,7 @@ class ExamController extends Controller
         }
     
         foreach ($selectedRooms as $selectedRoom) {
-            $selectedRoom->exam_valid_seat = $validatedData['valid_seat_count'];
+            $selectedRoom->applicant_seat_quantity = $validatedData['valid_seat_count'];
             $selectedRoom->save();
         }
     

@@ -13,15 +13,14 @@ return new class extends Migration
     {
         Schema::create('exam_room_information', function (Blueprint $table) {
             $table->id();
-            $table->string('building_name')->nullable();
-            $table->string('building_code')->nullable();
+            $table->string('building_id')->nullable();
             $table->string('floor')->nullable();
             $table->string('room')->nullable();
             $table->integer('rows')->nullable();
             $table->integer('columns')->nullable();
             $table->integer('valid_seat')->nullable();
             $table->integer('total_seat')->nullable();
-            $table->json('selected_seats')->nullable();
+            $table->json('invalid_seats')->nullable();
             $table->timestamps();
         });
     }

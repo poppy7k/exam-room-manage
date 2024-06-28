@@ -44,7 +44,7 @@ class ExamRoomInformationController extends Controller
             'columns' => $request->room_create_columns,
             'valid_seat' => $totalSeats,
             'total_seat' => $totalSeats,
-            'building_code' => $buildingId,
+            'building_id' => $buildingId,
         ]);
 
         // Log::info('Rows1: ' . $request->rows);
@@ -57,7 +57,7 @@ class ExamRoomInformationController extends Controller
     public function showRoomList($buildingId, Request $request)
     {
         $building = Building::findOrFail($buildingId);
-        $nextRoomId = ExamRoomInformation::where('building_code', $buildingId)->latest()->first();
+        $nextRoomId = ExamRoomInformation::where('building_id', $buildingId)->latest()->first();
         // $latestRoomId = ExamRoomInformation::where('building_code', $buildingId)->max('id');
         // $nextRoomId = $latestRoomId + 1;
         $rooms = $building->examRoomInformation();
@@ -143,7 +143,7 @@ class ExamRoomInformationController extends Controller
     {
         $building = Building::findOrFail($buildingId);
         $room = ExamRoomInformation::findOrFail($roomId);
-        $selectedSeats = json_encode($room->selected_seats);
+        $invalidSeats = json_encode($room->invalid_seats);
         // Log::info('$selectedSeats: ' . $selectedSeats);
     
         $breadcrumbs = [
@@ -159,24 +159,24 @@ class ExamRoomInformationController extends Controller
             'roomId' => $roomId,
             'breadcrumbs' => $breadcrumbs,
             'room' => $room,
-            'selectedSeats' => $selectedSeats,
+            'invalidSeats' => $invalidSeats,
         ]);
     }
 
-    public function saveSelectedSeats(Request $request, $buildingId, $roomId)
+    public function saveInvalidSeats(Request $request, $buildingId, $roomId)
     {
         $request->validate([
-            'selected_seats' => 'required|json',
+            'invalid_seats' => 'required|json',
             'valid_seat' => 'required|integer',
             'rows' => 'required|integer',
             'columns' => 'required|integer',
         ]);
     
-        $room = ExamRoomInformation::where('building_code', $buildingId)
+        $room = ExamRoomInformation::where('building_id', $buildingId)
                                     ->where('id', $roomId)
                                     ->firstOrFail();
     
-        $room->selected_seats = $request->selected_seats;
+        $room->invalid_seats = $request->invalid_seats;
         $room->valid_seat = $request->valid_seat;
         $room->rows = $request->rows;
         $room->columns = $request->columns;
