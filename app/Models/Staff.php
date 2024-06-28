@@ -17,8 +17,19 @@ class Staff extends Model
         'selected_room_id',
     ];
 
-    public function selectedRoom()
+    // public function selectedRoom()
+    // {
+    //     return $this->belongsTo(SelectedRoom::class, 'selected_room_id','room_staff');
+    // }
+    // public function selectedRooms()
+    // {
+    //     return $this->belongsToMany(SelectedRoom::class, 'room_staff', 'staff_id', 'room_id')
+    //                 ->withTimestamps();
+    // }
+    public function selectedRooms()
     {
-        return $this->belongsTo(SelectedRoom::class, 'selected_room_id');
+        return $this->belongsToMany(SelectedRoom::class, 'room_staff')
+            ->withPivot('exam_id')
+            ->withTimestamps();
     }
 }

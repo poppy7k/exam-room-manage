@@ -274,9 +274,25 @@ class ExamController extends Controller
     
         $applicants = Applicant::whereIn('id', $seats->pluck('applicant_id'))->get();
     
-        $staffs = Staff::where('selected_room_id', $selectedRoomId)->get();
+        $staffs = $selectedRooms ? $selectedRooms->staffs : collect();
     
-        $assignedStaffIds = Staff::whereNotNull('selected_room_id')->pluck('id')->toArray();
+        // Get all staff who are assigned to any room at the same time as this exam
+        $assignedStaffs = Staff::whereHas('selectedRooms', function ($query) use ($exams) {
+            $query->where('exam_date', $exams->exam_date)
+                  ->where('exam_start_time', '<=', $exams->exam_end_time)
+                  ->where('exam_end_time', '>=', $exams->exam_start_time);
+        })->get()->map(function ($staff) use ($exams) {
+            return [
+                'staff_id' => $staff->id,
+                'name' => $staff->name,
+                'exam_date' => $exams->exam_date,
+                'exam_start_time' => $exams->exam_start_time,
+                'exam_end_time' => $exams->exam_end_time
+            ];
+        });
+    
+        // Log the assigned staffs for debugging
+        Log::info('Assigned Staffs Query Result: ', ['query' => $assignedStaffs->toArray()]);
     
         $breadcrumbs = [
             ['url' => '/', 'title' => 'หน้าหลัก'],
@@ -287,8 +303,10 @@ class ExamController extends Controller
     
         session()->flash('sidebar', '3');
     
-        return view('pages.exam-manage.exam-roomdetail', compact('exams', 'room', 'breadcrumbs', 'applicants', 'staffs', 'seats', 'assignedStaffIds'));
+        return view('pages.exam-manage.exam-roomdetail', compact('exam', 'room', 'breadcrumbs', 'applicants', 'staffs', 'seats', 'assignedStaffs'));
     }
+    
+
     public function updateExamStatus(Request $request)
     {
         $validatedData = $request->validate([
@@ -304,7 +322,7 @@ class ExamController extends Controller
     
         $selectedRooms = json_decode($validatedData['selected_rooms'], true);
         // debug
-        Log::info('Decoded Selected Rooms: ', $selectedRooms);
+        // Log::info('Decoded Selected Rooms: ', $selectedRooms);
     
         SelectedRoom::where('exam_id', $exam->id)->delete();
     
@@ -330,11 +348,6 @@ class ExamController extends Controller
         return redirect()->route('exam-list')->with('status', 'Exam updated to ready and rooms selected!');
     }
     
-    
-    
-    
-    
-
     public function getApplicantsWithoutSeats($roomId)
     {
         // Log::info('Fetching applicants without seats for room:', ['room_id' => $roomId]);

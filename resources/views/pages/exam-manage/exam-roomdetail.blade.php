@@ -58,7 +58,7 @@
 <script>
 let validSeatCount = {{ $room->valid_seat }};
 const roomId = {{ $room->id }};
-const examId = {{ $exams->id }};
+const examId = {{ $exam->id }};
 let applicants = {!! json_encode($applicants) !!};
 let seats = {!! json_encode($seats) !!};
 let currentSeatId = '';
@@ -164,14 +164,41 @@ document.addEventListener('DOMContentLoaded', function() {
                 staffList.innerHTML = '';
 
                 const selectedStaffIds = {!! json_encode($staffs->pluck('id')) !!};
-                const assignedStaffIds = {!! json_encode($assignedStaffIds) !!}; // Assuming you pass assignedStaffIds from the backend
+                const assignedStaffs = {!! json_encode($assignedStaffs) !!};
+
+                console.log('Assigned Staffs:', assignedStaffs);
+
+                const examStartTimeStr = '{{ $exam->exam_date }} {{ $exam->exam_start_time }}';
+                const examEndTimeStr = '{{ $exam->exam_date }} {{ $exam->exam_end_time }}';
+
+                console.log('Exam Start Time:', examStartTimeStr);
+                console.log('Exam End Time:', examEndTimeStr);
 
                 staffs.forEach(staff => {
-                    const isAssignedToAnotherRoom = assignedStaffIds.includes(staff.id) && !selectedStaffIds.includes(staff.id);
+                    let isAssigned = false;
+
+                    assignedStaffs.forEach(assignment => {
+                        if (assignment.staff_id === staff.id) {
+                            const staffStartTimeStr = assignment.exam_date + ' ' + assignment.exam_start_time;
+                            const staffEndTimeStr = assignment.exam_date + ' ' + assignment.exam_end_time;
+
+                            console.log(`Checking staff ${staff.name} (${staff.id}) against exam times.`);
+                            console.log(`Staff Start: ${staffStartTimeStr}, Staff End: ${staffEndTimeStr}`);
+
+                            if ((examStartTimeStr < staffEndTimeStr && examStartTimeStr >= staffStartTimeStr) || 
+                                (examEndTimeStr <= staffEndTimeStr && examEndTimeStr > staffStartTimeStr) || 
+                                (examStartTimeStr <= staffStartTimeStr && examEndTimeStr >= staffEndTimeStr)) {
+                                isAssigned = true;
+                                console.log(`Staff ${staff.name} (${staff.id}) is assigned: ${isAssigned}`);
+                            }
+                        }
+                    });
+
+                    console.log(`Staff ${staff.name} (${staff.id}) assigned: ${isAssigned}`);
                     const div = document.createElement('div');
                     div.classList.add('flex', 'items-center', 'gap-2', 'mb-2', 'staff-item');
                     div.innerHTML = `
-                        <input type="checkbox" value="${staff.id}" class="staff-checkbox" data-name="${staff.name}" ${selectedStaffIds.includes(staff.id) ? 'checked' : ''} ${isAssignedToAnotherRoom ? 'disabled' : ''}>
+                        <input type="checkbox" value="${staff.id}" class="staff-checkbox" data-name="${staff.name}" ${selectedStaffIds.includes(staff.id) ? 'checked' : ''} ${isAssigned && !selectedStaffIds.includes(staff.id) ? 'disabled' : ''}>
                         <p>${staff.name}</p>
                     `;
                     staffList.appendChild(div);
@@ -202,6 +229,7 @@ document.addEventListener('DOMContentLoaded', function() {
             },
             body: JSON.stringify({
                 room_id: roomId,
+                exam_id: examId,
                 examiners: selectedExaminers
             })
         })

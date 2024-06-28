@@ -70,38 +70,33 @@ class StaffController extends Controller
     public function saveStaffs(Request $request)
     {
         try {
-            // Log::info('Received request to save staffs', ['room_id' => $request->input('room_id'), 'examiners' => $request->input('examiners')]);
-    
             $roomId = $request->input('room_id');
             $examiners = $request->input('examiners');
+            $examId = $request->input('exam_id');
     
-            $selectedRoom = SelectedRoom::where('room_id', $roomId)->first();
+            $selectedRoom = SelectedRoom::where('room_id', $roomId)->where('exam_id', $examId)->first();
     
-            $oldStaffs = Staff::where('selected_room_id', $selectedRoom->id)->get();
+            if ($selectedRoom) {
+                // Detach all current staff for the room and exam
+                $selectedRoom->staffs()->detach();
     
-            foreach ($oldStaffs as $oldStaff) {
-                $oldStaff->selected_room_id = null;
-                $oldStaff->save();
-            }
-    
-            foreach ($examiners as $examiner) {
-                $staff = Staff::find($examiner['id']);
-                if ($staff) {
-                    $staff->selected_room_id = $selectedRoom->id;
-                    $staff->save();
+                // Attach the new staff members
+                foreach ($examiners as $examiner) {
+                    $staff = Staff::find($examiner['id']);
+                    if ($staff) {
+                        $selectedRoom->staffs()->attach($staff->id, ['exam_id' => $examId]);
+                    }
                 }
             }
     
-            $updatedStaffs = Staff::where('selected_room_id', $selectedRoom->id)->get();
-    
-            return response()->json(['success' => true, 'staffs' => $updatedStaffs]);
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            Log::error('Validation failed', ['errors' => $e->errors()]);
-            return response()->json(['success' => false, 'message' => 'Validation failed.', 'errors' => $e->errors()], 422);
+            return response()->json(['success' => true]);
         } catch (\Exception $e) {
             Log::error('Error saving staff: ' . $e->getMessage(), ['exception' => $e]);
             return response()->json(['success' => false, 'message' => 'Failed to save staff.'], 500);
         }
     }
-
+    
+    
+    
+    
 }
