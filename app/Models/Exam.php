@@ -20,6 +20,7 @@ class Exam extends Model
         'exam_takers_quantity',
         'organization',
         'status',
+        'subject'
     ];
 
     public function selectedRooms()

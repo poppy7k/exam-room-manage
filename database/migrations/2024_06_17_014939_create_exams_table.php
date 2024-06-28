@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('department_name')->nullable();//
             $table->integer('exam_takers_quantity')->default(0);
             $table->string('exam_position')->nullable();//
+            $table->string('subject')->nullable();
             $table->datetime('exam_date')->nullable();//
             $table->datetime('exam_start_time')->nullable();//
             $table->datetime('exam_end_time')->nullable();//

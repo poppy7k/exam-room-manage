@@ -264,7 +264,7 @@ class ExamController extends Controller
 
     public function showExamRoomDetail($examId, $selectedRoomId)
     {
-        $exams = Exam::findOrFail($examId);
+        $exam = Exam::findOrFail($examId);
         $selectedRooms = SelectedRoom::findOrFail($selectedRoomId);
         $room = ExamRoomInformation::findOrFail($selectedRooms->room_id);
     
@@ -277,17 +277,19 @@ class ExamController extends Controller
         $staffs = $selectedRooms ? $selectedRooms->staffs : collect();
     
         // Get all staff who are assigned to any room at the same time as this exam
-        $assignedStaffs = Staff::whereHas('selectedRooms', function ($query) use ($exams) {
-            $query->where('exam_date', $exams->exam_date)
-                  ->where('exam_start_time', '<=', $exams->exam_end_time)
-                  ->where('exam_end_time', '>=', $exams->exam_start_time);
-        })->get()->map(function ($staff) use ($exams) {
+        $assignedStaffs = Staff::whereHas('selectedRooms', function ($query) use ($exam) {
+            $query->whereHas('exam', function($examQuery) use ($exam) {
+                $examQuery->where('exam_date', $exam->exam_date)
+                          ->where('exam_start_time', '<=', $exam->exam_end_time)
+                          ->where('exam_end_time', '>=', $exam->exam_start_time);
+            });
+        })->get()->map(function ($staff) use ($exam) {
             return [
                 'staff_id' => $staff->id,
                 'name' => $staff->name,
-                'exam_date' => $exams->exam_date,
-                'exam_start_time' => $exams->exam_start_time,
-                'exam_end_time' => $exams->exam_end_time
+                'exam_date' => $exam->exam_date,
+                'exam_start_time' => $exam->exam_start_time,
+                'exam_end_time' => $exam->exam_end_time
             ];
         });
     
@@ -297,7 +299,7 @@ class ExamController extends Controller
         $breadcrumbs = [
             ['url' => '/', 'title' => 'หน้าหลัก'],
             ['url' => '/exams', 'title' => 'รายการสอบ'],
-            ['url' => '/exams/'.$examId.'/selectedrooms', 'title' => ''.$exams->department_name],
+            ['url' => '/exams/'.$examId.'/selectedrooms', 'title' => ''.$exam->department_name],
             ['url' => '/exams/'.$examId.'/selectedrooms/'.$selectedRooms->room_id, 'title' => ''.$room->room],
         ];
     
