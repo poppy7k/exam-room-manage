@@ -19,7 +19,7 @@
             <p id="column-count" class="font-bold ml-1 mt-1.5 text-black"> {{ $selectedRooms->room->columns }}</p>
         </div>
         <div class="flex">
-            <x-buttons.primary id="select-examiners-btn" class="px-5 py-2 rounded-lg bg-blue-500 text-white">
+            <x-buttons.primary id="select-examiners-btn" class="px-5 py-2 rounded-lg text-white">
                 เลือกผู้คุมสอบ
             </x-buttons.primary>
         </div>
@@ -206,22 +206,39 @@ document.addEventListener('DOMContentLoaded', function() {
                         const div = document.createElement('div');
                         div.classList.add('flex', 'items-center', 'gap-2', 'mb-2', 'staff-item');
                         div.innerHTML = `
-                            <input type="checkbox" value="${staff.id}" class="staff-checkbox" data-name="${staff.name}" ${isAlreadySelected ? 'checked' : ''} ${isAssigned ? 'disabled' : ''}>
-                            <p>${staff.name}</p>
+                            <label class="flex items-center w-full px-3 py-1.5 cursor-pointer transition-all duration-300 hover:bg-gray-200 rounded-md">
+                                <div class="grid mr-3 place-items-center">
+                                    <div class="inline-flex items-center">
+                                        <label for="staff-${ staff.id }" class="relative flex items-center p-0 rounded-full cursor-pointer">
+                                            <input id="staff-${ staff.id }" type="radio" value="${staff.id}" data-name="${staff.name}" ${isAlreadySelected ? 'checked' : ''} ${isAssigned ? 'disabled' : ''}
+                                                class="staff-checkbox before:content[''] peer relative h-5 w-5 cursor-pointer appearance-none rounded-full border border-gray-800 text-gray-900 transition-all before:absolute before:top-2/4 before:left-2/4 before:block before:h-12 before:w-12 before:-translate-y-2/4 before:-translate-x-2/4 before:rounded-full before:bg-blue-gray-00 before:opacity-0 before:transition-opacity checked:border-gray-900 checked:before:bg-gray-900 hover:before:opacity-0" />
+                                            <span class="absolute text-gray-900 transition-opacity opacity-0 pointer-events-none top-2/4 left-2/4 -translate-y-2/4 -translate-x-2/4 peer-checked:opacity-100">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 16 16" fill="currentColor">
+                                                    <circle data-name="ellipse" cx="8" cy="8" r="8"></circle>
+                                                </svg>
+                                            </span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <p class="block font-sans text-base antialiased font-medium leading-relaxed text-gray-900">
+                                    ${staff.name}
+                                </p>
                         `;
                         staffList.appendChild(div);
                     });
 
                     // Add event listeners to checkboxes for deselection logic
                     document.querySelectorAll('.staff-checkbox').forEach(checkbox => {
-                        checkbox.addEventListener('change', function() {
+                        checkbox.addEventListener('click', function() {
                             if (checkbox.checked) {
                                 selectedStaffIds.push(parseInt(checkbox.value));
+                                checkbox.checked = false;
                             } else {
                                 const index = selectedStaffIds.indexOf(parseInt(checkbox.value));
                                 if (index > -1) {
                                     selectedStaffIds.splice(index, 1);
                                 }
+                                checkbox.checked = true;
                             }
                         });
                     });
