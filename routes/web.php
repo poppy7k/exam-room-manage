@@ -6,7 +6,10 @@ use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\ExamController;
 use App\Http\Controllers\ExamRoomInformationController;
 use App\Http\Controllers\StaffController;
-use App\Models\ExamRoomInformation;
+use App\Http\Controllers\SelectedRoomController;
+use App\Http\Controllers\ApplicantController;
+use App\Http\Controllers\SeatController;
+
 
 Route::get('/', [BuildingController::class, 'index'])->name('index');
 
@@ -53,7 +56,7 @@ Route::get('/exams/{examId}/buildings', [ExamController::class, 'exam_building_l
 Route::get('/exams/{examId}/buildings/{buildingId}', [ExamController::class, 'exam_room_list'])->name('exam-roomlist');
 
 Route::post('/update-exam-status', [ExamController::class, 'updateExamStatus'])->name('update-exam-status');
-Route::get('/exams/{examId}/selectedrooms', [ExamController::class, 'showSelectedRooms'])->name('exam-selectedroom');
+Route::get('/exams/{examId}/selectedrooms', [SelectedRoomController::class, 'showSelectedRooms'])->name('exam-selectedroom');
 Route::get('/exams/{examId}/selectedrooms/{selected_room_id}', [ExamController::class, 'showExamRoomDetail'])->name('exam-roomdetail');
 
 // Alert //
@@ -69,8 +72,8 @@ Route::get('/calendar/exams', [ExamController::class, 'getExam'])->name('exam.ge
 Route::get('/staffs', [StaffController::class, 'index'])->name('staffs.index');
 Route::post('/save-staffs', [StaffController::class, 'saveStaffs']);
 
-Route::get('/get-applicants-without-seats/{roomId}', [ExamController::class, 'getApplicantsWithoutSeats']);
-Route::post('/save-applicant-to-seat', [ExamController::class, 'saveApplicantToSeat']);
-Route::post('/remove-applicant-from-seat', [ExamController::class, 'removeApplicantFromSeat']);
-Route::post('/update-valid-seat-count', [ExamController::class, 'updateValidSeatCount']);
+Route::get('/get-applicants-without-seats/{roomId}', [ApplicantController::class, 'getApplicantsWithoutSeats']);//
+Route::post('/save-applicant-to-seat', [SeatController::class, 'saveApplicantToSeat']);
+Route::post('/remove-applicant-from-seat', [SeatController::class, 'removeApplicantFromSeat']);
+Route::post('/update-valid-seat-count', [SeatController::class, 'updateValidSeatCount']);
 Route::put('/exams/update', [ExamController::class, 'updateExam'])->name('update-exam');

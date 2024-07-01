@@ -15,6 +15,15 @@ use Illuminate\Support\Facades\DB;
 
 class ExamController extends Controller
 {
+    protected $staffController;
+    protected $seatController;
+
+    public function __construct(StaffController $staffController, SeatController $seatController)
+    {
+        $this->staffController = $staffController;
+        $this->seatController = $seatController;
+    }
+
     public function index() {
         $exams = Exam::paginate(8);
         $totalExams = $exams->total();
@@ -58,80 +67,11 @@ class ExamController extends Controller
             'subject' => $validatedData['subject'],
         ]);
 
-        // $this->duplicateStaffAssignments($exam);
-
         session()->flash('status', 'success');
         session()->flash('message', 'สร้างการสอบสำเร็จ!');
     
         return redirect()->route('exam-list');
     }
-
-    private function duplicateStaffAssignments($newExam)
-    {
-        Log::info('Starting to duplicate staff assignments', ['new_exam_id' => $newExam->id]);
-    
-        // Find existing exams with the same date and time but different IDs
-        $existingExams = Exam::where('exam_date', $newExam->exam_date)
-                             ->where('exam_start_time', $newExam->exam_start_time)
-                             ->where('exam_end_time', $newExam->exam_end_time)
-                             ->where('id', '!=', $newExam->id)
-                             ->get();
-    
-        Log::info('Found existing exams with the same date and time', ['existing_exams' => $existingExams]);
-    
-        foreach ($existingExams as $existingExam) {
-            Log::info('Processing existing exam', ['existing_exam_id' => $existingExam->id]);
-    
-            $existingSelectedRooms = SelectedRoom::where('exam_id', $existingExam->id)->get();
-            Log::info('Found selected rooms for existing exam', ['selected_rooms' => $existingSelectedRooms]);
-    
-            foreach ($existingSelectedRooms as $selectedRoom) {
-                Log::info('Duplicating staff assignments for selected room', ['selected_room_id' => $selectedRoom->id]);
-    
-                // Find the corresponding selected room for the new exam
-                $newSelectedRoom = SelectedRoom::where('exam_id', $newExam->id)
-                                               ->where('room_id', $selectedRoom->room_id)
-                                               ->first();
-    
-                if (!$newSelectedRoom) {
-                    Log::error('No corresponding selected room found for new exam', ['new_exam_id' => $newExam->id, 'room_id' => $selectedRoom->room_id]);
-                    continue;
-                }
-    
-                foreach ($selectedRoom->staffs as $staff) {
-                    Log::info('Attaching staff to new exam', ['staff_id' => $staff->id]);
-    
-                    // Explicitly attach the staff to the new exam and log the operation
-                    DB::table('room_staff')->insert([
-                        'selected_room_id' => $newSelectedRoom->id,
-                        'staff_id' => $staff->id,
-                        'exam_id' => $newExam->id,
-                        'created_at' => now(),
-                        'updated_at' => now(),
-                    ]);
-    
-                    Log::info('Attached staff to new exam', ['staff_id' => $staff->id, 'new_exam_id' => $newExam->id, 'new_selected_room_id' => $newSelectedRoom->id]);
-    
-                    // Verify the attachment in the database
-                    $roomStaffRecord = DB::table('room_staff')
-                        ->where('selected_room_id', $newSelectedRoom->id)
-                        ->where('staff_id', $staff->id)
-                        ->where('exam_id', $newExam->id)
-                        ->first();
-    
-                    if ($roomStaffRecord) {
-                        Log::info('Room staff record exists in the database', ['room_staff_record' => $roomStaffRecord]);
-                    } else {
-                        Log::error('Failed to attach staff to the new exam', ['staff_id' => $staff->id, 'new_exam_id' => $newExam->id, 'new_selected_room_id' => $newSelectedRoom->id]);
-                    }
-                }
-            }
-        }
-    
-        Log::info('Completed duplicating staff assignments');
-    }
-    
-    
     
     public function create() {
         $breadcrumbs = [
@@ -242,7 +182,7 @@ class ExamController extends Controller
                                         })
                                         ->first();
             $room->valid_seat = $selectedRoom ? $selectedRoom->applicant_seat_quantity - $room->valid_seat : $room->valid_seat;
-            Log::info('Room ID: '.$room->id.' Exam Valid Seat: '.$room->valid_seat);
+            //Log::info('Room ID: '.$room->id.' Exam Valid Seat: '.$room->valid_seat);
             return $room;
         });
         
@@ -258,90 +198,16 @@ class ExamController extends Controller
         return view('pages.exam-manage.exam-roomlist', compact('breadcrumbs', 'exams', 'buildings', 'rooms', 'totalRoom'));
     }
 
-    protected function assignApplicantsToSeats($departmentName, $examPosition, $selectedRooms, $exam)
-    {
-        $applicants = Applicant::where('department', $departmentName)
-                               ->where('position', $examPosition)
-                               ->get();
-    
-        $applicantIndex = 0;
-        $conflictedApplicants = [];
-    
-        foreach ($selectedRooms as $roomData) {
-            $room = ExamRoomInformation::findOrFail($roomData['id']);
-            $selectedRoom = SelectedRoom::where('room_id', $room->id)->where('exam_id', $exam->id)->first();
-    
-            if (!$selectedRoom) {
-                continue;
-            }
-    
-            for ($i = 1; $i <= $room->rows; $i++) {
-                for ($j = 1; $j <= $room->columns; $j++) {
-                    if ($applicantIndex >= $applicants->count()) {
-                        return $conflictedApplicants;
-                    }
-    
-                    $seatExists = Seat::where('row', $i)
-                                      ->where('column', $j)
-                                      ->where('selected_room_id', $selectedRoom->id)
-                                      ->exists();
-    
-                    if (!$seatExists) {
-                        $applicant = $applicants[$applicantIndex];
-    
-                        $conflictExists = Seat::whereHas('applicant', function($query) use ($applicant) {
-                                            $query->where('id_card', $applicant->id_card);
-                                    })->whereHas('selected_room', function ($query) use ($exam) {
-                                        $query->where('exam_id', $exam->exam_id)
-                                        ->whereHas('exam', function ($query) use ($exam) {
-                                            $query->where('exam_date', $exam->exam_date)
-                                                  ->where('exam_start_time', $exam->exam_start_time)
-                                                  ->where('exam_end_time', $exam->exam_end_time);
-                                        });
-                              })
-                              ->exists();
-    
-                        if ($conflictExists) {
-                            $conflictedApplicants[] = $applicant->name;
-                        } else {
-                            Seat::create([
-                                'selected_room_id' => $selectedRoom->id,
-                                'applicant_id' => $applicant->id,
-                                'row' => $i,
-                                'column' => $j,
-                            ]);
-                        }
-                        $applicantIndex++;
-                    }
-                }
-            }
-        }
-        return $conflictedApplicants;
-    }
-    
-    public function showSelectedRooms($examId)
-    {
-        $exams = Exam::findOrFail($examId);
-        $selectedRooms = $exams->selectedRooms;
-        $breadcrumbs = [
-            ['url' => '/', 'title' => 'หน้าหลัก'],
-            ['url' => '/exams', 'title' => 'รายการสอบ'],
-            ['url' => '/exams/'.$examId.'/buildings', 'title' => ''.$exams->department_name],
-        ];
-        session()->flash('sidebar', '3');
-    
-        return view('pages.exam-manage.exam-selectedroom', compact('exams', 'selectedRooms','breadcrumbs'));
-    }
-
     public function showExamRoomDetail($examId, $selectedRoomId)
     {
         $exam = Exam::findOrFail($examId);
         $selectedRooms = SelectedRoom::findOrFail($selectedRoomId);
         $room = ExamRoomInformation::findOrFail($selectedRooms->room_id);
+        $building = $room->building;
     
         $seats = Seat::where('selected_room_id', $selectedRoomId)
                      ->get();
-        Log::info('Seats:', $seats->toArray());
+        // Log::info('Seats:', $seats->toArray());
     
         $applicants = Applicant::whereIn('id', $seats->pluck('applicant_id'))->get();
     
@@ -365,8 +231,10 @@ class ExamController extends Controller
             ];
         });
     
-        // Log the assigned staffs for debugging
-        Log::info('Assigned Staffs Query Result: ', ['query' => $assignedStaffs->toArray()]);
+        //Log::info('Assigned Staffs Query Result: ', ['query' => $assignedStaffs->toArray()]);
+
+        $departments = $applicants->pluck('department')->unique()->toArray();
+        $positions = $applicants->pluck('position')->unique()->toArray();
     
         $breadcrumbs = [
             ['url' => '/', 'title' => 'หน้าหลัก'],
@@ -377,10 +245,9 @@ class ExamController extends Controller
     
         session()->flash('sidebar', '3');
     
-        return view('pages.exam-manage.exam-roomdetail', compact('exam', 'room', 'breadcrumbs', 'applicants', 'staffs', 'seats', 'assignedStaffs'));
+        return view('pages.exam-manage.exam-roomdetail', compact('building','exam', 'room', 'breadcrumbs', 'applicants', 'staffs', 'seats', 'assignedStaffs','departments','positions'));
     }
     
-
     public function updateExamStatus(Request $request)
     {
         $validatedData = $request->validate([
@@ -395,7 +262,6 @@ class ExamController extends Controller
         }
     
         $selectedRooms = json_decode($validatedData['selected_rooms'], true);
-        // debug
         // Log::info('Decoded Selected Rooms: ', $selectedRooms);
     
         SelectedRoom::where('exam_id', $exam->id)->delete();
@@ -410,9 +276,9 @@ class ExamController extends Controller
             ]);
         }
     
-        $this->duplicateStaffAssignments($exam);
+        $this->staffController->duplicateStaffAssignments($exam);
     
-        $conflictedApplicants = $this->assignApplicantsToSeats($exam->department_name, $exam->exam_position, $selectedRooms, $exam);
+        $conflictedApplicants = $this->seatController->assignApplicantsToSeats($exam->department_name, $exam->exam_position, $selectedRooms, $exam);
     
         if (count($conflictedApplicants) > 0) {
             return redirect()->back()->with('status', 'conflict')->with('conflictedApplicants', $conflictedApplicants);
@@ -424,103 +290,6 @@ class ExamController extends Controller
         return redirect()->route('exam-list')->with('status', 'Exam updated to ready and rooms selected!');
     }
     
-    public function getApplicantsWithoutSeats($roomId)
-    {
-        // Log::info('Fetching applicants without seats for room:', ['room_id' => $roomId]);
-        $room = ExamRoomInformation::findOrFail($roomId);
-        $applicantsWithoutSeats = Applicant::whereDoesntHave('seats', function($query) use ($roomId) {
-            $query->where('room_id', $roomId);
-        })->get();
-        
-        // Log::info('Applicants without seats:', $applicantsWithoutSeats->toArray());
-        
-        return response()->json($applicantsWithoutSeats);
-    }
-
-    public function saveApplicantToSeat(Request $request)
-    {
-        $validatedData = $request->validate([
-            'seat_id' => 'required|string',
-            'applicant_id' => 'required|exists:applicants,id',
-        ]);
-    
-        $seatId = $validatedData['seat_id'];
-        $applicantId = $validatedData['applicant_id'];
-    
-        $seatParts = explode('-', $seatId);
-        $row = $seatParts[0];
-        $column = ord($seatParts[1]) - 64;
-    
-        $seat = Seat::where('row', $row)->where('column', $column)->first();
-        if (!$seat) {
-            return response()->json(['success' => false, 'message' => 'Seat not found.'], 404);
-        }
-    
-        $roomId = $seat->room_id;
-    
-        $selectedRoom = SelectedRoom::where('room_id', $roomId)->first();
-        if (!$selectedRoom) {
-            return response()->json(['success' => false, 'message' => 'Selected room not found.'], 404);
-        }
-    
-        $exam = Exam::findOrFail($selectedRoom->exam_id);
-    
-        Seat::where('row', $row)
-            ->where('column', $column)
-            ->where('room_id', $roomId)
-            ->delete();
-    
-        Seat::create([
-            'room_id' => $roomId,
-            'applicant_id' => $applicantId,
-            'row' => $row,
-            'column' => $column,
-            'exam_date' => $exam->exam_date,
-            'exam_start_time' => $exam->exam_start_time,
-            'exam_end_time' => $exam->exam_end_time,
-        ]);
-    
-        return response()->json(['success' => true]);
-    }
-    
-
-    public function removeApplicantFromSeat(Request $request)
-    {
-        // Log::info('Starting to remove applicant from seat', ['request_data' => $request->all()]);
-    
-        try {
-            $validatedData = $request->validate([
-                'seat_id' => 'required|integer',
-                'room_id' => 'required|integer|exists:selected_rooms,room_id' // Change table to selected_rooms
-            ]);
-    
-            // Log::info('Request data validated successfully', ['validated_data' => $validatedData]);
-
-            $seat = Seat::where('id', $validatedData['seat_id'])
-                        ->where('room_id', $validatedData['room_id'])
-                        ->first();
-    
-            if ($seat) {
-                // Log::info('Seat found', ['seat' => $seat]);
-    
-                $seat->applicant_id = null;
-                $seat->save();
-    
-                // Log::info('Applicant removed from seat successfully');
-                return response()->json(['success' => true]);
-            } else {
-                Log::warning('Seat not found', ['seat_id' => $validatedData['seat_id'], 'room_id' => $validatedData['room_id']]);
-                return response()->json(['success' => false, 'message' => 'Seat not found.'], 404);
-            }
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            Log::error('Validation failed', ['errors' => $e->errors()]);
-            return response()->json(['success' => false, 'message' => 'Validation failed.', 'errors' => $e->errors()], 422);
-        } catch (\Exception $e) {
-            Log::error('Error removing applicant from seat', ['exception' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
-            return response()->json(['success' => false, 'message' => 'Failed to remove applicant from seat.'], 500);
-        }
-    }
-
     public function getExam() {
 
         $exams = Exam::all();
@@ -534,29 +303,7 @@ class ExamController extends Controller
         });
 
         return response()->json($exams);
-    }
-
-    public function updateValidSeatCount(Request $request)
-    {
-        $validatedData = $request->validate([
-            'room_id' => 'required|integer|exists:exam_room_information,id',
-            'exam_id' => 'required|integer|exists:exams,id',
-            'valid_seat_count' => 'required|integer',
-        ]);
-    
-        $selectedRooms = SelectedRoom::where('room_id', $validatedData['room_id'])->where('exam_id', $validatedData['exam_id'])->get();
-    
-        if ($selectedRooms->isEmpty()) {
-            return response()->json(['success' => false, 'message' => 'Selected rooms not found.'], 404);
-        }
-    
-        foreach ($selectedRooms as $selectedRoom) {
-            $selectedRoom->applicant_seat_quantity = $validatedData['valid_seat_count'];
-            $selectedRoom->save();
-        }
-    
-        return response()->json(['success' => true]);
-    }   
+    }  
 
     public function updateExam(Request $request)
     {
