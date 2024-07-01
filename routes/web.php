@@ -6,6 +6,7 @@ use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\ExamController;
 use App\Http\Controllers\ExamRoomInformationController;
 use App\Http\Controllers\StaffController;
+use App\Http\Controllers\SeatController;
 use App\Models\ExamRoomInformation;
 
 Route::get('/', [BuildingController::class, 'index'])->name('index');
@@ -49,8 +50,8 @@ Route::get('/exams/create', [ExamController::class, 'create'])->name('exam-creat
 Route::post('/exams', [ExamController::class, 'store'])->name('exams.store');
 Route::delete('/exams/{examId}', [ExamController::class, 'destroy'])->name('exams.destroy');
 
-Route::get('/exams/{examId}/buildings', [ExamController::class, 'exam_building_list'])->name('exam-buildinglist');
-Route::get('/exams/{examId}/buildings/{buildingId}', [ExamController::class, 'exam_room_list'])->name('exam-roomlist');
+Route::get('/exams/{examId}/buildings', [ExamController::class, 'showExamBuildingList'])->name('exam-buildinglist');
+Route::get('/exams/{examId}/buildings/{buildingId}', [ExamController::class, 'showExamRoomList'])->name('exam-roomlist');
 
 Route::post('/update-exam-status', [ExamController::class, 'updateExamStatus'])->name('update-exam-status');
 Route::get('/exams/{examId}/selectedrooms', [ExamController::class, 'showSelectedRooms'])->name('exam-selectedroom');

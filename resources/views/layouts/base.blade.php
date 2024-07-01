@@ -12,6 +12,7 @@
 
         <!-- Complied css -->
         @vite('resources/css/app.css')
+        @vite('resources/js/app.js')
 
         <style>
             [x-cloak] { display: none !important; }

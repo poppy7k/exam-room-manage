@@ -159,7 +159,7 @@ class ExamController extends Controller
         }
     }    
 
-    public function exam_building_list($examId, Request $request)
+    public function showExamBuildingList($examId, Request $request)
     {
         $exams = Exam::findOrFail($examId);
         $sort = $request->get('sort', 'alphabet_th'); // Default sort by building_th
@@ -206,7 +206,7 @@ class ExamController extends Controller
         return view('pages.exam-manage.exam-buildinglist', compact('breadcrumbs', 'exams','buildings'));
     }
     
-    public function exam_room_list($examId, $buildingId, Request $request)
+    public function showExamRoomList($examId, $buildingId, Request $request)
     {
         $exams = Exam::findOrFail($examId);
         $buildings = Building::findOrFail($buildingId);
@@ -239,7 +239,7 @@ class ExamController extends Controller
                                                 ->where('exams.exam_end_time', '>', $exams->exam_start_time);
                                         })
                                         ->first();
-            $room->valid_seat = $selectedRoom ? $selectedRoom->applicant_seat_quantity - $room->valid_seat : $room->valid_seat;
+            $room->valid_seat = $selectedRoom ? $room->valid_seat - $selectedRoom->applicant_seat_quantity : $room->valid_seat;
             Log::info('Room ID: '.$room->id.' Exam Valid Seat: '.$room->valid_seat);
             return $room;
         });
@@ -375,7 +375,7 @@ class ExamController extends Controller
     
         session()->flash('sidebar', '3');
     
-        return view('pages.exam-manage.exam-roomdetail', compact('exam', 'room', 'breadcrumbs', 'applicants', 'staffs', 'seats', 'assignedStaffs'));
+        return view('pages.exam-manage.exam-roomdetail', compact('exam', 'selectedRooms', 'breadcrumbs', 'applicants', 'staffs', 'seats', 'assignedStaffs'));
     }
     
 
