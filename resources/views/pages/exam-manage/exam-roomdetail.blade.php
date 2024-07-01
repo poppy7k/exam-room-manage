@@ -160,8 +160,7 @@ document.addEventListener('DOMContentLoaded', function() {
         fetch('/staffs')
             .then(response => response.json())
             .then(staffs => {
-                const staffList = document.getElementById('staff-list');
-                staffList.innerHTML = '';
+                let allStaffs = staffs;
 
                 const selectedStaffIds = {!! json_encode($staffs->pluck('id')) !!};
                 const assignedStaffs = {!! json_encode($assignedStaffs) !!};
@@ -174,53 +173,66 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.log('Exam Start Time:', examStartTimeStr);
                 console.log('Exam End Time:', examEndTimeStr);
 
-                staffs.forEach(staff => {
-                    let isAssigned = false;
-                    let isAlreadySelected = selectedStaffIds.includes(staff.id);
+                function renderStaffList(staffs) {
+                    const staffList = document.getElementById('staff-list');
+                    staffList.innerHTML = '';
 
-                    assignedStaffs.forEach(assignment => {
-                        if (assignment.staff_id === staff.id) {
-                            const staffStartTimeStr = assignment.exam_date + ' ' + assignment.exam_start_time;
-                            const staffEndTimeStr = assignment.exam_date + ' ' + assignment.exam_end_time;
+                    staffs.forEach(staff => {
+                        let isAssigned = false;
+                        let isAlreadySelected = selectedStaffIds.includes(staff.id);
 
-                            console.log(`Checking staff ${staff.name} (${staff.id}) against exam times.`);
-                            console.log(`Staff Start: ${staffStartTimeStr}, Staff End: ${staffEndTimeStr}`);
+                        assignedStaffs.forEach(assignment => {
+                            if (assignment.staff_id === staff.id) {
+                                const staffStartTimeStr = assignment.exam_date + ' ' + assignment.exam_start_time;
+                                const staffEndTimeStr = assignment.exam_date + ' ' + assignment.exam_end_time;
 
-                            if ((examStartTimeStr < staffEndTimeStr && examEndTimeStr > staffStartTimeStr) || 
-                                (examStartTimeStr < staffEndTimeStr && examEndTimeStr >= staffEndTimeStr) || 
-                                (examStartTimeStr <= staffStartTimeStr && examEndTimeStr > staffStartTimeStr)) {
-                                console.log(`Time overlap detected for staff ${staff.name} (${staff.id}).`);
-                                
-                                if ((assignment.exam_id !== examId || assignment.room_id !== roomId) && !isAlreadySelected) {
-                                    isAssigned = true;
-                                    console.log(`Staff ${staff.name} (${staff.id}) is assigned: ${isAssigned} due to different room or exam.`);
+                                console.log(`Checking staff ${staff.name} (${staff.id}) against exam times.`);
+                                console.log(`Staff Start: ${staffStartTimeStr}, Staff End: ${staffEndTimeStr}`);
+
+                                if ((examStartTimeStr < staffEndTimeStr && examEndTimeStr > staffStartTimeStr) || 
+                                    (examStartTimeStr < staffEndTimeStr && examEndTimeStr >= staffEndTimeStr) || 
+                                    (examStartTimeStr <= staffStartTimeStr && examEndTimeStr > staffStartTimeStr)) {
+                                    console.log(`Time overlap detected for staff ${staff.name} (${staff.id}).`);
+                                    
+                                    if ((assignment.exam_id !== examId || assignment.room_id !== roomId) && !isAlreadySelected) {
+                                        isAssigned = true;
+                                        console.log(`Staff ${staff.name} (${staff.id}) is assigned: ${isAssigned} due to different room or exam.`);
+                                    }
                                 }
                             }
-                        }
+                        });
+
+                        console.log(`Final assignment status for staff ${staff.name} (${staff.id}): ${isAssigned}`);
+                        const div = document.createElement('div');
+                        div.classList.add('flex', 'items-center', 'gap-2', 'mb-2', 'staff-item');
+                        div.innerHTML = `
+                            <input type="checkbox" value="${staff.id}" class="staff-checkbox" data-name="${staff.name}" ${isAlreadySelected ? 'checked' : ''} ${isAssigned ? 'disabled' : ''}>
+                            <p>${staff.name}</p>
+                        `;
+                        staffList.appendChild(div);
                     });
 
-                    console.log(`Final assignment status for staff ${staff.name} (${staff.id}): ${isAssigned}`);
-                    const div = document.createElement('div');
-                    div.classList.add('flex', 'items-center', 'gap-2', 'mb-2', 'staff-item');
-                    div.innerHTML = `
-                        <input type="checkbox" value="${staff.id}" class="staff-checkbox" data-name="${staff.name}" ${isAlreadySelected ? 'checked' : ''} ${isAssigned ? 'disabled' : ''}>
-                        <p>${staff.name}</p>
-                    `;
-                    staffList.appendChild(div);
-                });
-
-                // Add event listeners to checkboxes for deselection logic
-                document.querySelectorAll('.staff-checkbox').forEach(checkbox => {
-                    checkbox.addEventListener('change', function() {
-                        if (checkbox.checked) {
-                            selectedStaffIds.push(parseInt(checkbox.value));
-                        } else {
-                            const index = selectedStaffIds.indexOf(parseInt(checkbox.value));
-                            if (index > -1) {
-                                selectedStaffIds.splice(index, 1);
+                    // Add event listeners to checkboxes for deselection logic
+                    document.querySelectorAll('.staff-checkbox').forEach(checkbox => {
+                        checkbox.addEventListener('change', function() {
+                            if (checkbox.checked) {
+                                selectedStaffIds.push(parseInt(checkbox.value));
+                            } else {
+                                const index = selectedStaffIds.indexOf(parseInt(checkbox.value));
+                                if (index > -1) {
+                                    selectedStaffIds.splice(index, 1);
+                                }
                             }
-                        }
+                        });
                     });
+                }
+
+                renderStaffList(allStaffs);
+
+                document.getElementById('search-staff-input').addEventListener('input', function() {
+                    const searchTerm = this.value.toLowerCase();
+                    const filteredStaffs = allStaffs.filter(staff => staff.name.toLowerCase().includes(searchTerm));
+                    renderStaffList(filteredStaffs);
                 });
             });
     }

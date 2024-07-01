@@ -9,6 +9,7 @@
     'status' => 'null',
     'organization' => 'null',
     'exam_takers_quantity' => 'null',
+    'subject' => 'null',
     'exam_id',
 ])
 
@@ -62,6 +63,9 @@
                 ตำแหน่ง: {{ $exam_position }}
             </p>
         </span>
+        <div class="flex">
+            วิชา: {{ $subject }} 
+        </div>
         <div class="flex">
             จำนวนผู้เข้าสอบ: {{ $exam_takers_quantity }} คน
         </div>
