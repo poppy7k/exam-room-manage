@@ -45,15 +45,14 @@ class SeatController extends Controller
     
                         $conflictExists = Seat::whereHas('applicant', function($query) use ($applicant) {
                                             $query->where('id_card', $applicant->id_card);
-                                    })->whereHas('selected_room', function ($query) use ($exam) {
-                                        $query->where('exam_id', $exam->exam_id)
-                                        ->whereHas('exam', function ($query) use ($exam) {
-                                            $query->where('exam_date', $exam->exam_date)
+                                        })
+                                        ->whereHas('selectedRoom.exam', function ($query) use ($exam) {
+                                            $query->where('exam_id', $exam->id)
+                                                  ->where('exam_date', $exam->exam_date)
                                                   ->where('exam_start_time', $exam->exam_start_time)
                                                   ->where('exam_end_time', $exam->exam_end_time);
-                                        });
-                              })
-                              ->exists();
+                                        })
+                                        ->exists();
     
                         if ($conflictExists) {
                             $conflictedApplicants[] = $applicant->name;
@@ -64,6 +63,13 @@ class SeatController extends Controller
                                 'row' => $i,
                                 'column' => $j,
                             ]);
+    
+                            // Update the status in the pivot table
+                            if (!$exam->applicants()->where('applicant_id', $applicant->id)->exists()) {
+                                $exam->applicants()->attach($applicant->id, ['status' => 'assigned']);
+                            } else {
+                                $exam->applicants()->updateExistingPivot($applicant->id, ['status' => 'assigned']);
+                            }
                         }
                         $applicantIndex++;
                     }
@@ -72,80 +78,126 @@ class SeatController extends Controller
         }
         return $conflictedApplicants;
     }
-
+    
+    
     public function saveApplicantToSeat(Request $request)
     {
-        $validatedData = $request->validate([
-            'seat_id' => 'required|string',
-            'applicant_id' => 'required|exists:applicants,id',
-        ]);
+        Log::info('Starting to save applicant to seat', ['request_data' => $request->all()]);
     
-        $seatId = $validatedData['seat_id'];
-        $applicantId = $validatedData['applicant_id'];
+        try {
+            $validatedData = $request->validate([
+                'seat_id' => 'required|string',
+                'applicant_id' => 'required|exists:applicants,id',
+                'room_id' => 'required|integer|exists:exam_room_information,id',
+            ]);
     
-        $seatParts = explode('-', $seatId);
-        $row = $seatParts[0];
-        $column = ord($seatParts[1]) - 64;
+            Log::info('Request data validated successfully', ['validated_data' => $validatedData]);
     
-        $seat = Seat::where('row', $row)->where('column', $column)->first();
-        if (!$seat) {
-            return response()->json(['success' => false, 'message' => 'Seat not found.'], 404);
+            $seatId = $validatedData['seat_id'];
+            $applicantId = $validatedData['applicant_id'];
+            $roomId = $validatedData['room_id'];
+    
+            $seatParts = explode('-', $seatId);
+            $row = $seatParts[0];
+            $column = ord($seatParts[1]) - 64;
+    
+            $selectedRoom = SelectedRoom::where('room_id', $roomId)->first();
+            if (!$selectedRoom) {
+                Log::warning('Selected room not found', ['room_id' => $roomId]);
+                return response()->json(['success' => false, 'message' => 'Selected room not found.'], 404);
+            }
+    
+            $exam = Exam::findOrFail($selectedRoom->exam_id);
+    
+            $seat = Seat::where('row', $row)
+                        ->where('column', $column)
+                        ->where('selected_room_id', $selectedRoom->id)
+                        ->first();
+    
+            if (!$seat) {
+                Log::warning('Seat not found', ['row' => $row, 'column' => $column, 'selected_room_id' => $selectedRoom->id]);
+                return response()->json(['success' => false, 'message' => 'Seat not found.'], 404);
+            }
+    
+            // Delete any existing seat assignment for this row and column in the selected room
+            Seat::where('row', $row)
+                ->where('column', $column)
+                ->where('selected_room_id', $selectedRoom->id)
+                ->delete();
+    
+            // Create a new seat assignment
+            Seat::create([
+                'selected_room_id' => $selectedRoom->id,
+                'applicant_id' => $applicantId,
+                'row' => $row,
+                'column' => $column,
+                'exam_date' => $exam->exam_date,
+                'exam_start_time' => $exam->exam_start_time,
+                'exam_end_time' => $exam->exam_end_time,
+            ]);
+    
+            // Attach the applicant to the exam with status 'assigned'
+            $exam->applicants()->syncWithoutDetaching([$applicantId => ['status' => 'assigned']]);
+    
+            Log::info('Applicant assigned to seat successfully');
+            return response()->json(['success' => true]);
+        } catch (\Exception $e) {
+            Log::error('Error saving applicant to seat', ['exception' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
+            return response()->json(['success' => false, 'message' => 'Failed to assign applicant to seat.'], 500);
         }
-    
-        $roomId = $seat->room_id;
-    
-        $selectedRoom = SelectedRoom::where('room_id', $roomId)->first();
-        if (!$selectedRoom) {
-            return response()->json(['success' => false, 'message' => 'Selected room not found.'], 404);
-        }
-    
-        $exam = Exam::findOrFail($selectedRoom->exam_id);
-    
-        Seat::where('row', $row)
-            ->where('column', $column)
-            ->where('room_id', $roomId)
-            ->delete();
-    
-        Seat::create([
-            'room_id' => $roomId,
-            'applicant_id' => $applicantId,
-            'row' => $row,
-            'column' => $column,
-            'exam_date' => $exam->exam_date,
-            'exam_start_time' => $exam->exam_start_time,
-            'exam_end_time' => $exam->exam_end_time,
-        ]);
-    
-        return response()->json(['success' => true]);
     }
     
 
     public function removeApplicantFromSeat(Request $request)
     {
-        // Log::info('Starting to remove applicant from seat', ['request_data' => $request->all()]);
+        Log::info('Starting to remove applicant from seat', ['request_data' => $request->all()]);
     
         try {
             $validatedData = $request->validate([
                 'seat_id' => 'required|integer',
-                'room_id' => 'required|integer|exists:selected_rooms,room_id' // Change table to selected_rooms
+                'room_id' => 'required|integer|exists:selected_rooms,room_id' // Ensure room_id exists in selected_rooms table
             ]);
     
-            // Log::info('Request data validated successfully', ['validated_data' => $validatedData]);
-
-            $seat = Seat::where('id', $validatedData['seat_id'])
-                        ->where('room_id', $validatedData['room_id'])
-                        ->first();
+            Log::info('Request data validated successfully', ['validated_data' => $validatedData]);
     
+            // Fetch the seat using the provided seat_id
+            $seat = Seat::find($validatedData['seat_id']);
+            
             if ($seat) {
-                // Log::info('Seat found', ['seat' => $seat]);
+                Log::info('Seat found', ['seat' => $seat]);
+                
+                // Fetch the selected room
+                $selectedRoom = SelectedRoom::where('room_id', $validatedData['room_id'])
+                                            ->where('id', $seat->selected_room_id)
+                                            ->first();
+                                            
+                if ($selectedRoom) {
+                    Log::info('Selected room found', ['selected_room' => $selectedRoom]);
+                    
+                    // Ensure seat has an applicant assigned
+                    if ($seat->applicant_id !== null) {
+                        // Update the pivot table to set status to not_assigned
+                        $exam = Exam::find($selectedRoom->exam_id);
+                        if ($exam) {
+                            $exam->applicants()->updateExistingPivot($seat->applicant_id, ['status' => 'not_assigned']);
+                        }
     
-                $seat->applicant_id = null;
-                $seat->save();
+                        // Remove the applicant from the seat
+                        $seat->applicant_id = null;
+                        $seat->save();
     
-                // Log::info('Applicant removed from seat successfully');
-                return response()->json(['success' => true]);
+                        Log::info('Applicant removed from seat successfully');
+                        return response()->json(['success' => true]);
+                    } else {
+                        Log::warning('No applicant assigned to this seat', ['seat' => $seat]);
+                        return response()->json(['success' => false, 'message' => 'No applicant assigned to this seat.'], 404);
+                    }
+                } else {
+                    Log::warning('Selected room not found', ['seat' => $seat, 'room_id' => $validatedData['room_id']]);
+                    return response()->json(['success' => false, 'message' => 'Selected room not found.'], 404);
+                }
             } else {
-                Log::warning('Seat not found', ['seat_id' => $validatedData['seat_id'], 'room_id' => $validatedData['room_id']]);
+                Log::warning('Seat not found', ['seat_id' => $validatedData['seat_id']]);
                 return response()->json(['success' => false, 'message' => 'Seat not found.'], 404);
             }
         } catch (\Illuminate\Validation\ValidationException $e) {

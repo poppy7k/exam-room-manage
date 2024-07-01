@@ -30,6 +30,6 @@ class Exam extends Model
 
     public function applicants()
     {
-        return $this->hasMany(Applicant::class, 'exam_id');
+        return $this->belongsToMany(Applicant::class);
     }
 }

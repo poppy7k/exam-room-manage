@@ -32,7 +32,7 @@ class SelectedRoom extends Model
 
     public function applicants()
     {
-        return $this->hasMany(Applicant::class, 'room_id', 'room_id');
+        return $this->hasManyThrough(Applicant::class, Seat::class, 'selected_room_id', 'id', 'id', 'applicant_id');
     }
 
     public function staffs()

@@ -325,6 +325,20 @@ function showApplicantModal(seatId, seatRecordId, hasApplicant) {
     document.getElementById('applicants-modal').classList.remove('hidden');
 }
 
+document.getElementById('close-applicants-modal-btn').addEventListener('click', function() {
+    document.getElementById('applicants-modal').classList.add('hidden');
+});
+
+document.getElementById('save-applicant-to-seat-btn').addEventListener('click', function() {
+    const selectedApplicant = document.querySelector('input[name="applicant"]:checked');
+    if (selectedApplicant) {
+        saveApplicantToSeat(currentSeatId, selectedApplicant.value);
+        document.getElementById('applicants-modal').classList.add('hidden');
+    } else {
+        alert('Please select an applicant.');
+    }
+});
+
 function saveApplicantToSeat(seatId, applicantId) {
     console.log('Saving applicant to seat:', { seatId, applicantId, roomId });
     fetch(`/save-applicant-to-seat`, {
@@ -358,7 +372,6 @@ function saveApplicantToSeat(seatId, applicantId) {
         alert('An error occurred while assigning applicant to seat.');
     });
 }
-
 
 function removeApplicantFromSeat(seatId) {
     console.log('Removing applicant from seat:', { seatId: seatId, roomId });
@@ -394,8 +407,8 @@ function removeApplicantFromSeat(seatId) {
 }
 
 function fetchApplicantsWithoutSeats() {
-    console.log('Fetching applicants without seats for room:', roomId);
-    fetch(`/get-applicants-without-seats/${roomId}`)
+    console.log('Fetching applicants without seats for room:', roomId, 'and exam:', examId);
+    fetch(`/get-applicants-without-seats/${examId}/${roomId}`)
         .then(response => {
             console.log('Fetch response:', response);
             if (!response.ok) {
@@ -423,6 +436,7 @@ function fetchApplicantsWithoutSeats() {
             alert('An error occurred while fetching applicants.');
         });
 }
+
 function updateValidSeatCountInDB(validSeatCount) {
     fetch(`/update-valid-seat-count`, {
         method: 'POST',
