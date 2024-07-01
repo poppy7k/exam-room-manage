@@ -3,62 +3,21 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
+use App\Models\ExamRoomInformation;
+use App\Models\Applicant;
 class ApplicantController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
-    }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function getApplicantsWithoutSeats($roomId)
     {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        // Log::info('Fetching applicants without seats for room:', ['room_id' => $roomId]);
+        $room = ExamRoomInformation::findOrFail($roomId);
+        $applicantsWithoutSeats = Applicant::whereDoesntHave('seats', function($query) use ($roomId) {
+            $query->where('room_id', $roomId);
+        })->get();
+        
+        // Log::info('Applicants without seats:', $applicantsWithoutSeats->toArray());
+        
+        return response()->json($applicantsWithoutSeats);
     }
 }

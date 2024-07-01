@@ -58,8 +58,6 @@ class ExamRoomInformationController extends Controller
     {
         $building = Building::findOrFail($buildingId);
         $nextRoomId = ExamRoomInformation::where('building_id', $buildingId)->latest()->first();
-        // $latestRoomId = ExamRoomInformation::where('building_code', $buildingId)->max('id');
-        // $nextRoomId = $latestRoomId + 1;
         $rooms = $building->examRoomInformation();
 
         $sort = $request->get('sort', 'room_name_asc');
@@ -120,24 +118,6 @@ class ExamRoomInformationController extends Controller
             return response()->json(['success' => false, 'message' => 'Room not found.'], 404);
         }
     }
-
-    // public function showRoomDetail($buildingId, $roomId)
-    // {
-    //     $building = Building::findOrFail($buildingId);
-    //     $room = ExamRoomInformation::findOrFail($roomId);
-    //     $breadcrumbs = [
-    //         ['url' => '/', 'title' => 'หน้าหลัก'],
-    //         ['url' => '/buildings/'.$buildingId.'/room-list', 'title' => $building->building_th],
-    //         ['url' => '/buildings/'.$buildingId.'/room-list/'.$roomId, 'title' => $room->room],  
-    //     ];
-    
-    //     return view('pages.room-detail', [
-    //         'buildingId' => $buildingId,
-    //         'roomId' => $roomId,
-    //         'breadcrumbs' => $breadcrumbs,
-    //         'room' => $room,
-    //     ]);
-    // }
 
     public function showRoomDetail($buildingId, $roomId)
     {

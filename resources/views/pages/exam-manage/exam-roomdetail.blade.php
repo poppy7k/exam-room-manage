@@ -7,8 +7,8 @@
             <p class="font-semibold align-baseline text-2xl">
                 {{ $selectedRooms->room->room }}
             </p>
-            <p class="font-normal text-md ml-4 mt-1.5"> ชั้น </p>
-            <p class="font-bold ml-1 mt-1.5"> {{ $selectedRooms->room->floor }}</p>
+            {{-- <p class="font-normal text-md ml-4 mt-1.5"> ชั้น </p>
+            <p class="font-bold ml-1 mt-1.5"> {{ $room->floor }}</p> --}}
             <p class="font-normal text- justify-start ml-4 mt-1.5"> ที่นั่งว่าง </p>
             <p id="validSeatCount" class="font-bold ml-1 mt-1.5 text-green-800"> {{ $selectedRooms->room->valid_seat }}</p>
             <p class="font-normal text- justify-start ml-4 mt-1.5"> ที่นั่งทั้งหมด </p>
@@ -22,6 +22,21 @@
             <x-buttons.primary id="select-examiners-btn" class="px-5 py-2 rounded-lg bg-blue-500 text-white">
                 เลือกผู้คุมสอบ
             </x-buttons.primary>
+        </div>
+    </div>
+    <div>
+        ชั้น: {{$room->floor}} , ชื่อห้อง: {{$room->room}} , ชื่อตึก: {{ $building->building_th}}
+    </div>
+    <div class="flex flex-wrap my-4">
+        <div class="mr-4">
+            @foreach($departments as $department)
+                <span>ชื่อฝ่ายงาน: {{ $department }}@if(!$loop->last),@endif</span>
+            @endforeach
+        </div>
+        <div>
+            @foreach($positions as $position)
+                <span>ชื่อตำแหน่งสอบ: {{ $position }}@if(!$loop->last),@endif</span>
+            @endforeach
         </div>
     </div>
     <div class="bg-white shadow-md my-3 rounded-lg max-h-screen flex flex-col">
