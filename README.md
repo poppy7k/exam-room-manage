@@ -16,10 +16,22 @@ Create sail alias first if you haven't
 alias sail='[ -f sail ] && sh sail || sh vendor/bin/sail'
 ```
 
+Create a .env file
+
+```sh
+cp .env.example .env
+```
+
 Run all container
 
 ```sh
 sail up -d
+```
+
+Generate an application key in .env
+
+```sh
+sail artisan key:generate
 ```
 
 Install node dependencies
@@ -32,4 +44,16 @@ Run dev server
 
 ```sh
 sail yarn dev
+```
+
+Run database migrations and seeders to set up the database
+
+```sh
+sail artisan migrate:fresh --seed
+```
+
+Link Storage
+
+```sh
+sail artisan storage:link
 ```

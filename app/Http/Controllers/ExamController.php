@@ -38,6 +38,7 @@ class ExamController extends Controller
             'exam_date' => 'required|date',
             'exam_start_time' => 'required|date_format:H:i',
             'exam_end_time' => 'required|date_format:H:i',
+            'subject' => 'required|string',
         ]);
         $organizations = ["สำนักกองบริหารกลาง"];
         $randomOrganization = $organizations[array_rand($organizations)];
@@ -54,6 +55,7 @@ class ExamController extends Controller
             'organization' => $randomOrganization,
             'exam_takers_quantity' => $applicantCount,
             'status' => 'pending',
+            'subject' => $validatedData['subject'],
         ]);
 
         // $this->duplicateStaffAssignments($exam);
@@ -577,6 +579,7 @@ class ExamController extends Controller
                 'exam_start_time' => $request->exam_date . ' ' . $request->exam_start_time,
                 'exam_end_time' => $request->exam_date . ' ' . $request->exam_end_time,
                 'exam_takers_quantity' => $applicantCount,
+                'subject' => $request->subject,
             ]);
     
             // Log::info('Exam updated', ['exam' => $exam]);

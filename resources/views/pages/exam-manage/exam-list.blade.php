@@ -44,6 +44,7 @@
                 :exam_takers_quantity="$exam->exam_takers_quantity"
                 :status="$exam->status"
                 :organization="$exam->organization"
+                :subject="$exam->subject"
             />
         @empty
 

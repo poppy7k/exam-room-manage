@@ -65,6 +65,11 @@
                 @endforeach
              </datalist>
         </div>
+        <div class="mb-4">
+            <label for="subject" class="block font-semibold">ชื่อวิชา</label>
+            <input type="text" id="subject" name="subject" placeholder="กรอกชื่อวิชา" required class="w-full my-2 px-3 py-2 rounded ring-1 shadow-sm ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-green-600 transition-all duration-300 outline-none">
+            <span id="subject_error" class="error-message" style="color: red; display: none;">* กรุณากรอกชื่อวิชาให้ถูกต้อง</span>
+        </div>
         <x-buttons.primary type="submit" class="py-2 w-full hover:scale-105 justify-center">
             สร้างการสอบ
         </x-buttons.primary>
