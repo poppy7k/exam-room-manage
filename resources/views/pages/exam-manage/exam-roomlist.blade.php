@@ -2,7 +2,7 @@
 
 @section('content')
 
-<div class="flex flex-col divide-gray-300 w-full">
+<div class="flex flex-col divide-gray-300 w-full ">
     <div class="flex justify-between items-center">
         <div class="flex"> 
             <p class="font-semibold text-2xl justify-start">
@@ -69,7 +69,7 @@
     </div>
 @endif
 
-<div class="flex items-center justify-center fixed rounded-lg bottom-0 transform w-10/12 z-20 ">
+<div class="flex items-center justify-center fixed rounded-lg -bottom-36 transform w-10/12 z-20">
     <div class="flex gap-3 bg-white rounded-lg border-1 border-gray-50 my-8 text-black shadow-xl">
         <p class="px-5 py-3 my-auto">
             ห้องที่เลือก

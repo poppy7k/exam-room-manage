@@ -5,6 +5,7 @@
     'building_th',
     'building_id',
     'valid_seat',
+    'selected_seat',
     'examId',
     'buildingId'
 ])

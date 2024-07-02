@@ -104,12 +104,13 @@ class ExamController extends Controller
     public function showExamBuildingList($examId, Request $request)
     {
         $exams = Exam::findOrFail($examId);
-        $sort = $request->get('sort', 'alphabet_th'); // Default sort by building_th
+        $sort = $request->get('sort', 'alphabet_th');
+        
         $buildings = Building::query()
             ->select('buildings.*')
             ->selectSub(
                 ExamRoomInformation::query()
-                    ->selectRaw('SUM(valid_seat) - COALESCE(SUM(selected_rooms.applicant_seat_quantity), 0) as total_valid_seats')
+                ->selectRaw('SUM(valid_seat) - COALESCE(SUM(selected_rooms.applicant_seat_quantity), 0) - (150 * GREATEST(COUNT(selected_rooms.id) - 1, 0)) AS total_valid_seats')
                     ->leftJoin('selected_rooms', function($join) use ($exams) {
                         $join->on('exam_room_information.id', '=', 'selected_rooms.room_id')
                             ->leftJoin('exams', 'selected_rooms.exam_id', '=', 'exams.id')
@@ -117,9 +118,11 @@ class ExamController extends Controller
                             ->where('exams.exam_start_time', '<', $exams->exam_end_time)
                             ->where('exams.exam_end_time', '>', $exams->exam_start_time);
                     })
-                    ->whereColumn('exam_room_information.building_id', 'buildings.id'),
+                    ->whereColumn('exam_room_information.building_id', 'buildings.id')
+                    ->groupBy('exam_room_information.building_id'),
                 'total_valid_seats'
-            );
+                );
+    
         switch ($sort) {
             case 'alphabet_th':
                 $buildings->orderBy('building_th');
@@ -136,6 +139,7 @@ class ExamController extends Controller
             default:
                 $buildings->orderBy('building_th');
         }
+    
         $buildings = $buildings->paginate(8);
     
         $breadcrumbs = [
@@ -144,9 +148,10 @@ class ExamController extends Controller
             ['url' => '/exams/'.$examId.'/buildings', 'title' => ''.$exams->department_name],
         ];
         session()->flash('sidebar', '3');
-
-        return view('pages.exam-manage.exam-buildinglist', compact('breadcrumbs', 'exams','buildings'));
+    
+        return view('pages.exam-manage.exam-buildinglist', compact('breadcrumbs', 'exams', 'buildings'));
     }
+    
     
     public function showExamRoomList($examId, $buildingId, Request $request)
     {
@@ -180,8 +185,8 @@ class ExamController extends Controller
                                                 ->where('exams.exam_start_time', '<', $exams->exam_end_time)
                                                 ->where('exams.exam_end_time', '>', $exams->exam_start_time);
                                         })
-                                        ->first();
-            $room->valid_seat = $selectedRoom ? $room->valid_seat - $selectedRoom->applicant_seat_quantity : $room->valid_seat;
+                                        ->sum('selected_rooms.applicant_seat_quantity');
+            $room->valid_seat = $selectedRoom ? $room->valid_seat - $selectedRoom : $room->valid_seat;
             Log::info('Room ID: '.$room->id.' Exam Valid Seat: '.$room->valid_seat);
             return $room;
         });

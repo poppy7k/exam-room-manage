@@ -33,16 +33,14 @@
     </div>
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-4 mt-2">
         @forelse ($buildings as $building)
-            @php
-                $totalValidSeats = $building->total_valid_seats;
-            @endphp
             <x-exam-building-card
                 :building_image="asset('storage/building_images/' . ($building->building_image ?? 'default/default-building-image.jpg'))"
                 {{-- :building_image="'https://images.unsplash.com/photo-1554629947-334ff61d85dc?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1024&h=1280&q=80'" --}}
                 :building_th="$building->building_th"
                 :building_en="$building->building_en"
                 :building_id="$building->id"
-                :valid_seat="$totalValidSeats"
+                :valid_seat="$building->total_valid_seats"
+                :selected_seat="$building->total_applicant_seat_quantity"
                 :examId="$exams->id"
                 :buildingId="$building->id"
             />
