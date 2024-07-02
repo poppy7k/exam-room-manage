@@ -16,7 +16,7 @@ class Seat extends Model
         'column',
     ];
 
-    public function selected_room()
+    public function selectedRoom()
     {
         return $this->belongsTo(SelectedRoom::class, 'selected_room_id');
     }

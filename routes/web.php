@@ -72,7 +72,7 @@ Route::get('/calendar/exams', [ExamController::class, 'getExam'])->name('exam.ge
 Route::get('/staffs', [StaffController::class, 'index'])->name('staffs.index');
 Route::post('/save-staffs', [StaffController::class, 'saveStaffs']);
 
-Route::get('/get-applicants-without-seats/{roomId}', [ApplicantController::class, 'getApplicantsWithoutSeats']);//
+Route::get('/get-applicants-without-seats/{examId}/{roomId}', [ApplicantController::class, 'getApplicantsWithoutSeats']);
 Route::post('/save-applicant-to-seat', [SeatController::class, 'saveApplicantToSeat']);
 Route::post('/remove-applicant-from-seat', [SeatController::class, 'removeApplicantFromSeat']);
 Route::post('/update-valid-seat-count', [SeatController::class, 'updateValidSeatCount']);

@@ -58,8 +58,11 @@
 <div id="applicants-modal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
     <div class="bg-white rounded-lg p-6 w-1/2">
         <div class="flex justify-between items-center mb-4">
-            <h3 class="text-xl font-semibold">เลือกผู้เข้าสอบ</h3>
+            <h3 class="text-xl font-semibold"></h3>
             <button id="close-applicants-modal-btn" class="text-red-500">&times;</button>
+        </div>
+        <div id="applicant-info" class="mb-4 hidden">
+            <!-- Applicant info will be displayed here -->
         </div>
         <div id="applicant-list" class="max-h-64 overflow-y-auto">
             <!-- Applicant list will be populated here -->
@@ -314,8 +317,13 @@ document.addEventListener('DOMContentLoaded', function() {
 function showApplicantModal(seatId, seatRecordId, hasApplicant) {
     currentSeatId = seatId;
 
+    const modalTitle = document.querySelector('#applicants-modal h3');
     const applicantList = document.getElementById('applicant-list');
+    const saveButton = document.getElementById('save-applicant-to-seat-btn');
+    const applicantInfo = document.getElementById('applicant-info');
     applicantList.innerHTML = '';
+    applicantInfo.innerHTML = '';
+    applicantInfo.classList.add('hidden');
 
     let availableApplicants = applicants.filter(applicant => !seats.find(seat => seat.applicant_id === applicant.id));
 
@@ -330,17 +338,53 @@ function showApplicantModal(seatId, seatRecordId, hasApplicant) {
     });
 
     if (hasApplicant) {
+        saveButton.classList.add('hidden'); 
+        modalTitle.textContent = 'นำผู้เข้าสอบออกจากที่นั้ง'; 
+
+        const seat = seats.find(seat => seat.row === parseInt(seatId.split('-')[0]) && seat.column === (seatId.split('-')[1].charCodeAt(0) - 64));
+        const applicant = applicants.find(applicant => applicant.id === seat.applicant_id);
+
+        if (applicant) {
+            applicantInfo.innerHTML = `
+                <div>
+                    <p><strong>ID Number:</strong> ${applicant.id_number}</p>
+                    <p><strong>ID Card:</strong> ${applicant.id_card}</p>
+                    <p><strong>Name:</strong> ${applicant.name}</p>
+                    <p><strong>Degree:</strong> ${applicant.degree}</p>
+                    <p><strong>Position:</strong> ${applicant.position}</p>
+                    <p><strong>Department:</strong> ${applicant.department}</p>
+                </div>
+            `;
+            applicantInfo.classList.remove('hidden');
+        }
+
         const removeButton = document.createElement('button');
         removeButton.textContent = 'Remove Applicant';
         removeButton.classList.add('px-4', 'py-2', 'bg-red-500', 'text-white', 'rounded', 'mt-4');
         removeButton.onclick = () => removeApplicantFromSeat(seatRecordId);
         applicantList.appendChild(removeButton);
     } else {
+        saveButton.classList.remove('hidden'); 
+        modalTitle.textContent = 'เลือกผู้เข้าสอบ'; 
         fetchApplicantsWithoutSeats();
     }
 
     document.getElementById('applicants-modal').classList.remove('hidden');
 }
+
+document.getElementById('close-applicants-modal-btn').addEventListener('click', function() {
+    document.getElementById('applicants-modal').classList.add('hidden');
+});
+
+document.getElementById('save-applicant-to-seat-btn').addEventListener('click', function() {
+    const selectedApplicant = document.querySelector('input[name="applicant"]:checked');
+    if (selectedApplicant) {
+        saveApplicantToSeat(currentSeatId, selectedApplicant.value);
+        document.getElementById('applicants-modal').classList.add('hidden');
+    } else {
+        alert('Please select an applicant.');
+    }
+});
 
 function saveApplicantToSeat(seatId, applicantId) {
     console.log('Saving applicant to seat:', { seatId, applicantId, roomId });
@@ -376,7 +420,6 @@ function saveApplicantToSeat(seatId, applicantId) {
     });
 }
 
-
 function removeApplicantFromSeat(seatId) {
     console.log('Removing applicant from seat:', { seatId: seatId, roomId });
     fetch(`/remove-applicant-from-seat`, {
@@ -411,8 +454,8 @@ function removeApplicantFromSeat(seatId) {
 }
 
 function fetchApplicantsWithoutSeats() {
-    console.log('Fetching applicants without seats for room:', roomId);
-    fetch(`/get-applicants-without-seats/${roomId}`)
+    console.log('Fetching applicants without seats for room:', roomId, 'and exam:', examId);
+    fetch(`/get-applicants-without-seats/${examId}/${roomId}`)
         .then(response => {
             console.log('Fetch response:', response);
             if (!response.ok) {
@@ -440,6 +483,7 @@ function fetchApplicantsWithoutSeats() {
             alert('An error occurred while fetching applicants.');
         });
 }
+
 function updateValidSeatCountInDB(validSeatCount) {
     fetch(`/update-valid-seat-count`, {
         method: 'POST',
