@@ -29,13 +29,15 @@
     </div>
     <div class="flex flex-wrap my-4">
         <div class="mr-4">
+            ชื่อฝ่ายงาน:
             @foreach($departments as $department)
-                <span>ชื่อฝ่ายงาน: {{ $department }}@if(!$loop->last),@endif</span>
+                <span>{{ $department }}@if(!$loop->last),@endif</span>
             @endforeach
         </div>
         <div>
+            ชื่อตำแหน่งสอบ:
             @foreach($positions as $position)
-                <span>ชื่อตำแหน่งสอบ: {{ $position }}@if(!$loop->last),@endif</span>
+                <span>{{ $position }}@if(!$loop->last),@endif</span>
             @endforeach
         </div>
     </div>
@@ -81,8 +83,8 @@ let applicants = {!! json_encode($applicants) !!};
 let seats = {!! json_encode($seats) !!};
 let currentSeatId = '';
 
-console.log('Applicants:', applicants);
-console.log('Seats:', seats);
+//console.log('Applicants:', applicants);
+//console.log('Seats:', seats);
 
 function toExcelColumn(n) {
     let result = '';
@@ -297,7 +299,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-function showApplicantModal(seatId, seatRecordId, hasApplicant) {
+function showApplicantModal(seatId, seatRecordId, hasApplicant, examId) {
     currentSeatId = seatId;
 
     const modalTitle = document.querySelector('#applicants-modal h3');
@@ -362,15 +364,15 @@ document.getElementById('close-applicants-modal-btn').addEventListener('click', 
 document.getElementById('save-applicant-to-seat-btn').addEventListener('click', function() {
     const selectedApplicant = document.querySelector('input[name="applicant"]:checked');
     if (selectedApplicant) {
-        saveApplicantToSeat(currentSeatId, selectedApplicant.value);
+        saveApplicantToSeat(currentSeatId, selectedApplicant.value, examId);
         document.getElementById('applicants-modal').classList.add('hidden');
     } else {
         alert('Please select an applicant.');
     }
 });
 
-function saveApplicantToSeat(seatId, applicantId) {
-    console.log('Saving applicant to seat:', { seatId, applicantId, roomId });
+function saveApplicantToSeat(seatId, applicantId, examId) {
+    console.log('Saving applicant to seat:', { seatId, applicantId, roomId, examId });
     fetch(`/save-applicant-to-seat`, {
         method: 'POST',
         headers: {
@@ -380,7 +382,8 @@ function saveApplicantToSeat(seatId, applicantId) {
         body: JSON.stringify({
             seat_id: seatId,
             applicant_id: applicantId,
-            room_id: roomId
+            room_id: roomId,
+            exam_id: examId 
         })
     })
     .then(response => response.json())
@@ -394,7 +397,7 @@ function saveApplicantToSeat(seatId, applicantId) {
             alert('Applicant assigned to seat successfully.');
         } else {
             console.error('Server response:', data);
-            alert('Failed to assign applicant to seat.');
+            alert('Failed to assign applicant to seat: ' + data.message);
         }
     })
     .catch(error => {
@@ -483,7 +486,7 @@ function updateValidSeatCountInDB(validSeatCount) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            console.log('Valid seat count updated successfully in the database.');
+            //console.log('Valid seat count updated successfully in the database.');
         } else {
             console.error('Failed to update valid seat count in the database.', data);
         }
