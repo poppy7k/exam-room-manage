@@ -110,7 +110,7 @@ class ExamController extends Controller
             ->select('buildings.*')
             ->selectSub(
                 ExamRoomInformation::query()
-                ->selectRaw('SUM(valid_seat) - COALESCE(SUM(selected_rooms.applicant_seat_quantity), 0) - (150 * GREATEST(COUNT(selected_rooms.id) - 1, 0)) AS total_valid_seats')
+                ->selectRaw('SUM(valid_seat) - COALESCE(SUM(selected_rooms.applicant_seat_quantity), 0) - (COALESCE(MAX((SELECT valid_seat FROM exam_room_information WHERE id = selected_rooms.room_id)), 0) * GREATEST(COUNT(selected_rooms.id) - 1, 0)) AS total_valid_seats')
                     ->leftJoin('selected_rooms', function($join) use ($exams) {
                         $join->on('exam_room_information.id', '=', 'selected_rooms.room_id')
                             ->leftJoin('exams', 'selected_rooms.exam_id', '=', 'exams.id')
