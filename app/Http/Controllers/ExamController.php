@@ -215,7 +215,14 @@ class ExamController extends Controller
         })->get();
         // Log::info('Seats:', $seats->toArray());
     
-        $applicants = Applicant::whereIn('id', $seats->pluck('applicant_id'))->get();
+        // $applicants = Applicant::whereIn('id', $seats->pluck('applicant_id'))->get();
+        $applicants = Applicant::whereIn('id', $seats->pluck('applicant_id'))->get()->map(function ($applicant) use ($examId) {
+            $applicant->exam_id = $examId;
+            return $applicant;
+        });
+        $applicantExams = DB::table('applicant_exam')
+            ->whereIn('applicant_id', $applicants->pluck('id'))
+            ->get();
     
         $staffs = $selectedRooms ? $selectedRooms->staffs : collect();
     
@@ -251,7 +258,7 @@ class ExamController extends Controller
     
         session()->flash('sidebar', '3');
     
-        return view('pages.exam-manage.exam-roomdetail', compact('selectedRooms','building','exam', 'room', 'breadcrumbs', 'applicants', 'staffs', 'seats', 'assignedStaffs','departments','positions'));
+        return view('pages.exam-manage.exam-roomdetail', compact('applicantExams','selectedRooms','building','exam', 'room', 'breadcrumbs', 'applicants', 'staffs', 'seats', 'assignedStaffs','departments','positions'));
     }
     
     public function updateExamStatus(Request $request)

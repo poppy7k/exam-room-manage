@@ -140,17 +140,17 @@ class SeatController extends Controller
             }
     
             // Check for time conflicts
-            $conflictExists = Exam::where('id', '!=', $exam->id)
-                ->where('exam_date', $exam->exam_date)
-                ->where('exam_start_time', '<=', $exam->exam_end_time)
-                ->where('exam_end_time', '>=', $exam->exam_start_time)
-                ->whereHas('applicants', function($query) use ($applicantId) {
-                    $query->where('applicant_id', $applicantId);
-                })->exists();
+            // $conflictExists = Exam::where('id', '!=', $exam->id)
+            //     ->where('exam_date', $exam->exam_date)
+            //     ->where('exam_start_time', '<=', $exam->exam_end_time)
+            //     ->where('exam_end_time', '>=', $exam->exam_start_time)
+            //     ->whereHas('applicants', function($query) use ($applicantId) {
+            //         $query->where('applicant_id', $applicantId);
+            //     })->exists();
     
-            if ($conflictExists) {
-                return response()->json(['success' => false, 'message' => 'Applicant has a time conflict with another exam.'], 400);
-            }
+            // if ($conflictExists) {
+            //     return response()->json(['success' => false, 'message' => 'Applicant has a time conflict with another exam.'], 400);
+            // }
     
             // Assign the applicant to the seat
             $seat->applicant_id = $applicantId;

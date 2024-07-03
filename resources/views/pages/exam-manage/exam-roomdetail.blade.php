@@ -80,6 +80,7 @@ let validSeatCount = {{ $selectedRooms->room->valid_seat }};
 const roomId = {{ $selectedRooms->room->id }};
 const examId = {{ $exam->id }};
 let applicants = {!! json_encode($applicants) !!};
+let applicantExams = {!! json_encode($applicantExams) !!};
 let seats = {!! json_encode($seats) !!};
 let currentSeatId = '';
 
@@ -104,7 +105,16 @@ function addSeats() {
 
     let seatComponents = '';
     let assignedSeats = 0;
+    
+    const colors = ['bg-green-500', 'bg-blue-500', 'bg-red-500', 'bg-yellow-500'];
+    let examGroups = {}; 
 
+    applicantExams.forEach((applicantExam) => {
+        if (!examGroups[applicantExam.exam_id]) {
+            examGroups[applicantExam.exam_id] = colors[Object.keys(examGroups).length % colors.length];
+        }
+    });
+    //console.log('Exam Groups:', examGroups);
     for (let i = 0; i < rows; i++) {
         for (let j = 0; j < columns; j++) {
             const seatId = `${i + 1}-${toExcelColumn(j)}`;
@@ -114,14 +124,16 @@ function addSeats() {
 
             if (seat) {
                 if (applicant) {
+                    const applicantExam = applicantExams.find(ae => ae.applicant_id === applicant.id);
+                    const bgColor = applicantExam ? examGroups[applicantExam.exam_id] : 'bg-gray-500';
                     seatComponent = `
                         <div id="seat-${seatId}" class="seat p-4 text-center cursor-pointer" onclick="showApplicantModal('${seatId}', ${seat.id}, true)">
-                            <x-seats.assigned applicant="${applicant.id_number}">
+                            <x-seats.assigned :bgColor="'${bgColor}'" applicant="${applicant.id_number}">
                                 ${seatId}
                             </x-seats.assigned>
                         </div>
                     `;
-                    assignedSeats++; 
+                    assignedSeats++;
                 } else {
                     seatComponent = `
                         <div id="seat-${seatId}" class="seat p-4 text-center cursor-pointer" onclick="showApplicantModal('${seatId}', null, false)">
