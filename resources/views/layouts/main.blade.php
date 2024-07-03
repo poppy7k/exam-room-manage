@@ -9,6 +9,9 @@
         @include('components.modals.examiner-select')
         @include('components.modals.exam-edit')
     </div>
+    <div id="modal">
+        @include('components.modals.applicant-modal')
+    </div>
     @include('layouts.navbar')
     <main class="flex flex-grow h-full">
         @include('layouts.sidebar')

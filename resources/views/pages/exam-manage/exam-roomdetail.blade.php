@@ -3,40 +3,53 @@
 @section('content')
 <div class="flex flex-col w-full max-h-full">
     <div class="flex justify-between items-center">
-        <div class="flex">
-            <p class="font-semibold align-baseline text-2xl">
-                {{ $room->room }}
-            </p>
-            {{-- <p class="font-normal text-md ml-4 mt-1.5"> ชั้น </p>
-            <p class="font-bold ml-1 mt-1.5"> {{ $room->floor }}</p> --}}
-            <p class="font-normal text- justify-start ml-4 mt-1.5"> ที่นั่งว่าง </p>
-            <p id="validSeatCount" class="font-bold ml-1 mt-1.5 text-green-800"> {{ $room->valid_seat }}</p>
-            <p class="font-normal text- justify-start ml-4 mt-1.5"> ที่นั่งทั้งหมด </p>
-            <p id="totalSeatCount" class="font-bold ml-1 mt-1.5"> {{ $room->total_seat }}</p>
-            <p class="font-normal text- justify-start ml-4 mt-1.5"> แถว </p>
-            <p id="row-count" class="font-bold ml-1 mt-1.5 text-black"> {{ $room->rows }}</p>
-            <p class="font-normal text- justify-start ml-4 mt-1.5"> คอลัมน์ </p>
-            <p id="column-count" class="font-bold ml-1 mt-1.5 text-black"> {{ $room->columns }}</p>
+        <div class="flex flex-col">
+            <div class="flex">
+                <p class="font-semibold align-baseline text-2xl">
+                    {{ $room->room }}
+                </p>
+                {{-- <p class="font-normal text-md ml-4 mt-1.5"> ชั้น </p>
+                <p class="font-bold ml-1 mt-1.5"> {{ $room->floor }}</p> --}}
+                <p class="font-normal text- justify-start ml-4 mt-1.5"> ที่นั่งว่าง </p>
+                <p id="validSeatCount" class="font-bold ml-1 mt-1.5 text-green-800"> {{ $room->valid_seat }}</p>
+                <p class="font-normal text- justify-start ml-4 mt-1.5"> ที่นั่งทั้งหมด </p>
+                <p id="totalSeatCount" class="font-bold ml-1 mt-1.5"> {{ $room->total_seat }}</p>
+                <p class="font-normal text- justify-start ml-4 mt-1.5"> แถว </p>
+                <p id="row-count" class="font-bold ml-1 mt-1.5 text-black"> {{ $room->rows }}</p>
+                <p class="font-normal text- justify-start ml-4 mt-1.5"> คอลัมน์ </p>
+                <p id="column-count" class="font-bold ml-1 mt-1.5 text-black"> {{ $room->columns }}</p>
+                <p class="font-normal text- justify-start ml-4 mt-1.5"> อาคาร </p>
+                <p id="column-count" class="font-bold ml-1 mt-1.5 text-black"> {{ $room->building->building_th }}</p>
+            </div>
+            <div class="flex flex-wrap">
+                <div class="mr-4">
+                    @foreach($departments as $department)
+                        <span class="flex">ฝ่ายงาน 
+                            <p class="ml-1 font-bold">{{ $department }}</p>@if(!$loop->last),@endif</span>
+                    @endforeach
+                </div>
+                <div>
+                    @foreach($positions as $position)
+                        <span class="flex">ตำแหน่ง 
+                            <p class="ml-1 font-bold">{{ $position }}</p>@if(!$loop->last),@endif</span>
+                    @endforeach
+                </div>
+            </div>
         </div>
-        <div class="flex">
+        <div class="flex align-center gap-8">
+            <div class="flex gap-4">
+                <x-buttons.danger type="button" onclick="" class="pl-2 py-2 z-10 rounded-lg fill-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="translate-x-0.5" id="Outline" viewBox="0 0 24 24" width="24" height="24"><path d="M21,4H17.9A5.009,5.009,0,0,0,13,0H11A5.009,5.009,0,0,0,6.1,4H3A1,1,0,0,0,3,6H4V19a5.006,5.006,0,0,0,5,5h6a5.006,5.006,0,0,0,5-5V6h1a1,1,0,0,0,0-2ZM11,2h2a3.006,3.006,0,0,1,2.829,2H8.171A3.006,3.006,0,0,1,11,2Zm7,17a3,3,0,0,1-3,3H9a3,3,0,0,1-3-3V6H18Z"/><path d="M10,18a1,1,0,0,0,1-1V11a1,1,0,0,0-2,0v6A1,1,0,0,0,10,18Z"/><path d="M14,18a1,1,0,0,0,1-1V11a1,1,0,0,0-2,0v6A1,1,0,0,0,14,18Z"/></svg>
+                    <x-tooltip title="ลบผู้เข้าสอบออกจากที่นั่ง" class="group-hover:-translate-x-[5.5rem] group-hover:translate-y-8"></x-tooltip>
+                </x-buttons.danger>
+                <x-buttons.primary type="button" onclick="" class="pl-2 py-2 z-10 rounded-lg fill-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="translate-x-1" id="Outline" viewBox="0 0 24 24" width="24" height="24"><path d="M23,11H21V9a1,1,0,0,0-2,0v2H17a1,1,0,0,0,0,2h2v2a1,1,0,0,0,2,0V13h2a1,1,0,0,0,0-2Z"/><path d="M9,12A6,6,0,1,0,3,6,6.006,6.006,0,0,0,9,12ZM9,2A4,4,0,1,1,5,6,4,4,0,0,1,9,2Z"/><path d="M9,14a9.01,9.01,0,0,0-9,9,1,1,0,0,0,2,0,7,7,0,0,1,14,0,1,1,0,0,0,2,0A9.01,9.01,0,0,0,9,14Z"/></svg>
+                    <x-tooltip title="เพิ่มผู้เข้าสอบลงที่นั่ง" class="group-hover:-translate-x-20 group-hover:translate-y-8"></x-tooltip>
+                </x-buttons.primary>
+            </div>
             <x-buttons.primary id="select-examiners-btn" class="px-5 py-2 rounded-lg text-white">
                 เลือกผู้คุมสอบ
             </x-buttons.primary>
-        </div>
-    </div>
-    <div>
-        ชั้น: {{$room->floor}} , ชื่อห้อง: {{$room->room}} , ชื่อตึก: {{ $room->building->building_th}}
-    </div>
-    <div class="flex flex-wrap my-4">
-        <div class="mr-4">
-            @foreach($departments as $department)
-                <span>ชื่อฝ่ายงาน: {{ $department }}@if(!$loop->last),@endif</span>
-            @endforeach
-        </div>
-        <div>
-            @foreach($positions as $position)
-                <span>ชื่อตำแหน่งสอบ: {{ $position }}@if(!$loop->last),@endif</span>
-            @endforeach
         </div>
     </div>
     <div class="bg-white shadow-md my-3 rounded-lg max-h-screen flex flex-col">
@@ -51,25 +64,6 @@
                 <li>{{ $staff->name }}</li>
             @endforeach
         </ul>
-    </div>
-</div>
-
-<!-- Applicants modal -->
-<div id="applicants-modal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
-    <div class="bg-white rounded-lg p-6 w-1/2">
-        <div class="flex justify-between items-center mb-4">
-            <h3 class="text-xl font-semibold"></h3>
-            <button id="close-applicants-modal-btn" class="text-red-500">&times;</button>
-        </div>
-        <div id="applicant-info" class="mb-4 hidden">
-            <!-- Applicant info will be displayed here -->
-        </div>
-        <div id="applicant-list" class="max-h-64 overflow-y-auto">
-            <!-- Applicant list will be populated here -->
-        </div>
-        <div class="flex justify-end mt-4">
-            <button id="save-applicant-to-seat-btn" class="px-5 py-2 bg-blue-500 text-white rounded">บันทึก</button>
-        </div>
     </div>
 </div>
 
@@ -314,67 +308,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-function showApplicantModal(seatId, seatRecordId, hasApplicant) {
-    currentSeatId = seatId;
 
-    const modalTitle = document.querySelector('#applicants-modal h3');
-    const applicantList = document.getElementById('applicant-list');
-    const saveButton = document.getElementById('save-applicant-to-seat-btn');
-    const applicantInfo = document.getElementById('applicant-info');
-    applicantList.innerHTML = '';
-    applicantInfo.innerHTML = '';
-    applicantInfo.classList.add('hidden');
-
-    let availableApplicants = applicants.filter(applicant => !seats.find(seat => seat.applicant_id === applicant.id));
-
-    availableApplicants.forEach(applicant => {
-        const div = document.createElement('div');
-        div.classList.add('flex', 'items-center', 'gap-2', 'mb-2', 'applicant-item');
-        div.innerHTML = `
-            <input type="radio" name="applicant" value="${applicant.id}" class="applicant-radio">
-            <p>${applicant.name}</p>
-        `;
-        applicantList.appendChild(div);
-    });
-
-    if (hasApplicant) {
-        saveButton.classList.add('hidden'); 
-        modalTitle.textContent = 'นำผู้เข้าสอบออกจากที่นั้ง'; 
-
-        const seat = seats.find(seat => seat.row === parseInt(seatId.split('-')[0]) && seat.column === (seatId.split('-')[1].charCodeAt(0) - 64));
-        const applicant = applicants.find(applicant => applicant.id === seat.applicant_id);
-
-        if (applicant) {
-            applicantInfo.innerHTML = `
-                <div>
-                    <p><strong>ID Number:</strong> ${applicant.id_number}</p>
-                    <p><strong>ID Card:</strong> ${applicant.id_card}</p>
-                    <p><strong>Name:</strong> ${applicant.name}</p>
-                    <p><strong>Degree:</strong> ${applicant.degree}</p>
-                    <p><strong>Position:</strong> ${applicant.position}</p>
-                    <p><strong>Department:</strong> ${applicant.department}</p>
-                </div>
-            `;
-            applicantInfo.classList.remove('hidden');
-        }
-
-        const removeButton = document.createElement('button');
-        removeButton.textContent = 'Remove Applicant';
-        removeButton.classList.add('px-4', 'py-2', 'bg-red-500', 'text-white', 'rounded', 'mt-4');
-        removeButton.onclick = () => removeApplicantFromSeat(seatRecordId);
-        applicantList.appendChild(removeButton);
-    } else {
-        saveButton.classList.remove('hidden'); 
-        modalTitle.textContent = 'เลือกผู้เข้าสอบ'; 
-        fetchApplicantsWithoutSeats();
-    }
-
-    document.getElementById('applicants-modal').classList.remove('hidden');
-}
-
-document.getElementById('close-applicants-modal-btn').addEventListener('click', function() {
-    document.getElementById('applicants-modal').classList.add('hidden');
-});
 
 document.getElementById('save-applicant-to-seat-btn').addEventListener('click', function() {
     const selectedApplicant = document.querySelector('input[name="applicant"]:checked');
