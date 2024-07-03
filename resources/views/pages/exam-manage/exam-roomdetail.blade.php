@@ -30,13 +30,13 @@
     <div class="flex flex-wrap my-4">
         <div class="mr-4">
             ชื่อฝ่ายงาน:
-            @foreach($departments as $department)
+            @foreach(collect($departments)->reverse() as $department)
                 <span>{{ $department }}@if(!$loop->last),@endif</span>
             @endforeach
         </div>
         <div>
             ชื่อตำแหน่งสอบ:
-            @foreach($positions as $position)
+            @foreach(collect($positions)->reverse() as $position)
                 <span>{{ $position }}@if(!$loop->last),@endif</span>
             @endforeach
         </div>
@@ -82,6 +82,7 @@ const examId = {{ $exam->id }};
 let applicants = {!! json_encode($applicants) !!};
 let applicantExams = {!! json_encode($applicantExams) !!};
 let seats = {!! json_encode($seats) !!};
+let invalidSeats = {!! json_encode($selectedRooms->room->invalid_seats) !!};
 let currentSeatId = '';
 
 //console.log('Applicants:', applicants);
@@ -122,7 +123,13 @@ function addSeats() {
             const seat = seats.find(seat => seat.row === (i + 1) && seat.column === (j + 1));
             const applicant = seat ? applicants.find(applicant => applicant.id === seat.applicant_id) : null;
 
-            if (seat) {
+            if (invalidSeats.includes(seatId)) {
+                seatComponent = `
+                    <div id="seat-${seatId}" class="seat p-4 text-center cursor-not-allowed">
+                        <x-seats.unavailable slot="${seatId}" />
+                    </div>
+                `;
+            } else if (seat) {
                 if (applicant) {
                     const applicantExam = applicantExams.find(ae => ae.applicant_id === applicant.id);
                     const bgColor = applicantExam ? examGroups[applicantExam.exam_id] : 'bg-gray-500';
