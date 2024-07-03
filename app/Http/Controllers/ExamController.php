@@ -185,9 +185,15 @@ class ExamController extends Controller
                                                 ->where('exams.exam_start_time', '<', $exams->exam_end_time)
                                                 ->where('exams.exam_end_time', '>', $exams->exam_start_time);
                                         })
+<<<<<<< HEAD
                                         ->sum('selected_rooms.applicant_seat_quantity');
             $room->valid_seat = $selectedRoom ? $room->valid_seat - $selectedRoom : $room->valid_seat;
             Log::info('Room ID: '.$room->id.' Exam Valid Seat: '.$room->valid_seat);
+=======
+                                        ->first();
+            $room->valid_seat = $selectedRoom ? $room->valid_seat - $selectedRoom->applicant_seat_quantity : $room->valid_seat;
+            //Log::info('Room ID: '.$room->id.' Exam Valid Seat: '.$room->valid_seat);
+>>>>>>> e70542ca52395a714ff351601ce9bcd89c45a97f
             return $room;
         });
         
@@ -210,8 +216,14 @@ class ExamController extends Controller
         $room = ExamRoomInformation::findOrFail($selectedRooms->room_id);
         $building = $room->building;
     
-        $seats = Seat::where('selected_room_id', $selectedRoomId)
-                     ->get();
+        // $seats = Seat::where('selected_room_id', $selectedRoomId)
+        //              ->get();
+        $seats = Seat::whereHas('selectedRoom.exam', function ($query) use ($exam, $room) {
+            $query->where('exam_date', $exam->exam_date)
+                  ->where('exam_start_time', '<=', $exam->exam_end_time)
+                  ->where('exam_end_time', '>=', $exam->exam_start_time)
+                  ->where('room_id', $room->id);
+        })->get();
         // Log::info('Seats:', $seats->toArray());
     
         $applicants = Applicant::whereIn('id', $seats->pluck('applicant_id'))->get();
