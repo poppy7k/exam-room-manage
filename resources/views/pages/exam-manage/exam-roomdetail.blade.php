@@ -27,19 +27,50 @@
     <div>
         ชั้น: {{$room->floor}} , ชื่อห้อง: {{$room->room}} , ชื่อตึก: {{ $building->building_th}}
     </div>
-    <div class="flex flex-wrap my-4">
+    <div class="flex flex-wrap">
         <div class="mr-4">
             ชื่อฝ่ายงาน:
             @foreach(collect($departments)->reverse() as $department)
-                <span>{{ $department }}@if(!$loop->last),@endif</span>
+                <span>{{ $department }}@if(!$loop->last) ,@endif</span>
             @endforeach
         </div>
+    </div>
+    <div class="flex flex-wrap">
         <div>
             ชื่อตำแหน่งสอบ:
             @foreach(collect($positions)->reverse() as $position)
-                <span>{{ $position }}@if(!$loop->last),@endif</span>
+                <span>{{ $position }}@if(!$loop->last) ,@endif</span>
             @endforeach
         </div>
+    </div>
+    <div class="flex flex-wrap">
+        เลขประจำตัวสอบสำหรับกลุ่ม
+        @php
+            $applicantExamsArray = json_decode(json_encode($applicantExams), true);
+            $groupedApplicants = collect($applicantExamsArray)->groupBy('exam_id')->map(function ($group) use ($applicants) {
+                return $group->map(function ($exam) use ($applicants) {
+                    return $applicants->firstWhere('id', $exam['applicant_id']);
+                });
+            });
+        @endphp
+
+        @foreach($groupedApplicants as $examId => $group)
+            @php
+                $idNumbers = $group->pluck('id_number')->sort();
+                $minIdNumber = $idNumbers->first();
+                $maxIdNumber = $idNumbers->last();
+            @endphp
+            <div>
+                , {{$examId}} :
+                <span>
+                    @if($minIdNumber == $maxIdNumber)
+                        {{ $minIdNumber }}
+                    @else
+                        {{ $minIdNumber }} - {{ $maxIdNumber }}
+                    @endif
+                </span>
+            </div>
+        @endforeach
     </div>
     <div class="bg-white shadow-md my-3 rounded-lg max-h-screen flex flex-col">
         <div id="seat-container" class="grid gap-2 overflow-x-auto overflow-y-auto w-full h-96">
@@ -123,7 +154,7 @@ function addSeats() {
             const seat = seats.find(seat => seat.row === (i + 1) && seat.column === (j + 1));
             const applicant = seat ? applicants.find(applicant => applicant.id === seat.applicant_id) : null;
 
-            if (invalidSeats.includes(seatId)) {
+            if (invalidSeats && invalidSeats.includes(seatId)) {
                 seatComponent = `
                     <div id="seat-${seatId}" class="seat p-4 text-center cursor-not-allowed">
                         <x-seats.unavailable slot="${seatId}" />
