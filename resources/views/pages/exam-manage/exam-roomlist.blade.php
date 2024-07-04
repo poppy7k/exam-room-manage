@@ -28,6 +28,16 @@
             </div>
         </div>
     </div>
+    @if(session('status') == 'conflict')
+        <div class="bg-red-500 text-white p-4 rounded mb-4">
+            <p>พบปัญหาการจองห้องสำหรับผู้เข้าสอบต่อไปนี้:</p>
+            <ul>
+                @foreach(session('conflictedApplicants') as $conflictedApplicant)
+                    <li>{{ $conflictedApplicant }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
 
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-4 mt-2">
         @forelse($rooms as $room)
@@ -57,17 +67,6 @@
         {{ $rooms->links('pagination::bootstrap-4') }}
     </div>
 </div>
-
-@if(session('status') == 'conflict')
-    <div class="bg-red-500 text-white p-4 rounded mb-4">
-        <p>พบปัญหาการจองห้องสำหรับผู้เข้าสอบต่อไปนี้:</p>
-        <ul>
-            @foreach(session('conflictedApplicants') as $conflictedApplicant)
-                <li>{{ $conflictedApplicant }}</li>
-            @endforeach
-        </ul>
-    </div>
-@endif
 
 <div class="flex items-center justify-center fixed rounded-lg bottom-0 transform w-10/12 z-20 ">
     <div class="flex gap-3 bg-white rounded-lg border-1 border-gray-50 my-8 text-black shadow-xl">

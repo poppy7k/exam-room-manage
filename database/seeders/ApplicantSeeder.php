@@ -13,7 +13,33 @@ class ApplicantSeeder extends Seeder
      */
     public function run(): void
     {
-        // \App\Models\Applicant::factory(5)->create();
+        $applicant = new Applicant();
+        $applicant->id_number = "060001";
+        $applicant->id_card = "7 6485 55823 68 6";
+        $applicant->name = "นาย --------------01(06)";
+        $applicant->degree = "ระดับปริญญาตรี";
+        $applicant->position = "เจ้าหน้าที่บริหารงานทั่วไประดับปฏิบัติการ5";
+        $applicant->department = "งานบริหารระบบเอกสารกลาง5";
+        $applicant->save();
+
+        $applicant = new Applicant();
+        $applicant->id_number = "050001";
+        $applicant->id_card = "1 6485 55823 68 6";
+        $applicant->name = "นาย --------------01(05)";
+        $applicant->degree = "ระดับปริญญาตรี";
+        $applicant->position = "เจ้าหน้าที่บริหารงานทั่วไประดับปฏิบัติการ4";
+        $applicant->department = "งานบริหารระบบเอกสารกลาง4";
+        $applicant->save();
+
+        $applicant = new Applicant();
+        $applicant->id_number = "040001";
+        $applicant->id_card = "5 6485 55823 68 6";
+        $applicant->name = "นาย --------------01(04)";
+        $applicant->degree = "ระดับปริญญาตรี";
+        $applicant->position = "เจ้าหน้าที่บริหารงานทั่วไประดับปฏิบัติการ3";
+        $applicant->department = "งานบริหารระบบเอกสารกลาง3";
+        $applicant->save();
+
         $applicant = new Applicant();
         $applicant->id_number = "030001";
         $applicant->id_card = "5 6485 54823 48 3";
@@ -26,7 +52,16 @@ class ApplicantSeeder extends Seeder
         $applicant = new Applicant();
         $applicant->id_number = "020001";
         $applicant->id_card = "5 6485 54823 48 6";
-        $applicant->name = "นาย --------------01(02)";
+        $applicant->name = "นาย --------------01(cf01)";
+        $applicant->degree = "ระดับปริญญาตรี";
+        $applicant->position = "เจ้าหน้าที่บริหารงานทั่วไประดับปฏิบัติการ1";
+        $applicant->department = "งานบริหารระบบเอกสารกลาง1";
+        $applicant->save();
+
+        $applicant = new Applicant();
+        $applicant->id_number = "020002";
+        $applicant->id_card = "5 6485 54823 48 6";
+        $applicant->name = "นาย --------------01(cf02)";
         $applicant->degree = "ระดับปริญญาตรี";
         $applicant->position = "เจ้าหน้าที่บริหารงานทั่วไประดับปฏิบัติการ1";
         $applicant->department = "งานบริหารระบบเอกสารกลาง1";
@@ -40,42 +75,6 @@ class ApplicantSeeder extends Seeder
         $applicant->position = "เจ้าหน้าที่บริหารงานทั่วไประดับปฏิบัติการ";
         $applicant->department = "งานบริหารระบบเอกสารกลาง";
         $applicant->save();
-
-        // $applicant = new Applicant();
-        // $applicant->id_number = "010002";
-        // $applicant->id_card = "6 1813 48294 81 9";
-        // $applicant->name = "นาย --------------02";
-        // $applicant->degree = "ระดับปริญญาตรี";
-        // $applicant->position = "เจ้าหน้าที่บริหารงานทั่วไประดับปฏิบัติการ";
-        // $applicant->department = "งานบริหารระบบเอกสารกลาง";
-        // $applicant->save();
-
-        // $applicant = new Applicant();
-        // $applicant->id_number = "010003";
-        // $applicant->id_card = "4 5841 63218 48 6";
-        // $applicant->name = "นาย --------------03";
-        // $applicant->degree = "ระดับปริญญาตรี";
-        // $applicant->position = "เจ้าหน้าที่บริหารงานทั่วไประดับปฏิบัติการ";
-        // $applicant->department = "งานบริหารระบบเอกสารกลาง";
-        // $applicant->save();
-        
-        // $applicant = new Applicant();
-        // $applicant->id_number = "010004";
-        // $applicant->id_card = "1 5842 31448 84 3";
-        // $applicant->name = "นาย --------------04";
-        // $applicant->degree = "ระดับปริญญาตรี";
-        // $applicant->position = "เจ้าหน้าที่บริหารงานทั่วไประดับปฏิบัติการ";
-        // $applicant->department = "งานบริหารระบบเอกสารกลาง";
-        // $applicant->save();
-
-        // $applicant = new Applicant();
-        // $applicant->id_number = "010005";
-        // $applicant->id_card = "4 5264 84815 25 6";
-        // $applicant->name = "นาย --------------05";
-        // $applicant->degree = "ระดับปริญญาตรี";
-        // $applicant->position = "เจ้าหน้าที่บริหารงานทั่วไประดับปฏิบัติการ";
-        // $applicant->department = "งานบริหารระบบเอกสารกลาง";
-        // $applicant->save();
 
         $faker = \Faker\Factory::create('th_TH'); // Use Thai locale for more realistic data
 

@@ -137,16 +137,26 @@ function addSeats() {
 
     let seatComponents = '';
     let assignedSeats = 0;
-    
-    const colors = ['bg-green-500', 'bg-blue-500', 'bg-red-500', 'bg-yellow-500'];
-    let examGroups = {}; 
+
+    const colors = ['bg-green-500', 'bg-blue-500', 'bg-purple-500', 'bg-pink-500'];
+    let examGroups = {};
+    let colorCounters = {};
 
     applicantExams.forEach((applicantExam) => {
         if (!examGroups[applicantExam.exam_id]) {
-            examGroups[applicantExam.exam_id] = colors[Object.keys(examGroups).length % colors.length];
+            const colorIndex = Object.keys(examGroups).length % colors.length;
+            examGroups[applicantExam.exam_id] = colors[colorIndex];
+            if (!colorCounters[colors[colorIndex]]) {
+                colorCounters[colors[colorIndex]] = 1;
+            } else {
+                colorCounters[colors[colorIndex]]++;
+            }
         }
     });
+
     //console.log('Exam Groups:', examGroups);
+    //console.log('Color Counters:', colorCounters);
+
     for (let i = 0; i < rows; i++) {
         for (let j = 0; j < columns; j++) {
             const seatId = `${i + 1}-${toExcelColumn(j)}`;
@@ -164,9 +174,18 @@ function addSeats() {
                 if (applicant) {
                     const applicantExam = applicantExams.find(ae => ae.applicant_id === applicant.id);
                     const bgColor = applicantExam ? examGroups[applicantExam.exam_id] : 'bg-gray-500';
+                    const colorIndex = Object.keys(examGroups).indexOf(applicantExam.exam_id.toString()) % colors.length;
+                    let colorCount = (Math.floor(Object.keys(examGroups).indexOf(applicantExam.exam_id.toString()) / colors.length) + 1) - 1;
+                    
+                    if (colorCount === 0) {
+                        colorCount = '';
+                    }
+
+                    //console.log('Applicant:', applicant.id_number, 'Color:', bgColor, 'Color Count:', colorCount, 'Color Index:', colorIndex);
+
                     seatComponent = `
                         <div id="seat-${seatId}" class="seat p-4 text-center cursor-pointer" onclick="showApplicantModal('${seatId}', ${seat.id}, true)">
-                            <x-seats.assigned :bgColor="'${bgColor}'" applicant="${applicant.id_number}">
+                            <x-seats.assigned :bgColor="'${bgColor}'" applicant="${applicant.id_number}" colorCount="${colorCount}">
                                 ${seatId}
                             </x-seats.assigned>
                         </div>
@@ -247,6 +266,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     const staffList = document.getElementById('staff-list');
                     staffList.innerHTML = '';
 
+                    let checkedStaffs = [];
+                    let uncheckedStaffs = [];
+
                     staffs.forEach(staff => {
                         let isAssigned = false;
                         let isAlreadySelected = selectedStaffIds.includes(staff.id);
@@ -279,10 +301,15 @@ document.addEventListener('DOMContentLoaded', function() {
                             <input type="checkbox" value="${staff.id}" class="staff-checkbox" data-name="${staff.name}" ${isAlreadySelected ? 'checked' : ''} ${isAssigned ? 'disabled' : ''}>
                             <p>${staff.name}</p>
                         `;
-                        staffList.appendChild(div);
+
+                        if (isAlreadySelected) {
+                            checkedStaffs.push(div);
+                        } else {
+                            uncheckedStaffs.push(div);
+                        }
                     });
 
-                    // Add event listeners to checkboxes for deselection logic
+
                     document.querySelectorAll('.staff-checkbox').forEach(checkbox => {
                         checkbox.addEventListener('change', function() {
                             if (checkbox.checked) {
@@ -293,8 +320,12 @@ document.addEventListener('DOMContentLoaded', function() {
                                     selectedStaffIds.splice(index, 1);
                                 }
                             }
+
+                            renderStaffList(allStaffs);
                         });
                     });
+                    checkedStaffs.forEach(div => staffList.appendChild(div));
+                    uncheckedStaffs.forEach(div => staffList.appendChild(div));
                 }
 
                 renderStaffList(allStaffs);
