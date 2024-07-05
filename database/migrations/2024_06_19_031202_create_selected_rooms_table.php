@@ -16,6 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('exam_id');
             $table->unsignedBigInteger('room_id');
             $table->integer('applicant_seat_quantity')->nullable();
+            $table->integer('selectedroom_valid_seat')->nullable();
             $table->timestamps();
     
             // Foreign key constraints

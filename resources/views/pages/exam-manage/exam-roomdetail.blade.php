@@ -108,6 +108,7 @@
 
 <script>
 let validSeatCount = {{ $selectedRooms->room->valid_seat }};
+let TotalSeat = {{$selectedRooms->room->total_seat}}
 const roomId = {{ $selectedRooms->room->id }};
 const examId = {{ $exam->id }};
 let applicants = {!! json_encode($applicants) !!};
@@ -212,10 +213,10 @@ function addSeats() {
             seatComponents += seatComponent;
         }
     }
-    validSeatCount = assignedSeats; 
+    validSeatCount = TotalSeat - assignedSeats; 
     seatContainer.innerHTML = seatComponents;
     updateValidSeatCountUI(validSeatCount);
-    updateValidSeatCountInDB(validSeatCount);
+    // updateValidSeatCountInDB(validSeatCount);
 }
 
 function updateValidSeatCountUI(validSeatCount) {
@@ -473,7 +474,7 @@ function saveApplicantToSeat(seatId, applicantId, examId) {
         if (data.success) {
             validSeatCount--;
             updateValidSeatCountUI(validSeatCount);
-            updateValidSeatCountInDB(validSeatCount);
+            // updateValidSeatCountInDB(validSeatCount);
             location.reload();
             alert('Applicant assigned to seat successfully.');
         } else {
@@ -506,7 +507,7 @@ function removeApplicantFromSeat(seatId) {
         if (data.success) {
             validSeatCount++;
             updateValidSeatCountUI(validSeatCount);
-            updateValidSeatCountInDB(validSeatCount);
+            // updateValidSeatCountInDB(validSeatCount);
             location.reload();
             alert('Applicant removed from seat successfully.');
         } else {
@@ -551,31 +552,31 @@ function fetchApplicantsWithoutSeats() {
         });
 }
 
-function updateValidSeatCountInDB(validSeatCount) {
-    fetch(`/update-valid-seat-count`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-        },
-        body: JSON.stringify({
-            room_id: roomId,
-            exam_id: examId,
-            valid_seat_count: validSeatCount
-        })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            //console.log('Valid seat count updated successfully in the database.');
-        } else {
-            console.error('Failed to update valid seat count in the database.', data);
-        }
-    })
-    .catch(error => {
-        console.error('Error updating valid seat count in the database:', error);
-    });
-}
+// function updateValidSeatCountInDB(validSeatCount) {
+//     fetch(`/update-valid-seat-count`, {
+//         method: 'POST',
+//         headers: {
+//             'Content-Type': 'application/json',
+//             'X-CSRF-TOKEN': '{{ csrf_token() }}'
+//         },
+//         body: JSON.stringify({
+//             room_id: roomId,
+//             exam_id: examId,
+//             valid_seat_count: validSeatCount
+//         })
+//     })
+//     .then(response => response.json())
+//     .then(data => {
+//         if (data.success) {
+//             //console.log('Valid seat count updated successfully in the database.');
+//         } else {
+//             console.error('Failed to update valid seat count in the database.', data);
+//         }
+//     })
+//     .catch(error => {
+//         console.error('Error updating valid seat count in the database:', error);
+//     });
+// }
 
 </script>
 @endsection

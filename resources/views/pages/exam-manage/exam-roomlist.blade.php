@@ -29,7 +29,7 @@
         </div>
     </div>
     @if(session('status') == 'conflict')
-        <div class="bg-red-500 text-white p-4 rounded mb-4">
+        <div id="conflict-alert" class="fixed top-4 left-1/2 transform -translate-x-1/2 bg-red-500 text-white p-4 rounded mb-4 shadow-lg z-50 opacity-75">
             <p>พบปัญหาการจองห้องสำหรับผู้เข้าสอบต่อไปนี้:</p>
             <ul>
                 @foreach(session('conflictedApplicants') as $conflictedApplicant)
@@ -37,6 +37,13 @@
                 @endforeach
             </ul>
         </div>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                setTimeout(function() {
+                    document.getElementById('conflict-alert').classList.add('hidden');
+                }, 5000); // hide after 5 seconds
+            });
+        </script>
     @endif
 
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-4 mt-2">

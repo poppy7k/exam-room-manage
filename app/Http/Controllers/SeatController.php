@@ -292,17 +292,29 @@ class SeatController extends Controller
             'valid_seat_count' => 'required|integer',
         ]);
     
-        $selectedRooms = SelectedRoom::where('room_id', $validatedData['room_id'])->where('exam_id', $validatedData['exam_id'])->get();
+        // Get the exam details
+        $exam = Exam::findOrFail($validatedData['exam_id']);
+    
+        // Find all selected rooms that have the same room_id and overlap in time with the provided exam
+        $selectedRooms = SelectedRoom::where('room_id', $validatedData['room_id'])
+            ->whereHas('exam', function($query) use ($exam) {
+                $query->where('exam_date', $exam->exam_date)
+                    ->where('exam_start_time', '<', $exam->exam_end_time)
+                    ->where('exam_end_time', '>', $exam->exam_start_time);
+            })
+            ->get();
     
         if ($selectedRooms->isEmpty()) {
             return response()->json(['success' => false, 'message' => 'Selected rooms not found.'], 404);
         }
     
+        // Update applicant_seat_quantity for all matching selected rooms
         foreach ($selectedRooms as $selectedRoom) {
             $selectedRoom->applicant_seat_quantity = $validatedData['valid_seat_count'];
             $selectedRoom->save();
         }
     
         return response()->json(['success' => true]);
-    } 
+    }
+    
 }
