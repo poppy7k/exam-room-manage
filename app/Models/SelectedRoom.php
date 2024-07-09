@@ -12,7 +12,8 @@ class SelectedRoom extends Model
     protected $fillable = [
         'exam_id', 
         'room_id', 
-        'applicant_seat_quantity'
+        'applicant_seat_quantity',
+        'selectedroom_valid_seat'
     ];
 
     public function exam()

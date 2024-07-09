@@ -105,23 +105,37 @@ class ExamController extends Controller
     {
         $exams = Exam::findOrFail($examId);
         $sort = $request->get('sort', 'alphabet_th');
+<<<<<<< HEAD
         
         $buildings = Building::query()
             ->select('buildings.*')
             ->selectSub(
                 ExamRoomInformation::query()
                 ->selectRaw('SUM(valid_seat) - COALESCE(SUM(selected_rooms.applicant_seat_quantity), 0) - (COALESCE(MAX((SELECT valid_seat FROM exam_room_information WHERE id = selected_rooms.room_id)), 0) * GREATEST(COUNT(selected_rooms.id) - 1, 0)) AS total_valid_seats')
+=======
+    
+        $buildings = Building::query()
+            ->select('buildings.*')
+            ->selectSub(function ($query) use ($exams) {
+                $query->selectRaw('SUM(valid_seat) - COALESCE(SUM(selected_rooms.applicant_seat_quantity), 0) as total_valid_seats')
+                    ->from('exam_room_information')
+>>>>>>> e4695f2bc38b8d949042f519a3d908357c1dd301
                     ->leftJoin('selected_rooms', function($join) use ($exams) {
                         $join->on('exam_room_information.id', '=', 'selected_rooms.room_id')
-                            ->leftJoin('exams', 'selected_rooms.exam_id', '=', 'exams.id')
-                            ->where('exams.exam_date', $exams->exam_date)
-                            ->where('exams.exam_start_time', '<', $exams->exam_end_time)
-                            ->where('exams.exam_end_time', '>', $exams->exam_start_time);
+                             ->leftJoin('exams', 'selected_rooms.exam_id', '=', 'exams.id')
+                             ->where('exams.exam_date', $exams->exam_date)
+                             ->where('exams.exam_start_time', '<', $exams->exam_end_time)
+                             ->where('exams.exam_end_time', '>', $exams->exam_start_time);
                     })
                     ->whereColumn('exam_room_information.building_id', 'buildings.id')
+<<<<<<< HEAD
                     ->groupBy('exam_room_information.building_id'),
                 'total_valid_seats'
                 );
+=======
+                    ->groupBy('exam_room_information.building_id');
+            }, 'total_valid_seats');
+>>>>>>> e4695f2bc38b8d949042f519a3d908357c1dd301
     
         switch ($sort) {
             case 'alphabet_th':
@@ -145,10 +159,16 @@ class ExamController extends Controller
         $breadcrumbs = [
             ['url' => '/', 'title' => 'หน้าหลัก'],
             ['url' => '/exams', 'title' => 'รายการสอบ'],
-            ['url' => '/exams/'.$examId.'/buildings', 'title' => ''.$exams->department_name],
+            ['url' => '/exams/'.$examId.'/buildings', 'title' => $exams->department_name],
         ];
         session()->flash('sidebar', '3');
     
+<<<<<<< HEAD
+=======
+        // Logging to debug the calculation of valid seats
+        //Log::debug('Buildings with total valid seats:', $buildings->toArray());
+    
+>>>>>>> e4695f2bc38b8d949042f519a3d908357c1dd301
         return view('pages.exam-manage.exam-buildinglist', compact('breadcrumbs', 'exams', 'buildings'));
     }
     
@@ -226,7 +246,14 @@ class ExamController extends Controller
         })->get();
         // Log::info('Seats:', $seats->toArray());
     
-        $applicants = Applicant::whereIn('id', $seats->pluck('applicant_id'))->get();
+        // $applicants = Applicant::whereIn('id', $seats->pluck('applicant_id'))->get();
+        $applicants = Applicant::whereIn('id', $seats->pluck('applicant_id'))->get()->map(function ($applicant) use ($examId) {
+            $applicant->exam_id = $examId;
+            return $applicant;
+        });
+        $applicantExams = DB::table('applicant_exam')
+            ->whereIn('applicant_id', $applicants->pluck('id'))
+            ->get();
     
         $staffs = $selectedRooms ? $selectedRooms->staffs : collect();
     
@@ -262,7 +289,7 @@ class ExamController extends Controller
     
         session()->flash('sidebar', '3');
     
-        return view('pages.exam-manage.exam-roomdetail', compact('selectedRooms','building','exam', 'room', 'breadcrumbs', 'applicants', 'staffs', 'seats', 'assignedStaffs','departments','positions'));
+        return view('pages.exam-manage.exam-roomdetail', compact('applicantExams','selectedRooms','building','exam', 'room', 'breadcrumbs', 'applicants', 'staffs', 'seats', 'assignedStaffs','departments','positions'));
     }
     
     public function updateExamStatus(Request $request)
@@ -284,13 +311,52 @@ class ExamController extends Controller
         SelectedRoom::where('exam_id', $exam->id)->delete();
     
         foreach ($selectedRooms as $roomData) {
-            $examValidSeat = $roomData['usedSeat'];
-            
-            SelectedRoom::create([
+            $room = ExamRoomInformation::findOrFail($roomData['id']);
+            $applicantSeatQuantity = $roomData['usedSeat'];
+    
+            Log::debug('Processing room', ['room_id' => $room->id, 'applicantSeatQuantity' => $applicantSeatQuantity]);
+    
+            // Calculate the remaining valid seats for the first setup
+            $initialValidSeats = $room->total_seat - $applicantSeatQuantity;
+            Log::debug('Initial valid seats for the first setup', ['initialValidSeats' => $initialValidSeats]);
+    
+            // Create the selected room record
+            $selectedRoom = SelectedRoom::create([
                 'exam_id' => $exam->id,
                 'room_id' => $roomData['id'],
-                'applicant_seat_quantity' => $examValidSeat,
+                'applicant_seat_quantity' => $applicantSeatQuantity,
+                'selectedroom_valid_seat' => $initialValidSeats,
             ]);
+    
+            Log::debug('Selected room created', ['selectedRoom' => $selectedRoom]);
+    
+            // Ensure other records with the same room_id and overlapping exam times are updated
+            $overlappingExams = SelectedRoom::where('room_id', $room->id)
+                                ->whereHas('exam', function($query) use ($exam) {
+                                    $query->where('exam_date', $exam->exam_date)
+                                          ->where('exam_start_time', $exam->exam_start_time)
+                                          ->where('exam_end_time', $exam->exam_end_time);
+                                })
+                                ->get();
+    
+            Log::debug('Overlapping exams', ['count' => $overlappingExams->count()]);
+    
+            foreach ($overlappingExams as $overlappingExam) {
+                // Sum of all applicant seat quantities in overlapping exams
+                $totalUsedSeatsInOverlappingExams = SelectedRoom::where('room_id', $room->id)
+                                                                ->whereHas('exam', function($query) use ($exam) {
+                                                                    $query->where('exam_date', $exam->exam_date)
+                                                                          ->where('exam_start_time', $exam->exam_start_time)
+                                                                          ->where('exam_end_time', $exam->exam_end_time);
+                                                                })
+                                                                ->sum('applicant_seat_quantity');
+                Log::debug('Total used seats in overlapping exams', ['totalUsedSeatsInOverlappingExams' => $totalUsedSeatsInOverlappingExams]);
+    
+                $remainingSeats = max(0, $room->total_seat - $totalUsedSeatsInOverlappingExams);
+                $overlappingExam->update(['selectedroom_valid_seat' => $remainingSeats]);
+    
+                Log::debug('Updated overlapping exam', ['overlappingExam' => $overlappingExam, 'remainingSeats' => $remainingSeats]);
+            }
         }
     
         $this->staffController->duplicateStaffAssignments($exam);

@@ -55,17 +55,50 @@
     <div>
         ชั้น: {{$room->floor}} , ชื่อห้อง: {{$room->room}} , ชื่อตึก: {{ $building->building_th}}
     </div>
-    <div class="flex flex-wrap my-4">
+    <div class="flex flex-wrap">
         <div class="mr-4">
-            @foreach($departments as $department)
-                <span>ชื่อฝ่ายงาน: {{ $department }}@if(!$loop->last),@endif</span>
+            ชื่อฝ่ายงาน:
+            @foreach(collect($departments)->reverse() as $department)
+                <span>{{ $department }}@if(!$loop->last) ,@endif</span>
             @endforeach
         </div>
+    </div>
+    <div class="flex flex-wrap">
         <div>
-            @foreach($positions as $position)
-                <span>ชื่อตำแหน่งสอบ: {{ $position }}@if(!$loop->last),@endif</span>
+            ชื่อตำแหน่งสอบ:
+            @foreach(collect($positions)->reverse() as $position)
+                <span>{{ $position }}@if(!$loop->last) ,@endif</span>
             @endforeach
         </div>
+    </div>
+    <div class="flex flex-wrap">
+        เลขประจำตัวสอบสำหรับกลุ่ม
+        @php
+            $applicantExamsArray = json_decode(json_encode($applicantExams), true);
+            $groupedApplicants = collect($applicantExamsArray)->groupBy('exam_id')->map(function ($group) use ($applicants) {
+                return $group->map(function ($exam) use ($applicants) {
+                    return $applicants->firstWhere('id', $exam['applicant_id']);
+                });
+            });
+        @endphp
+
+        @foreach($groupedApplicants as $examId => $group)
+            @php
+                $idNumbers = $group->pluck('id_number')->sort();
+                $minIdNumber = $idNumbers->first();
+                $maxIdNumber = $idNumbers->last();
+            @endphp
+            <div>
+                , {{$examId}} :
+                <span>
+                    @if($minIdNumber == $maxIdNumber)
+                        {{ $minIdNumber }}
+                    @else
+                        {{ $minIdNumber }} - {{ $maxIdNumber }}
+                    @endif
+                </span>
+            </div>
+        @endforeach
     </div>
     <div class="bg-white shadow-md my-3 rounded-lg max-h-screen flex flex-col">
         <div id="seat-container" class="grid gap-2 overflow-x-auto overflow-y-auto w-full h-96">
@@ -84,10 +117,13 @@
 
 <script>
 let validSeatCount = {{ $selectedRooms->room->valid_seat }};
+let TotalSeat = {{$selectedRooms->room->total_seat}}
 const roomId = {{ $selectedRooms->room->id }};
 const examId = {{ $exam->id }};
 let applicants = {!! json_encode($applicants) !!};
+let applicantExams = {!! json_encode($applicantExams) !!};
 let seats = {!! json_encode($seats) !!};
+let invalidSeats = {!! json_encode($selectedRooms->room->invalid_seats) !!};
 let currentSeatId = '';
 
 //console.log('Applicants:', applicants);
@@ -112,6 +148,25 @@ function addSeats() {
     let seatComponents = '';
     let assignedSeats = 0;
 
+    const colors = ['bg-green-500', 'bg-blue-500', 'bg-purple-500', 'bg-pink-500'];
+    let examGroups = {};
+    let colorCounters = {};
+
+    applicantExams.forEach((applicantExam) => {
+        if (!examGroups[applicantExam.exam_id]) {
+            const colorIndex = Object.keys(examGroups).length % colors.length;
+            examGroups[applicantExam.exam_id] = colors[colorIndex];
+            if (!colorCounters[colors[colorIndex]]) {
+                colorCounters[colors[colorIndex]] = 1;
+            } else {
+                colorCounters[colors[colorIndex]]++;
+            }
+        }
+    });
+
+    //console.log('Exam Groups:', examGroups);
+    //console.log('Color Counters:', colorCounters);
+
     for (let i = 0; i < rows; i++) {
         for (let j = 0; j < columns; j++) {
             const seatId = `${i + 1}-${toExcelColumn(j)}`;
@@ -119,16 +174,33 @@ function addSeats() {
             const seat = seats.find(seat => seat.row === (i + 1) && seat.column === (j + 1));
             const applicant = seat ? applicants.find(applicant => applicant.id === seat.applicant_id) : null;
 
-            if (seat) {
+            if (invalidSeats && invalidSeats.includes(seatId)) {
+                seatComponent = `
+                    <div id="seat-${seatId}" class="seat p-4 text-center cursor-not-allowed">
+                        <x-seats.unavailable slot="${seatId}" />
+                    </div>
+                `;
+            } else if (seat) {
                 if (applicant) {
+                    const applicantExam = applicantExams.find(ae => ae.applicant_id === applicant.id);
+                    const bgColor = applicantExam ? examGroups[applicantExam.exam_id] : 'bg-gray-500';
+                    const colorIndex = Object.keys(examGroups).indexOf(applicantExam.exam_id.toString()) % colors.length;
+                    let colorCount = (Math.floor(Object.keys(examGroups).indexOf(applicantExam.exam_id.toString()) / colors.length) + 1) - 1;
+                    
+                    if (colorCount === 0) {
+                        colorCount = '';
+                    }
+
+                    //console.log('Applicant:', applicant.id_number, 'Color:', bgColor, 'Color Count:', colorCount, 'Color Index:', colorIndex);
+
                     seatComponent = `
                         <div id="seat-${seatId}" class="seat p-4 text-center cursor-pointer" onclick="showApplicantModal('${seatId}', ${seat.id}, true)">
-                            <x-seats.assigned applicant="${applicant.id_number}">
+                            <x-seats.assigned :bgColor="'${bgColor}'" applicant="${applicant.id_number}" colorCount="${colorCount}">
                                 ${seatId}
                             </x-seats.assigned>
                         </div>
                     `;
-                    assignedSeats++; 
+                    assignedSeats++;
                 } else {
                     seatComponent = `
                         <div id="seat-${seatId}" class="seat p-4 text-center cursor-pointer" onclick="showApplicantModal('${seatId}', null, false)">
@@ -150,10 +222,10 @@ function addSeats() {
             seatComponents += seatComponent;
         }
     }
-    validSeatCount = assignedSeats; 
+    validSeatCount = TotalSeat - assignedSeats; 
     seatContainer.innerHTML = seatComponents;
     updateValidSeatCountUI(validSeatCount);
-    updateValidSeatCountInDB(validSeatCount);
+    // updateValidSeatCountInDB(validSeatCount);
 }
 
 function updateValidSeatCountUI(validSeatCount) {
@@ -204,6 +276,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     const staffList = document.getElementById('staff-list');
                     staffList.innerHTML = '';
 
+                    let checkedStaffs = [];
+                    let uncheckedStaffs = [];
+
                     staffs.forEach(staff => {
                         let isAssigned = false;
                         let isAlreadySelected = selectedStaffIds.includes(staff.id);
@@ -233,7 +308,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         const div = document.createElement('div');
                         div.classList.add('flex', 'items-center', 'gap-2', 'mb-2', 'staff-item');
                         div.innerHTML = `
-                            <label class="flex items-center w-full px-3 py-1.5 cursor-pointer transition-all duration-300 hover:bg-gray-200 rounded-md">
+<label class="flex items-center w-full px-3 py-1.5 cursor-pointer transition-all duration-300 hover:bg-gray-200 rounded-md">
                                 <div class="grid mr-3 place-items-center">
                                     <div class="inline-flex items-center">
                                         <label for="staff-${ staff.id }" class="relative flex items-center p-0 rounded-full cursor-pointer">
@@ -251,10 +326,15 @@ document.addEventListener('DOMContentLoaded', function() {
                                     ${staff.name}
                                 </p>
                         `;
-                        staffList.appendChild(div);
+
+                        if (isAlreadySelected) {
+                            checkedStaffs.push(div);
+                        } else {
+                            uncheckedStaffs.push(div);
+                        }
                     });
 
-                    // Add event listeners to checkboxes for deselection logic
+
                     document.querySelectorAll('.staff-checkbox').forEach(checkbox => {
                         checkbox.addEventListener('click', function() {
                             if (checkbox.checked) {
@@ -267,8 +347,12 @@ document.addEventListener('DOMContentLoaded', function() {
                                 }
                                 checkbox.checked = true;
                             }
+
+                            renderStaffList(allStaffs);
                         });
                     });
+                    checkedStaffs.forEach(div => staffList.appendChild(div));
+                    uncheckedStaffs.forEach(div => staffList.appendChild(div));
                 }
 
                 renderStaffList(allStaffs);
@@ -356,7 +440,7 @@ function saveApplicantToSeat(seatId, applicantId, examId) {
         if (data.success) {
             validSeatCount--;
             updateValidSeatCountUI(validSeatCount);
-            updateValidSeatCountInDB(validSeatCount);
+            // updateValidSeatCountInDB(validSeatCount);
             location.reload();
             alert('Applicant assigned to seat successfully.');
         } else {
@@ -389,7 +473,7 @@ function removeApplicantFromSeat(seatId) {
         if (data.success) {
             validSeatCount++;
             updateValidSeatCountUI(validSeatCount);
-            updateValidSeatCountInDB(validSeatCount);
+            // updateValidSeatCountInDB(validSeatCount);
             location.reload();
             alert('Applicant removed from seat successfully.');
         } else {
@@ -434,31 +518,31 @@ function fetchApplicantsWithoutSeats() {
         });
 }
 
-function updateValidSeatCountInDB(validSeatCount) {
-    fetch(`/update-valid-seat-count`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-        },
-        body: JSON.stringify({
-            room_id: roomId,
-            exam_id: examId,
-            valid_seat_count: validSeatCount
-        })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            //console.log('Valid seat count updated successfully in the database.');
-        } else {
-            console.error('Failed to update valid seat count in the database.', data);
-        }
-    })
-    .catch(error => {
-        console.error('Error updating valid seat count in the database:', error);
-    });
-}
+// function updateValidSeatCountInDB(validSeatCount) {
+//     fetch(`/update-valid-seat-count`, {
+//         method: 'POST',
+//         headers: {
+//             'Content-Type': 'application/json',
+//             'X-CSRF-TOKEN': '{{ csrf_token() }}'
+//         },
+//         body: JSON.stringify({
+//             room_id: roomId,
+//             exam_id: examId,
+//             valid_seat_count: validSeatCount
+//         })
+//     })
+//     .then(response => response.json())
+//     .then(data => {
+//         if (data.success) {
+//             //console.log('Valid seat count updated successfully in the database.');
+//         } else {
+//             console.error('Failed to update valid seat count in the database.', data);
+//         }
+//     })
+//     .catch(error => {
+//         console.error('Error updating valid seat count in the database:', error);
+//     });
+// }
 
 </script>
 @endsection

@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Log;
 
 class SeatController extends Controller
 {
-
+    
     public function assignApplicantsToSeats($departmentName, $examPosition, $selectedRooms, $exam)
     {
         $applicants = Applicant::where('department', $departmentName)
@@ -21,53 +21,105 @@ class SeatController extends Controller
     
         $applicantIndex = 0;
         $conflictedApplicants = [];
+        $conflictedApplicantNames = [];
     
+        foreach ($applicants as $applicant) {
+            $conflictExists = Exam::whereHas('applicants', function($query) use ($applicant) {
+                                    $query->where('id_card', $applicant->id_card);
+                                })
+                                ->where('exam_date', $exam->exam_date)
+                                ->where('exam_start_time', $exam->exam_start_time)
+                                ->where('exam_end_time', $exam->exam_end_time)
+                                ->exists();
+    
+            if ($conflictExists) {
+                if (!in_array($applicant->name, $conflictedApplicantNames)) {
+                    $conflictedApplicants[] = $applicant->name;
+                    $conflictedApplicantNames[] = $applicant->name;
+                }
+                //Log::debug('Applicant conflict found', ['applicant_id' => $applicant->id, 'id_card' => $applicant->id_card, 'exam_id' => $exam->id]);
+            }
+        }
+    
+        $applicants = $applicants->filter(function($applicant) use ($conflictedApplicantNames) {
+            return !in_array($applicant->name, $conflictedApplicantNames);
+        });
+    
+        $totalSeats = 0;
         foreach ($selectedRooms as $roomData) {
             $room = ExamRoomInformation::findOrFail($roomData['id']);
-            $selectedRoom = SelectedRoom::where('room_id', $room->id)->where('exam_id', $exam->id)->first();
+            $totalSeats += $room->rows * $room->columns;
+        }
     
-            if (!$selectedRoom) {
-                continue;
-            }
+        if ($applicants->count() > $totalSeats) {
+            Log::error('Not enough seats for all applicants', ['required_seats' => $applicants->count(), 'available_seats' => $totalSeats]);
+            return array_unique($conflictedApplicants);
+        }
+    
+        $selectedRoomIds = array_column($selectedRooms, 'id');
+        $isMultiRoomSameTimeSingleExam = (count($selectedRoomIds) > 1);
+        //Log::debug("multiroom", ['isMultiRoomSameTimeSingleExam' => $isMultiRoomSameTimeSingleExam]);
+
+        foreach ($selectedRooms as $roomData) {
+            $room = ExamRoomInformation::findOrFail($roomData['id']);
+            $selectedRoom = SelectedRoom::firstOrCreate(['room_id' => $room->id, 'exam_id' => $exam->id]);
     
             for ($i = 1; $i <= $room->rows; $i++) {
                 for ($j = 1; $j <= $room->columns; $j++) {
                     if ($applicantIndex >= $applicants->count()) {
-                        return $conflictedApplicants;
+                        return array_unique($conflictedApplicants);
                     }
     
-                    // Check if the seat is already occupied by another applicant for the same exam
                     $seatExists = Seat::where('row', $i)
                                       ->where('column', $j)
                                       ->where('selected_room_id', $selectedRoom->id)
                                       ->exists();
     
-                    // Check if the seat is already occupied by another applicant for any exam at the same time
-                    $seatOccupiedSameTime = Seat::where('row', $i)
-                                                ->where('column', $j)
-                                                ->whereHas('selectedRoom.exam', function($query) use ($exam) {
-                                                    $query->where('exam_date', $exam->exam_date)
-                                                          ->where('exam_start_time', $exam->exam_start_time)
-                                                          ->where('exam_end_time', $exam->exam_end_time);
-                                                })
-                                                ->exists();
+                    if ($isMultiRoomSameTimeSingleExam) { //case multi room ,same time,single exam 
+                        $seatOccupiedSameTime = Seat::where('row', $i)
+                                                    ->where('column', $j)
+                                                    ->whereHas('selectedRoom.exam', function($query) use ($exam) {
+                                                        $query->where('exam_date', $exam->exam_date)
+                                                              ->where('exam_start_time', $exam->exam_start_time)
+                                                              ->where('exam_end_time', $exam->exam_end_time);
+                                                    })
+                                                    ->whereIn('selected_room_id', $selectedRoomIds)
+                                                    ->exists();
+                    } else {
+                        $seatOccupiedSameTime = Seat::where('row', $i) //case single room ,same time , multi exam
+                                                    ->where('column', $j)
+                                                    ->whereIn('selected_room_id', function($query) use ($selectedRoomIds, $exam) {
+                                                        $query->select('selected_rooms.id')
+                                                              ->from('selected_rooms')
+                                                              ->join('exams', 'selected_rooms.exam_id', '=', 'exams.id')
+                                                              ->whereIn('selected_rooms.room_id', $selectedRoomIds)
+                                                              ->where('exams.exam_date', $exam->exam_date)
+                                                              ->where('exams.exam_start_time', $exam->exam_start_time)
+                                                              ->where('exams.exam_end_time', $exam->exam_end_time);
+                                                    })
+                                                    ->exists();
+                    }
+    
+                    //Log::debug('Checking seat', ['room_id' => $room->id, 'row' => $i, 'column' => $j, 'seat_exists' => $seatExists, 'seat_occupied_same_time' => $seatOccupiedSameTime]);
     
                     if (!$seatExists && !$seatOccupiedSameTime) {
-                        $applicant = $applicants[$applicantIndex];
+                        $applicant = $applicants->values()->get($applicantIndex);
+                        //Log::debug('Attempting to assign applicant', ['applicant_index' => $applicantIndex, 'applicant_id' => $applicant->id]);
     
-                        // Check for conflicts in the same time across all exams
                         $conflictExists = Exam::whereHas('applicants', function($query) use ($applicant) {
-                                                $query->where('id_card', $applicant->id_card);
-                                            })
-                                            ->where(function ($query) use ($exam) {
-                                                $query->where('exam_date', $exam->exam_date)
-                                                      ->where('exam_start_time', $exam->exam_start_time)
-                                                      ->where('exam_end_time', $exam->exam_end_time);
-                                            })
-                                            ->exists();
+                                                    $query->where('id_card', $applicant->id_card);
+                                                })
+                                                ->where('exam_date', $exam->exam_date)
+                                                ->where('exam_start_time', $exam->exam_start_time)
+                                                ->where('exam_end_time', $exam->exam_end_time)
+                                                ->exists();
     
                         if ($conflictExists) {
-                            $conflictedApplicants[] = $applicant->name;
+                            if (!in_array($applicant->name, $conflictedApplicantNames)) {
+                                $conflictedApplicants[] = $applicant->name;
+                                $conflictedApplicantNames[] = $applicant->name;
+                            }
+                            //Log::debug('Applicant conflict found during seat assignment', ['applicant_id' => $applicant->id, 'id_card' => $applicant->id_card, 'exam_id' => $exam->id]);
                         } else {
                             Seat::create([
                                 'selected_room_id' => $selectedRoom->id,
@@ -82,13 +134,17 @@ class SeatController extends Controller
                             } else {
                                 $exam->applicants()->updateExistingPivot($applicant->id, ['status' => 'assigned']);
                             }
+                            //Log::debug('Applicant assigned to seat', ['applicant_id' => $applicant->id, 'seat_row' => $i, 'seat_column' => $j, 'room_id' => $room->id]);
+    
+                            $applicantIndex++;
                         }
-                        $applicantIndex++;
+                    } else {
+                        //Log::debug('Seat is already occupied', ['row' => $i, 'column' => $j, 'room_id' => $room->id]);
                     }
                 }
             }
         }
-        return $conflictedApplicants;
+        return array_unique($conflictedApplicants);
     }
 
     public function saveApplicantToSeat(Request $request)
@@ -140,17 +196,17 @@ class SeatController extends Controller
             }
     
             // Check for time conflicts
-            $conflictExists = Exam::where('id', '!=', $exam->id)
-                ->where('exam_date', $exam->exam_date)
-                ->where('exam_start_time', '<=', $exam->exam_end_time)
-                ->where('exam_end_time', '>=', $exam->exam_start_time)
-                ->whereHas('applicants', function($query) use ($applicantId) {
-                    $query->where('applicant_id', $applicantId);
-                })->exists();
+            // $conflictExists = Exam::where('id', '!=', $exam->id)
+            //     ->where('exam_date', $exam->exam_date)
+            //     ->where('exam_start_time', '<=', $exam->exam_end_time)
+            //     ->where('exam_end_time', '>=', $exam->exam_start_time)
+            //     ->whereHas('applicants', function($query) use ($applicantId) {
+            //         $query->where('applicant_id', $applicantId);
+            //     })->exists();
     
-            if ($conflictExists) {
-                return response()->json(['success' => false, 'message' => 'Applicant has a time conflict with another exam.'], 400);
-            }
+            // if ($conflictExists) {
+            //     return response()->json(['success' => false, 'message' => 'Applicant has a time conflict with another exam.'], 400);
+            // }
     
             // Assign the applicant to the seat
             $seat->applicant_id = $applicantId;
@@ -236,17 +292,29 @@ class SeatController extends Controller
             'valid_seat_count' => 'required|integer',
         ]);
     
-        $selectedRooms = SelectedRoom::where('room_id', $validatedData['room_id'])->where('exam_id', $validatedData['exam_id'])->get();
+        // Get the exam details
+        $exam = Exam::findOrFail($validatedData['exam_id']);
+    
+        // Find all selected rooms that have the same room_id and overlap in time with the provided exam
+        $selectedRooms = SelectedRoom::where('room_id', $validatedData['room_id'])
+            ->whereHas('exam', function($query) use ($exam) {
+                $query->where('exam_date', $exam->exam_date)
+                    ->where('exam_start_time', '<', $exam->exam_end_time)
+                    ->where('exam_end_time', '>', $exam->exam_start_time);
+            })
+            ->get();
     
         if ($selectedRooms->isEmpty()) {
             return response()->json(['success' => false, 'message' => 'Selected rooms not found.'], 404);
         }
     
+        // Update applicant_seat_quantity for all matching selected rooms
         foreach ($selectedRooms as $selectedRoom) {
             $selectedRoom->applicant_seat_quantity = $validatedData['valid_seat_count'];
             $selectedRoom->save();
         }
     
         return response()->json(['success' => true]);
-    } 
+    }
+    
 }
