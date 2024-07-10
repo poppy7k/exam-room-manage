@@ -305,22 +305,22 @@ class ExamController extends Controller
             $this->seatController->SelectedroomValidSeatUpdate($room, $exam, $applicantSeatQuantity);
         }
     
-        $this->staffController->duplicateStaffAssignments($exam);
-    
         // Call the assignApplicantsToSeats function to create seats
         $conflictedApplicants = $this->seatController->assignApplicantsToSeats($exam->department_name, $exam->exam_position, $selectedRooms, $exam);
     
         if (count($conflictedApplicants) > 0) {
             return redirect()->back()->with('status', 'conflict')->with('conflictedApplicants', $conflictedApplicants);
         }
-    
+
+        $this->staffController->duplicateStaffAssignments2($exam);
+
         $exam->status = 'ready';
         $exam->save();
     
         //Log::debug('Exam updated to ready');
         return redirect()->route('exam-list')->with('status', 'Exam updated to ready and rooms selected!');
     }
-    
+
     public function getExam() {
 
         $exams = Exam::all();
