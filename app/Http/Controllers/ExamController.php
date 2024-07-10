@@ -282,61 +282,32 @@ class ExamController extends Controller
         }
     
         $selectedRooms = json_decode($validatedData['selected_rooms'], true);
-        // Log::info('Decoded Selected Rooms: ', $selectedRooms);
+        //Log::debug('Selected Rooms', ['selectedRooms' => $selectedRooms]);
     
+        // Check for conflicts before creating selected rooms
+        $conflictedApplicants = $this->seatController->checkApplicantConflicts(Applicant::where('department', $exam->department_name)->where('position', $exam->exam_position)->get(), $exam);
+    
+        //Log::debug('Conflicted Applicants', ['count' => count($conflictedApplicants)]);
+    
+        if (count($conflictedApplicants) > 0) {
+            return redirect()->back()->with('status', 'conflict')->with('conflictedApplicants', $conflictedApplicants);
+        }
+    
+        // No conflicts, proceed to create selected rooms
         SelectedRoom::where('exam_id', $exam->id)->delete();
+        //Log::debug('Deleted existing selected rooms');
     
         foreach ($selectedRooms as $roomData) {
             $room = ExamRoomInformation::findOrFail($roomData['id']);
             $applicantSeatQuantity = $roomData['usedSeat'];
     
-            Log::debug('Processing room', ['room_id' => $room->id, 'applicantSeatQuantity' => $applicantSeatQuantity]);
-    
-            // Calculate the remaining valid seats for the first setup
-            $initialValidSeats = $room->total_seat - $applicantSeatQuantity;
-            Log::debug('Initial valid seats for the first setup', ['initialValidSeats' => $initialValidSeats]);
-    
-            // Create the selected room record
-            $selectedRoom = SelectedRoom::create([
-                'exam_id' => $exam->id,
-                'room_id' => $roomData['id'],
-                'applicant_seat_quantity' => $applicantSeatQuantity,
-                'selectedroom_valid_seat' => $initialValidSeats,
-            ]);
-    
-            Log::debug('Selected room created', ['selectedRoom' => $selectedRoom]);
-    
-            // Ensure other records with the same room_id and overlapping exam times are updated
-            $overlappingExams = SelectedRoom::where('room_id', $room->id)
-                                ->whereHas('exam', function($query) use ($exam) {
-                                    $query->where('exam_date', $exam->exam_date)
-                                          ->where('exam_start_time', $exam->exam_start_time)
-                                          ->where('exam_end_time', $exam->exam_end_time);
-                                })
-                                ->get();
-    
-            Log::debug('Overlapping exams', ['count' => $overlappingExams->count()]);
-    
-            foreach ($overlappingExams as $overlappingExam) {
-                // Sum of all applicant seat quantities in overlapping exams
-                $totalUsedSeatsInOverlappingExams = SelectedRoom::where('room_id', $room->id)
-                                                                ->whereHas('exam', function($query) use ($exam) {
-                                                                    $query->where('exam_date', $exam->exam_date)
-                                                                          ->where('exam_start_time', $exam->exam_start_time)
-                                                                          ->where('exam_end_time', $exam->exam_end_time);
-                                                                })
-                                                                ->sum('applicant_seat_quantity');
-                Log::debug('Total used seats in overlapping exams', ['totalUsedSeatsInOverlappingExams' => $totalUsedSeatsInOverlappingExams]);
-    
-                $remainingSeats = max(0, $room->total_seat - $totalUsedSeatsInOverlappingExams);
-                $overlappingExam->update(['selectedroom_valid_seat' => $remainingSeats]);
-    
-                Log::debug('Updated overlapping exam', ['overlappingExam' => $overlappingExam, 'remainingSeats' => $remainingSeats]);
-            }
+            // Call the new method to calculate and update valid seats
+            $this->seatController->SelectedroomValidSeatUpdate($room, $exam, $applicantSeatQuantity);
         }
     
         $this->staffController->duplicateStaffAssignments($exam);
     
+        // Call the assignApplicantsToSeats function to create seats
         $conflictedApplicants = $this->seatController->assignApplicantsToSeats($exam->department_name, $exam->exam_position, $selectedRooms, $exam);
     
         if (count($conflictedApplicants) > 0) {
@@ -346,6 +317,7 @@ class ExamController extends Controller
         $exam->status = 'ready';
         $exam->save();
     
+        //Log::debug('Exam updated to ready');
         return redirect()->route('exam-list')->with('status', 'Exam updated to ready and rooms selected!');
     }
     
