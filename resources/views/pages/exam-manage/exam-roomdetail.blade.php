@@ -1,9 +1,10 @@
+
 @extends('layouts.main')
 
 @section('content')
 <div class="flex flex-col w-full max-h-full">
     <div class="flex justify-between items-center">
-        <div class="flex flex-col">
+        <div class="flex flex-col bg-white rounded-lg px-4 py-3 shadow-md overflow-y-auto max-h-32">
             <div class="flex">
                 <p class="font-semibold align-baseline text-2xl">
                     {{ $room->room }}
@@ -22,18 +23,49 @@
                 <p id="column-count" class="font-bold ml-1 mt-1.5 text-black"> {{ $room->building->building_th }}</p>
             </div>
             <div class="flex flex-wrap">
-                <div class="mr-4">
-                    @foreach($departments as $department)
-                        <span class="flex">ฝ่ายงาน 
-                            <p class="ml-1 font-bold">{{ $department }}</p>@if(!$loop->last),@endif</span>
-                    @endforeach
-                </div>
                 <div>
                     @foreach($positions as $position)
-                        <span class="flex">ตำแหน่ง 
-                            <p class="ml-1 font-bold">{{ $position }}</p>@if(!$loop->last),@endif</span>
+                    <span class="flex">ตำแหน่ง
+                            <div class=" w-4 h-4 ml-1 border-2 border-black translate-y-1 rounded-full bg-green-500"></div>
+                            <p class="ml-1 font-bold">{{ $position }}</p>@if(!$loop->last)@endif</span>
                     @endforeach
                 </div>
+                <div class="mr-4">
+                    <span class="flex">
+                    @foreach($departments as $department)
+                            <p class="ml-1 font-semibold">( {{ $department }} )</p>@if(!$loop->last)@endif</span>
+                    @endforeach
+                </div>
+
+            </div>
+            <div class="flex flex-wrap">
+                เลขประจำตัวสอบสำหรับกลุ่ม
+                @php
+                    $applicantExamsArray = json_decode(json_encode($applicantExams), true);
+                    $groupedApplicants = collect($applicantExamsArray)->groupBy('exam_id')->map(function ($group) use ($applicants) {
+                        return $group->map(function ($exam) use ($applicants) {
+                            return $applicants->firstWhere('id', $exam['applicant_id']);
+                        });
+                    });
+                @endphp
+
+                @foreach($groupedApplicants as $examId => $group)
+                    @php
+                        $idNumbers = $group->pluck('id_number')->sort();
+                        $minIdNumber = $idNumbers->first();
+                        $maxIdNumber = $idNumbers->last();
+                    @endphp
+                    <div>
+                        , {{$examId}} :
+                        <span>
+                            @if($minIdNumber == $maxIdNumber)
+                                {{ $minIdNumber }}
+                            @else
+                                {{ $minIdNumber }} - {{ $maxIdNumber }}
+                            @endif
+                        </span>
+                    </div>
+                @endforeach
             </div>
         </div>
         <div class="flex align-center gap-8">
@@ -51,54 +83,6 @@
                 เลือกผู้คุมสอบ
             </x-buttons.primary>
         </div>
-    </div>
-    <div>
-        ชั้น: {{$room->floor}} , ชื่อห้อง: {{$room->room}} , ชื่อตึก: {{ $building->building_th}}
-    </div>
-    <div class="flex flex-wrap">
-        <div class="mr-4">
-            ชื่อฝ่ายงาน:
-            @foreach(collect($departments)->reverse() as $department)
-                <span>{{ $department }}@if(!$loop->last) ,@endif</span>
-            @endforeach
-        </div>
-    </div>
-    <div class="flex flex-wrap">
-        <div>
-            ชื่อตำแหน่งสอบ:
-            @foreach(collect($positions)->reverse() as $position)
-                <span>{{ $position }}@if(!$loop->last) ,@endif</span>
-            @endforeach
-        </div>
-    </div>
-    <div class="flex flex-wrap">
-        เลขประจำตัวสอบสำหรับกลุ่ม
-        @php
-            $applicantExamsArray = json_decode(json_encode($applicantExams), true);
-            $groupedApplicants = collect($applicantExamsArray)->groupBy('exam_id')->map(function ($group) use ($applicants) {
-                return $group->map(function ($exam) use ($applicants) {
-                    return $applicants->firstWhere('id', $exam['applicant_id']);
-                });
-            });
-        @endphp
-
-        @foreach($groupedApplicants as $examId => $group)
-            @php
-                $idNumbers = $group->pluck('id_number')->sort();
-                $minIdNumber = $idNumbers->first();
-                $maxIdNumber = $idNumbers->last();
-            @endphp
-            <div>
-                , {{$examId}} :
-                <span>
-                    @if($minIdNumber == $maxIdNumber)
-                        {{ $minIdNumber }}
-                    @else
-                        {{ $minIdNumber }} - {{ $maxIdNumber }}
-                    @endif
-                </span>
-            </div>
-        @endforeach
     </div>
     <div class="bg-white shadow-md my-3 rounded-lg max-h-screen flex flex-col">
         <div id="seat-container" class="grid gap-2 overflow-x-auto overflow-y-auto w-full h-96">
@@ -186,7 +170,7 @@ function addSeats() {
                     const bgColor = applicantExam ? examGroups[applicantExam.exam_id] : 'bg-gray-500';
                     const colorIndex = Object.keys(examGroups).indexOf(applicantExam.exam_id.toString()) % colors.length;
                     let colorCount = (Math.floor(Object.keys(examGroups).indexOf(applicantExam.exam_id.toString()) / colors.length) + 1) - 1;
-                    
+
                     if (colorCount === 0) {
                         colorCount = '';
                     }
@@ -222,7 +206,7 @@ function addSeats() {
             seatComponents += seatComponent;
         }
     }
-    validSeatCount = TotalSeat - assignedSeats; 
+    validSeatCount = TotalSeat - assignedSeats;
     seatContainer.innerHTML = seatComponents;
     updateValidSeatCountUI(validSeatCount);
     // updateValidSeatCountInDB(validSeatCount);
@@ -291,11 +275,11 @@ document.addEventListener('DOMContentLoaded', function() {
                                 console.log(`Checking staff ${staff.name} (${staff.id}) against exam times.`);
                                 console.log(`Staff Start: ${staffStartTimeStr}, Staff End: ${staffEndTimeStr}`);
 
-                                if ((examStartTimeStr < staffEndTimeStr && examEndTimeStr > staffStartTimeStr) || 
-                                    (examStartTimeStr < staffEndTimeStr && examEndTimeStr >= staffEndTimeStr) || 
+                                if ((examStartTimeStr < staffEndTimeStr && examEndTimeStr > staffStartTimeStr) ||
+                                    (examStartTimeStr < staffEndTimeStr && examEndTimeStr >= staffEndTimeStr) ||
                                     (examStartTimeStr <= staffStartTimeStr && examEndTimeStr > staffStartTimeStr)) {
                                     console.log(`Time overlap detected for staff ${staff.name} (${staff.id}).`);
-                                    
+
                                     if ((assignment.exam_id !== examId || assignment.room_id !== roomId) && !isAlreadySelected) {
                                         isAssigned = true;
                                         console.log(`Staff ${staff.name} (${staff.id}) is assigned: ${isAssigned} due to different room or exam.`);
@@ -431,7 +415,7 @@ function saveApplicantToSeat(seatId, applicantId, examId) {
             seat_id: seatId,
             applicant_id: applicantId,
             room_id: roomId,
-            exam_id: examId 
+            exam_id: examId
         })
     })
     .then(response => response.json())

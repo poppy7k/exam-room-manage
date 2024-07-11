@@ -20,14 +20,14 @@ class Applicant extends Model
         'department',
     ];
 
-    public function exams()
-    {
-        return $this->belongsToMany(Exam::class);
-    }
-
     public function seats()
     {
-        return $this->hasMany(Seat::class);
+        return $this->hasMany(Seat::class, 'applicant_id');
+    }
+
+    public function exam()
+    {
+        return $this->belongsTo(Exam::class);
     }
 
     public function room()
