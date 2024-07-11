@@ -93,7 +93,7 @@
                 {{ $exams->exam_takers_quantity }}
             </p>
         </div>
-        <form class="my-auto mx-5" id="submit-form" method="POST" action="{{ route('update-exam-status') }}">
+        <form class="my-auto mx-5" id="submit-form" method="POST" action="{{ route('create-exams') }}">
             @csrf
             <input type="hidden" name="exam_id" value="{{ $exams->id }}">
             <input type="hidden" name="selected_rooms" id="selected-rooms-input">

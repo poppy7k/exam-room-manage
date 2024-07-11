@@ -479,7 +479,7 @@ function saveApplicantToSeat(seatId, applicantId, examId) {
             alert('Applicant assigned to seat successfully.');
         } else {
             console.error('Server response:', data);
-            alert('Failed to assign applicant to seat: ' + data.message);
+            alert(data.message);
         }
     })
     .catch(error => {
@@ -512,7 +512,7 @@ function removeApplicantFromSeat(seatId) {
             alert('Applicant removed from seat successfully.');
         } else {
             console.error('Server response:', data);
-            alert('Failed to remove applicant from seat.');
+            alert(data.message);
         }
     })
     .catch(error => {

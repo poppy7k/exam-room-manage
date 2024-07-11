@@ -129,13 +129,14 @@
             examEndTimeError.style.display = 'none';
         }
 
-        if (startHour > endHour || (startHour === endHour && startMinute >= endMinute)) {
-            examStartTimeError.style.display = 'block';
-            examStartTimeError.textContent = '* เวลาเริ่มต้นการสอบต้องเริ่มก่อนเวลาสิ้นสุดการสอบ';
-            isValid = false;
-        } else {
-            examStartTimeError.style.display = 'none';
-        }
+        // //comment for testing exam status
+        // if (startHour > endHour || (startHour === endHour && startMinute >= endMinute)) {
+        //     examStartTimeError.style.display = 'block';
+        //     examStartTimeError.textContent = '* เวลาเริ่มต้นการสอบต้องเริ่มก่อนเวลาสิ้นสุดการสอบ';
+        //     isValid = false;
+        // } else {
+        //     examStartTimeError.style.display = 'none';
+        // }
 
         // Validate department is in datalist
         for (var i = 0; i < departmentOptions.length; i++) {
@@ -179,15 +180,15 @@
             departmentNameError.style.display = 'none';
         }
 
-        // Validate not before today
-        if (selectedDate < today) {
-            examDateError.textContent = '* ไม่สามารถเลือกวันที่หลังจากวันนี้ได้';
-            examDateError.style.display = 'block';
-            examDate.value = '';
-            isValid = false;
-        } else {
-            examDateError.style.display = 'none';
-        }
+        // //Validate not before today //comment for testing exam status
+        // if (selectedDate < today) {
+        //     examDateError.textContent = '* ไม่สามารถเลือกวันที่หลังจากวันนี้ได้';
+        //     examDateError.style.display = 'block';
+        //     examDate.value = '';
+        //     isValid = false;
+        // } else {
+        //     examDateError.style.display = 'none';
+        // }
         
         return isValid;
     }

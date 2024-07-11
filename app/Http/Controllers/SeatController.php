@@ -70,9 +70,16 @@ class SeatController extends Controller
             $selectedRoom = SelectedRoom::firstOrCreate(['room_id' => $room->id, 'exam_id' => $exam->id]);
     
             //Log::debug('Selected Room Created', ['selectedRoom' => $selectedRoom]);
+            $invalidSeats = json_decode($room->invalid_seats, true) ?? [];
     
             for ($i = 1; $i <= $room->rows; $i++) {
                 for ($j = 1; $j <= $room->columns; $j++) {
+                    $seatId = "{$i}-" . chr(64 + $j); // Converts column number to letter
+
+                    if (in_array($seatId, $invalidSeats)) {
+                        // Skip deactivated seat
+                        continue;
+                    } 
                     if ($applicantIndex >= $applicants->count()) {
                         //Log::debug('All applicants assigned', ['applicantIndex' => $applicantIndex]);
                         return array_unique($conflictedApplicants);
@@ -189,7 +196,7 @@ class SeatController extends Controller
         //Log::debug('Processing room', ['room_id' => $room->id, 'applicantSeatQuantity' => $applicantSeatQuantity]);
     
         // Calculate the remaining valid seats for the first setup
-        $initialValidSeats = $room->total_seat - $applicantSeatQuantity;
+        $initialValidSeats = $room->valid_seat - $applicantSeatQuantity;
         //Log::debug('Initial valid seats for the first setup', ['initialValidSeats' => $initialValidSeats]);
     
         // Create the selected room record
@@ -224,7 +231,7 @@ class SeatController extends Controller
                                                             ->sum('applicant_seat_quantity');
             //Log::debug('Total used seats in overlapping exams', ['totalUsedSeatsInOverlappingExams' => $totalUsedSeatsInOverlappingExams]);
     
-            $remainingSeats = max(0, $room->total_seat - $totalUsedSeatsInOverlappingExams);
+            $remainingSeats = max(0, $room->valid_seat - $totalUsedSeatsInOverlappingExams);
             $overlappingExam->update(['selectedroom_valid_seat' => $remainingSeats]);
     
             //Log::debug('Updated overlapping exam', ['overlappingExam' => $overlappingExam, 'remainingSeats' => $remainingSeats]);
@@ -246,6 +253,13 @@ class SeatController extends Controller
             $applicantId = $validatedData['applicant_id'];
             $roomId = $validatedData['room_id'];
             $examId = $validatedData['exam_id'];
+    
+            $exam = Exam::findOrFail($examId);
+
+            // Check the status of the exam
+            if (in_array($exam->status, ['inprogress', 'finished', 'unfinished'])) {
+                return response()->json(['success' => false, 'message' => 'ไม่สามารถแก้ไขผู้เข้าสอบในวันเวลาดังกล่าว'], 400);
+            }
     
             $seatParts = explode('-', $seatId);
             $row = $seatParts[0];
@@ -298,6 +312,10 @@ class SeatController extends Controller
     
             // Attach the applicant to the exam with status 'assigned'
             $exam->applicants()->syncWithoutDetaching([$applicantId => ['status' => 'assigned']]);
+
+            // Decrement the selectedroom_valid_seat by 1
+            $selectedRoom->decrement('selectedroom_valid_seat');
+            $selectedRoom->save();
     
             //Log::info('Applicant assigned to seat successfully');
             return response()->json(['success' => true]);
@@ -332,6 +350,13 @@ class SeatController extends Controller
                                             
                 if ($selectedRoom) {
                     //Log::info('Selected room found', ['selected_room' => $selectedRoom]);
+                    // Fetch the exam
+                    $exam = Exam::find($selectedRoom->exam_id);
+
+                    // Check the status of the exam
+                    if (in_array($exam->status, ['inprogress', 'finished', 'unfinished'])) {
+                        return response()->json(['success' => false, 'message' => 'ไม่สามารถแก้ไขผู้เข้าสอบในวันเวลาดังกล่าว'], 400);
+                    }
                     
                     // Ensure seat has an applicant assigned
                     if ($seat->applicant_id !== null) {
@@ -344,6 +369,10 @@ class SeatController extends Controller
                         // Remove the applicant from the seat
                         $seat->applicant_id = null;
                         $seat->save();
+
+                        // Increment the selectedroom_valid_seat by 1
+                        $selectedRoom->increment('selectedroom_valid_seat');
+                        $selectedRoom->save();
     
                         //Log::info('Applicant removed from seat successfully');
                         return response()->json(['success' => true]);
@@ -368,37 +397,37 @@ class SeatController extends Controller
         }
     }
 
-    public function updateValidSeatCount(Request $request)
-    {
-        $validatedData = $request->validate([
-            'room_id' => 'required|integer|exists:exam_room_information,id',
-            'exam_id' => 'required|integer|exists:exams,id',
-            'valid_seat_count' => 'required|integer',
-        ]);
+    // public function updateValidSeatCount(Request $request)
+    // {
+    //     $validatedData = $request->validate([
+    //         'room_id' => 'required|integer|exists:exam_room_information,id',
+    //         'exam_id' => 'required|integer|exists:exams,id',
+    //         'valid_seat_count' => 'required|integer',
+    //     ]);
     
-        // Get the exam details
-        $exam = Exam::findOrFail($validatedData['exam_id']);
+    //     // Get the exam details
+    //     $exam = Exam::findOrFail($validatedData['exam_id']);
     
-        // Find all selected rooms that have the same room_id and overlap in time with the provided exam
-        $selectedRooms = SelectedRoom::where('room_id', $validatedData['room_id'])
-            ->whereHas('exam', function($query) use ($exam) {
-                $query->where('exam_date', $exam->exam_date)
-                    ->where('exam_start_time', '<', $exam->exam_end_time)
-                    ->where('exam_end_time', '>', $exam->exam_start_time);
-            })
-            ->get();
+    //     // Find all selected rooms that have the same room_id and overlap in time with the provided exam
+    //     $selectedRooms = SelectedRoom::where('room_id', $validatedData['room_id'])
+    //         ->whereHas('exam', function($query) use ($exam) {
+    //             $query->where('exam_date', $exam->exam_date)
+    //                 ->where('exam_start_time', '<', $exam->exam_end_time)
+    //                 ->where('exam_end_time', '>', $exam->exam_start_time);
+    //         })
+    //         ->get();
     
-        if ($selectedRooms->isEmpty()) {
-            return response()->json(['success' => false, 'message' => 'Selected rooms not found.'], 404);
-        }
+    //     if ($selectedRooms->isEmpty()) {
+    //         return response()->json(['success' => false, 'message' => 'Selected rooms not found.'], 404);
+    //     }
     
-        // Update applicant_seat_quantity for all matching selected rooms
-        foreach ($selectedRooms as $selectedRoom) {
-            $selectedRoom->applicant_seat_quantity = $validatedData['valid_seat_count'];
-            $selectedRoom->save();
-        }
+    //     // Update applicant_seat_quantity for all matching selected rooms
+    //     foreach ($selectedRooms as $selectedRoom) {
+    //         $selectedRoom->applicant_seat_quantity = $validatedData['valid_seat_count'];
+    //         $selectedRoom->save();
+    //     }
     
-        return response()->json(['success' => true]);
-    }
+    //     return response()->json(['success' => true]);
+    // }
     
 }
