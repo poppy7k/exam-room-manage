@@ -24,56 +24,96 @@ class StaffController extends Controller
             $roomId = $request->input('room_id');
             $examiners = $request->input('examiners');
             $examId = $request->input('exam_id');
-    
+        
+            Log::debug('Saving Staffs', ['room_id' => $roomId, 'examiners' => $examiners, 'exam_id' => $examId]);
+        
             $selectedRoom = SelectedRoom::where('room_id', $roomId)->where('exam_id', $examId)->first();
-    
+        
             if ($selectedRoom) {
-                // Detach all current staff for the room and exam
-                $selectedRoom->staffs()->detach();
-    
-                // Attach the new staff members
-                foreach ($examiners as $examiner) {
-                    $staff = Staff::find($examiner['id']);
-                    if ($staff) {
-                        $selectedRoom->staffs()->attach($staff->id, ['exam_id' => $examId]);
+                Log::debug('Found selected room', ['selected_room_id' => $selectedRoom->id]);
+        
+                // Get current staff for the room and exam
+                $currentStaffIds = $selectedRoom->staffs->pluck('id')->toArray();
+                $newStaffIds = array_column($examiners, 'id');
+        
+                // Detach staff members that are not in the new list
+                $staffToDetach = array_diff($currentStaffIds, $newStaffIds);
+                if (!empty($staffToDetach)) {
+                    $selectedRoom->staffs()->detach($staffToDetach);
+                    Log::debug('Detached staff members', ['staff_ids' => $staffToDetach, 'selected_room_id' => $selectedRoom->id]);
+                }
+        
+                // Attach new staff members
+                foreach ($newStaffIds as $staffId) {
+                    if (!in_array($staffId, $currentStaffIds)) {
+                        $selectedRoom->staffs()->attach($staffId, ['exam_id' => $examId]);
+                        Log::debug('Attached new staff member', ['staff_id' => $staffId, 'selected_room_id' => $selectedRoom->id]);
                     }
                 }
-    
-                // Find other exams with the same date and time
-                $existingExams = Exam::where('exam_date', $selectedRoom->exam_date)
-                                     ->where('exam_start_time', $selectedRoom->exam_start_time)
-                                     ->where('exam_end_time', $selectedRoom->exam_end_time)
-                                     ->where('id', '!=', $examId)
-                                     ->get();
-    
-                foreach ($existingExams as $existingExam) {
-                    $existingSelectedRoom = SelectedRoom::where('room_id', $roomId)
-                                                         ->where('exam_id', $existingExam->id)
-                                                         ->first();
-    
-                    if ($existingSelectedRoom) {
-                        // Detach all current staff for the existing room and exam
-                        $existingSelectedRoom->staffs()->detach();
-    
-                        // Attach the new staff members
-                        foreach ($examiners as $examiner) {
-                            $staff = Staff::find($examiner['id']);
-                            if ($staff) {
-                                $existingSelectedRoom->staffs()->attach($staff->id, ['exam_id' => $existingExam->id]);
-                            }
-                        }
-                    }
-                }
+        
+                // Duplicate staff assignments for all other exams with the same date, time, and room
+                $this->duplicateStaffAssignments($selectedRoom, $newStaffIds, $staffToDetach);
             }
-    
+        
             return response()->json(['success' => true]);
         } catch (\Exception $e) {
             Log::error('Error saving staff: ' . $e->getMessage(), ['exception' => $e]);
             return response()->json(['success' => false, 'message' => 'Failed to save staff.'], 500);
         }
     }
+    
 
-    public function duplicateStaffAssignments($newExam)
+    public function duplicateStaffAssignments($selectedRoom, $newStaffIds, $staffToDetach)
+    {
+        $newExam = $selectedRoom->exam;
+        Log::info('Starting to duplicate staff assignments', ['new_exam_id' => $newExam->id]);
+        
+        // Find existing exams with the same date and time but different IDs
+        $existingExams = Exam::where('exam_date', $newExam->exam_date)
+                             ->where('exam_start_time', $newExam->exam_start_time)
+                             ->where('exam_end_time', $newExam->exam_end_time)
+                             ->where('id', '!=', $newExam->id)
+                             ->get();
+        
+        Log::info('Found existing exams with the same date and time', ['existing_exams' => $existingExams]);
+        
+        foreach ($existingExams as $existingExam) {
+            Log::info('Processing existing exam', ['existing_exam_id' => $existingExam->id]);
+        
+            $existingSelectedRoom = SelectedRoom::where('room_id', $selectedRoom->room_id)
+                                                 ->where('exam_id', $existingExam->id)
+                                                 ->first();
+        
+            if ($existingSelectedRoom) {
+                Log::info('Found corresponding selected room for existing exam', ['existing_selected_room_id' => $existingSelectedRoom->id]);
+        
+                // Detach staff members that are not in the new list
+                if (!empty($staffToDetach)) {
+                    $existingSelectedRoom->staffs()->detach($staffToDetach);
+                    Log::debug('Detached staff members from existing selected room', ['staff_ids' => $staffToDetach, 'selected_room_id' => $existingSelectedRoom->id]);
+                }
+        
+                // Attach new staff members
+                foreach ($newStaffIds as $staffId) {
+                    $exists = DB::table('room_staff')
+                        ->where('selected_room_id', $existingSelectedRoom->id)
+                        ->where('staff_id', $staffId)
+                        ->where('exam_id', $existingExam->id)
+                        ->exists();
+        
+                    if (!$exists) {
+                        $existingSelectedRoom->staffs()->attach($staffId, ['exam_id' => $existingExam->id]);
+                        Log::debug('Attached new staff member to existing selected room', ['staff_id' => $staffId, 'selected_room_id' => $existingSelectedRoom->id]);
+                    }
+                }
+            }
+        }
+        
+        Log::info('Completed duplicating staff assignments');
+    }
+    
+
+    public function duplicateStaffAssignments2($newExam)
     {
         //Log::info('Starting to duplicate staff assignments', ['new_exam_id' => $newExam->id]);
     
@@ -137,5 +177,6 @@ class StaffController extends Controller
     
         //Log::info('Completed duplicating staff assignments');
     }
+    
 
 }
