@@ -4,7 +4,7 @@
 @section('content')
 <div class="flex flex-col w-full max-h-full">
     <div class="flex justify-between items-center">
-        <div class="flex flex-col bg-white rounded-lg px-4 py-3 shadow-md overflow-y-auto max-h-32">
+        <div class="flex flex-col bg-white rounded-lg px-4 py-3 shadow-md overflow-y-auto max-h-32 mb-3">
             <div class="flex">
                 <p class="font-semibold align-baseline text-2xl">
                     {{ $room->room }}

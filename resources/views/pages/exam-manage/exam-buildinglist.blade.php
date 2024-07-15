@@ -70,7 +70,7 @@
             if (buildingTh.includes(searchQuery) || buildingEn.includes(searchQuery)) {
                 item.style.display = 'block';
                 hasVisibleItems = true;
-            } else {
+            } else { 
                 item.style.display = 'none';
             }
         });

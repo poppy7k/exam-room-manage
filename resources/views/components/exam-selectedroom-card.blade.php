@@ -27,7 +27,7 @@
         </div>
         <div class="flex justify-end">
             <p class="absolute justify-end -mx-1 -my-7 px-2 py-1 bg-gradient-to-tr from-green-600 to-green-400 rounded-lg text-sm text-white shadow-md">
-                {{ $selectedroom_valid_seat }} ที่นั่ง
+                {{ $selected_room_applicant_quantity }} ที่นั่ง
             </p>
         </div>
         <span class="relative group flex hover-trigger">
