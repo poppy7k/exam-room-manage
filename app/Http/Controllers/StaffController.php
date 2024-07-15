@@ -63,7 +63,7 @@ class StaffController extends Controller
     }
     
 
-    public function duplicateStaffAssignments($selectedRoom, $newStaffIds, $staffToDetach)
+    public function duplicateStaffAssignments($selectedRoom, $newStaffIds, $staffToDetach)// case selected staff after create all involve case same room same time
     {
         $newExam = $selectedRoom->exam;
         Log::info('Starting to duplicate staff assignments', ['new_exam_id' => $newExam->id]);
@@ -113,7 +113,7 @@ class StaffController extends Controller
     }
     
 
-    public function duplicateStaffAssignments2($newExam)
+    public function duplicateStaffAssignments2($newExam)// case selected staff in (exam)s before create another (exam)s
     {
         //Log::info('Starting to duplicate staff assignments', ['new_exam_id' => $newExam->id]);
     

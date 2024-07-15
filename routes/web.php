@@ -55,7 +55,7 @@ Route::delete('/exams/{examId}', [ExamController::class, 'destroy'])->name('exam
 Route::get('/exams/{examId}/buildings', [ExamController::class, 'showExamBuildingList'])->name('exam-buildinglist');
 Route::get('/exams/{examId}/buildings/{buildingId}', [ExamController::class, 'showExamRoomList'])->name('exam-roomlist');
 
-Route::post('/update-exam-status', [ExamController::class, 'updateExamStatus'])->name('update-exam-status');
+Route::post('/create-exams', [ExamController::class, 'createExams'])->name('create-exams');
 Route::get('/exams/{examId}/selectedrooms', [SelectedRoomController::class, 'showSelectedRooms'])->name('exam-selectedroom');
 Route::get('/exams/{examId}/selectedrooms/{selected_room_id}', [ExamController::class, 'showExamRoomDetail'])->name('exam-roomdetail');
 
@@ -77,3 +77,4 @@ Route::post('/save-applicant-to-seat', [SeatController::class, 'saveApplicantToS
 Route::post('/remove-applicant-from-seat', [SeatController::class, 'removeApplicantFromSeat']);
 Route::post('/update-valid-seat-count', [SeatController::class, 'updateValidSeatCount']);
 Route::put('/exams/update', [ExamController::class, 'updateExam'])->name('update-exam');
+Route::get('/update-exam-statuses', [ExamController::class, 'updateExamStatuses']);

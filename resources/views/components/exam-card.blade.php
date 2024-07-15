@@ -50,6 +50,16 @@
                 การสอบเสร็จสิ้น
             </p>
             @endif
+            @if ($status == 'unready')
+            <p class="w-max ml-2 py-1 px-2 -translate-y-0.5 bg-gradient-to-tr from-red-600 to-red-400 rounded-lg text-sm text-white shadow-md">
+                ไม่พร้อมจัดสอบ
+            </p>
+            @endif
+            @if ($status == 'unfinished')
+            <p class="w-max ml-2 py-1 px-2 -translate-y-0.5 bg-gradient-to-tr from-orange-600 to-orange-400 rounded-lg text-sm text-white shadow-md">
+                จัดสอบไม่สำเร็จ
+            </p>
+            @endif
         </div>
         <div class="flex">
             วันที่สอบ: {{ \Carbon\Carbon::parse($exam_start_time)->format('D, d/m/Y') }}
@@ -77,7 +87,7 @@
         </span>
 
         <div class="flex justify-between pb-1 mt-auto pt-3">
-            @if ($status == 'ready')
+            @if ($status == 'ready' || $status == 'inprogress' || $status == 'finished' || $status == 'unready' || $status == 'unfinished')
                 <x-buttons.primary type="button" class="py-1.5 px-12 z-10"
                     onclick="window.location.href = '{{ route('exam-selectedroom', ['examId' => $exam_id]) }}'">
                     เลือก
@@ -137,4 +147,91 @@
             });
         }
     }
+
+    document.addEventListener('DOMContentLoaded', function() {
+    function updateExamStatuses() {
+        fetch('/update-exam-statuses')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    data.exams.forEach(exam => {
+                        const examElement = document.querySelector(`#exam-${exam.id}`);
+                        if (examElement) {
+                            const statusElement = examElement.querySelector('.exam-status');
+                            statusElement.textContent = getStatusText(exam.status);
+                            updateStatusClass(statusElement, exam.status);
+                        }
+                    });
+                } else {
+                    console.error('Failed to update exam statuses:', data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error updating exam statuses:', error);
+            });
+    }
+
+    function getStatusText(status) {
+        switch (status) {
+            case 'pending':
+                return 'รอการเลือกห้องสอบ';
+            case 'ready':
+                return 'พร้อมจัดสอบ';
+            case 'inprogress':
+                return 'ระหว่างการสอบ';
+            case 'finished':
+                return 'การสอบเสร็จสิ้น';
+            case 'unready':
+                return 'ไม่พร้อมจัดสอบ';
+            case 'unfinished':
+                return 'จัดสอบไม่สำเร็จ';
+            default:
+                return 'Unknown';
+        }
+    }
+
+    function updateStatusClass(element, status) {
+        element.classList.remove('from-yellow-600', 'to-yellow-400', 'from-green-600', 'to-green-400', 'from-cyan-600', 'to-cyan-400', 'from-gray-600', 'to-gray-400','from-red-600','to-red-400','from-orange-600','to-orange-400');
+        switch (status) {
+            case 'pending':
+                element.classList.add('from-yellow-600', 'to-yellow-400');
+                break;
+            case 'ready':
+                element.classList.add('from-green-600', 'to-green-400');
+                break;
+            case 'inprogress':
+                element.classList.add('from-cyan-600', 'to-cyan-400');
+                break;
+            case 'finished':
+                element.classList.add('from-gray-600', 'to-gray-400');
+                break;
+            case 'unready':
+                element.classList.add('from-red-600', 'to-red-400');
+                break;
+            case 'unfinished':
+                element.classList.add('from-orange-600', 'to-orange-400');
+                break;
+        }
+    }
+
+    // Initial call to update statuses
+    updateExamStatuses();
+
+    // Periodically update statuses every 5 minutes
+    setInterval(updateExamStatuses, 300000); // 300000 ms = 5 minutes
+});
+// document.addEventListener('DOMContentLoaded', function() {
+//     fetch('/update-exam-statuses')
+//         .then(response => response.json())
+//         .then(data => {
+//             if (data.success) {
+//                 location.reload();
+//             } else {
+//                 console.error('Failed to update exam statuses:', data.message);
+//             }
+//         })
+//         .catch(error => {
+//             console.error('Error updating exam statuses:', error);
+//         });
+// });
 </script>

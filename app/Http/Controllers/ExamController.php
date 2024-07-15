@@ -12,6 +12,7 @@ use App\Models\Seat;
 use App\Models\Staff;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class ExamController extends Controller
 {
@@ -269,7 +270,7 @@ class ExamController extends Controller
         return view('pages.exam-manage.exam-roomdetail', compact('applicantExams','selectedRooms','building','exam', 'room', 'breadcrumbs', 'applicants', 'staffs', 'seats', 'assignedStaffs','departments','positions'));
     }
     
-    public function updateExamStatus(Request $request)
+    public function createExams(Request $request)
     {
         $validatedData = $request->validate([
             'exam_id' => 'required|integer|exists:exams,id',
@@ -321,6 +322,81 @@ class ExamController extends Controller
         //Log::debug('Exam updated to ready');
         return redirect()->route('exam-list')->with('status', 'Exam updated to ready and rooms selected!');
     }
+
+    public function updateExamStatuses()
+    {
+        try {
+            $currentDateTime = Carbon::now();
+    
+            // Get all exams
+            $exams = Exam::all();
+    
+            foreach ($exams as $exam) {
+                $startTime = Carbon::parse($exam->exam_date)->setTimeFromTimeString($exam->exam_start_time);
+                $endTime = Carbon::parse($exam->exam_date)->setTimeFromTimeString($exam->exam_end_time);
+    
+                // Log the current exam details
+                //Log::info('Processing exam', ['exam_id' => $exam->id]);
+    
+                // Get applicants registered for the exam
+                $registeredApplicants = $exam->applicants;
+    
+                // Log registered applicants
+                // Log::info('Registered applicants for exam', [
+                //     'exam_id' => $exam->id,
+                //     'applicants' => $registeredApplicants->pluck('id')->toArray()
+                // ]);
+    
+                // Filter applicants without seats
+                $applicantsWithoutSeats = $registeredApplicants->filter(function ($applicant) use ($exam) {
+                    return !Seat::where('applicant_id', $applicant->id)
+                                ->whereHas('selectedRoom', function ($query) use ($exam) {
+                                    $query->where('exam_id', $exam->id);
+                                })
+                                ->exists();
+                });
+    
+                // Log applicants without seats
+                // Log::info('Applicants without seats for exam', [
+                //     'exam_id' => $exam->id,
+                //     'applicants' => $applicantsWithoutSeats->pluck('id')->toArray()
+                // ]);
+    
+                if ($applicantsWithoutSeats->isNotEmpty()) {
+                    // Update status to 'unready'
+                    if ($exam->status === 'ready') {
+                        $exam->status = 'unready';
+                        $exam->save();
+                        //Log::info("Updated exam status to 'unready'", ['exam_id' => $exam->id]);
+                    }
+                } elseif ($applicantsWithoutSeats->isEmpty() && $exam->status === 'unready') {
+                    // Update status to 'ready' if previously unready and no applicants without seats
+                    $exam->status = 'ready';
+                    $exam->save();
+                    //Log::info("Updated exam status to 'ready'", ['exam_id' => $exam->id]);
+                } elseif ($currentDateTime->between($startTime, $endTime)) {
+                    // Update status to 'inprogress'
+                    if ($exam->status === 'ready') {
+                        $exam->status = 'inprogress';
+                        $exam->save();
+                        //Log::info("Updated exam status to 'inprogress'", ['exam_id' => $exam->id]);
+                    }
+                } elseif ($currentDateTime->gt($endTime)) {
+                    // Update status to 'finished'
+                    if ($exam->status === 'inprogress') {
+                        $exam->status = 'finished';
+                        $exam->save();
+                        //Log::info("Updated exam status to 'finished'", ['exam_id' => $exam->id]);
+                    }
+                }
+            }
+    
+            return response()->json(['success' => true, 'message' => 'Exam statuses updated successfully', 'exams' => $exams]);
+        } catch (\Exception $e) {
+            Log::error('Error updating exam statuses', ['exception' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
+            return response()->json(['success' => false, 'message' => 'Failed to update exam statuses.'], 500);
+        }
+    }    
 
     public function getExam() {
 
