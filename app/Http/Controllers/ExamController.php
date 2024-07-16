@@ -326,7 +326,7 @@ class ExamController extends Controller
     {
         try {
             $currentDateTime = Carbon::now();
-    
+            //Log::info('Current date and time', ['currentDateTime' => $currentDateTime->toDateTimeString()]);
             // Get all exams
             $exams = Exam::all();
     
@@ -334,6 +334,13 @@ class ExamController extends Controller
                 $startTime = Carbon::parse($exam->exam_date)->setTimeFromTimeString($exam->exam_start_time);
                 $endTime = Carbon::parse($exam->exam_date)->setTimeFromTimeString($exam->exam_end_time);
     
+                // Log the current exam details
+                // Log::info('Processing exam', [
+                //     'exam_id' => $exam->id,
+                //     'startTime' => $startTime->toDateTimeString(),
+                //     'endTime' => $endTime->toDateTimeString(),
+                //     'currentStatus' => $exam->status
+                // ]);
                 // Log the current exam details
                 //Log::info('Processing exam', ['exam_id' => $exam->id]);
     
@@ -361,7 +368,7 @@ class ExamController extends Controller
                 //     'applicants' => $applicantsWithoutSeats->pluck('id')->toArray()
                 // ]);
     
-                if ($applicantsWithoutSeats->isNotEmpty()) {
+                if ($applicantsWithoutSeats->isNotEmpty() && $exam->status !== 'unready') {
                     // Update status to 'unready'
                     if ($exam->status === 'ready') {
                         $exam->status = 'unready';
@@ -382,13 +389,22 @@ class ExamController extends Controller
                     }
                 } elseif ($currentDateTime->gt($endTime)) {
                     // Update status to 'finished'
+                    // if ($exam->status === 'inprogress' || $exam->status === 'ready') { prevent to change to case finished immediately (testing case unfinished)
                     if ($exam->status === 'inprogress') {
                         $exam->status = 'finished';
                         $exam->save();
                         //Log::info("Updated exam status to 'finished'", ['exam_id' => $exam->id]);
+                    }elseif ($exam->status === 'unready'){
+                        $exam->status = 'unfinished';
+                        $exam->save();
+                        //Log::info("Updated exam status to 'unfinished'", ['exam_id' => $exam->id]);
                     }
                 }
             }
+            // Log::info('Final exam status after processing', [
+            //     'exam_id' => $exam->id,
+            //     'finalStatus' => $exam->status
+            // ]);
     
             return response()->json(['success' => true, 'message' => 'Exam statuses updated successfully', 'exams' => $exams]);
         } catch (\Exception $e) {

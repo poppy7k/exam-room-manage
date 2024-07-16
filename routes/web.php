@@ -78,3 +78,7 @@ Route::post('/remove-applicant-from-seat', [SeatController::class, 'removeApplic
 Route::post('/update-valid-seat-count', [SeatController::class, 'updateValidSeatCount']);
 Route::put('/exams/update', [ExamController::class, 'updateExam'])->name('update-exam');
 Route::get('/update-exam-statuses', [ExamController::class, 'updateExamStatuses']);
+
+Route::get('/check-seat-deactivation/{seatId}', [ExamController::class, 'checkSeatDeactivation']);
+
+Route::post('/update-applicant-status', [ApplicantController::class, 'updateApplicantExamStatus']);
