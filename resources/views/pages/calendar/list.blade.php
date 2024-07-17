@@ -278,6 +278,10 @@
                     content.classList.add('from-green-400', 'to-green-600');
                 } else if (event.extendedProps.status === 'inprogress') {
                     content.classList.add('from-cyan-400', 'to-cyan-600');
+                } else if (event.extendedProps.status === 'finished') {
+                    content.classList.add('from-gray-400', 'to-gray-600');
+                } else if (event.extendedProps.status === 'unfinished') {
+                    content.classList.add('from-orange-400', 'to-orange-600');
                 }
                 content.innerHTML = `
                     ${event.title}

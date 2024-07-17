@@ -184,8 +184,10 @@ function addSeats() {
                 } else {
                     // Show deactivated seat if no applicant is assigned or exam status allows
                     seatComponent = `
-                        <div id="seat-${seatId}" class="seat p-4 text-center cursor-not-allowed">
-                            <x-seats.unavailable slot="${seatId}" />
+                        <div id="seat-${seatId}" class="seat p-4 text-center">
+                            <x-seats.unavailable slot="${seatId}">
+                                ${seatId}
+                            </x-seats.unavailable>
                         </div>
                     `;
                 }
