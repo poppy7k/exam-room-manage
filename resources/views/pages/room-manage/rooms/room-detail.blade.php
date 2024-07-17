@@ -316,6 +316,100 @@ document.getElementById('submit-exam-status-btn').addEventListener('click', func
         alert('An error occurred while updating exam statuses.');
     });
 });
+function addColumn(position) {
+    let columns = parseInt(document.getElementById('column-count').textContent);
+    columns++;
+    document.getElementById('column-count').textContent = columns;
+    if (position === 'left') {
+        invalidSeats = invalidSeats.map(seat => {
+            const [row, col] = seat.split('-');
+            const colIndex = col.charCodeAt(0) - 65 + 1;
+            return `${row}-${toExcelColumn(colIndex)}`;
+        });
+    }
+        
+    addSeats();
+    updateValidSeatCount();
+    updateTotalSeatCount();
+    }
+
+function removeColumn(position) {
+    let columns = parseInt(document.getElementById('column-count').textContent);
+    if (columns > 1) {
+        columns--;
+        document.getElementById('column-count').textContent = columns;
+        if (position === 'right') {
+            invalidSeats = invalidSeats.filter(seat => {
+                const col = seat.split('-')[1];
+                return col.charCodeAt(0) - 65 < columns;
+        });
+        } else if (position === 'left') {
+            invalidSeats = invalidSeats.map(seat => {
+                const [row, col] = seat.split('-');
+                const colIndex = col.charCodeAt(0) - 65 - 1;
+                return `${row}-${toExcelColumn(colIndex)}`;
+            }).filter(seat => {
+                const col = seat.split('-')[1];
+                return col.charCodeAt(0) - 65 >= 0;
+            });
+        }
+        addSeats();
+        updateValidSeatCount();
+        updateTotalSeatCount();
+    }
+}
+function addRow(position) {
+    let rows = parseInt(document.getElementById('row-count').textContent);
+    rows++;
+    document.getElementById('row-count').textContent = rows;
+    if (position === 'top') {
+        invalidSeats = invalidSeats.map(seat => {
+            const [row, col] = seat.split('-');
+            return `${parseInt(row) + 1}-${col}`;
+    });
+}
+    addSeats();
+    updateValidSeatCount();
+    updateTotalSeatCount();
+}
+function removeRow(position) {
+    let rows = parseInt(document.getElementById('row-count').textContent);
+    if (rows > 1) {
+        rows--;
+        document.getElementById('row-count').textContent = rows;
+        if (position === 'bottom') {
+            invalidSeats = invalidSeats.filter(seat => {
+                const row = seat.split('-')[0];
+                return parseInt(row) <= rows;
+            });
+        } else if (position === 'top') {
+            invalidSeats = invalidSeats.map(seat => {
+                const [row, col] = seat.split('-');
+                return `${parseInt(row) - 1}-${col}`;
+            }).filter(seat => {
+                const row = seat.split('-')[0];
+                return parseInt(row) >= 1;
+});
+        }
+        addSeats();
+        updateValidSeatCount();
+        updateTotalSeatCount();
+    }
+}
+function updateValidSeatCount() {
+    const rows = parseInt(document.getElementById('row-count').textContent);
+    const columns = parseInt(document.getElementById('column-count').textContent);
+    const totalSeats = rows * columns;
+    const occupiedSeats = invalidSeats.length;
+    validSeatCount = totalSeats - occupiedSeats;
+    document.getElementById('validSeatCount').textContent = validSeatCount;
+}
+function updateTotalSeatCount() {
+    const rows = parseInt(document.getElementById('row-count').textContent);
+    const columns = parseInt(document.getElementById('column-count').textContent);
+    const totalSeats = rows * columns;
+    document.getElementById('totalSeatCount').textContent = totalSeats;
+}
 
 document.addEventListener('DOMContentLoaded', addSeats);
 </script>
