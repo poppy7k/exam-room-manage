@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Applicant;
 use Illuminate\Support\Facades\Log;
 use App\Models\Exam;
+use Illuminate\Support\Facades\DB;
 
 class ApplicantController extends Controller
 {
@@ -38,5 +39,5 @@ class ApplicantController extends Controller
 
         return response()->json($applicantsWithoutSeats);
     }
-    
+
 }

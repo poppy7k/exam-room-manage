@@ -107,6 +107,7 @@ let validSeatCount = {{ $selectedRooms->room->valid_seat }};
 let TotalSeat = {{$selectedRooms->room->total_seat}}
 const roomId = {{ $selectedRooms->room->id }};
 const examId = {{ $exam->id }};
+const exam = {!! json_encode($exam) !!};
 let applicants = {!! json_encode($applicants) !!};
 let applicantExams = {!! json_encode($applicantExams) !!};
 let seats = {!! json_encode($seats) !!};
@@ -115,6 +116,7 @@ let currentSeatId = '';
 
 //console.log('Applicants:', applicants);
 //console.log('Seats:', seats);
+//console.log('Exams;', exam)
 
 function toExcelColumn(n) {
     let result = '';
@@ -151,22 +153,42 @@ function addSeats() {
         }
     });
 
-    //console.log('Exam Groups:', examGroups);
-    //console.log('Color Counters:', colorCounters);
-
     for (let i = 0; i < rows; i++) {
         for (let j = 0; j < columns; j++) {
             const seatId = `${i + 1}-${toExcelColumn(j)}`;
             let seatComponent = '';
             const seat = seats.find(seat => seat.row === (i + 1) && seat.column === (j + 1));
             const applicant = seat ? applicants.find(applicant => applicant.id === seat.applicant_id) : null;
+            const examStatus = exam.status;
 
             if (invalidSeats && invalidSeats.includes(seatId)) {
-                seatComponent = `
-                    <div id="seat-${seatId}" class="seat p-4 text-center cursor-not-allowed">
-                        <x-seats.unavailable slot="${seatId}" />
-                    </div>
-                `;
+                if (seat && applicant && ['inprogress', 'finished', 'unfinished'].includes(examStatus)) {
+                    // Don't replace the applicant seat if exam status is inprogress, finished, or unfinished
+                    const applicantExam = applicantExams.find(ae => ae.applicant_id === applicant.id);
+                    const bgColor = applicantExam ? examGroups[applicantExam.exam_id] : 'bg-gray-500';
+                    const colorIndex = Object.keys(examGroups).indexOf(applicantExam.exam_id.toString()) % colors.length;
+                    let colorCount = (Math.floor(Object.keys(examGroups).indexOf(applicantExam.exam_id.toString()) / colors.length) + 1) - 1;
+
+                    if (colorCount === 0) {
+                        colorCount = '';
+                    }
+
+                    seatComponent = `
+                        <div id="seat-${seatId}" class="seat p-4 text-center cursor-pointer" onclick="showApplicantModal('${seatId}', ${seat.id}, true)">
+                            <x-seats.assigned :bgColor="'${bgColor}'" applicant="${applicant.id_number}" colorCount="${colorCount}">
+                                ${seatId}
+                            </x-seats.assigned>
+                        </div>
+                    `;
+                    assignedSeats++;
+                } else {
+                    // Show deactivated seat if no applicant is assigned or exam status allows
+                    seatComponent = `
+                        <div id="seat-${seatId}" class="seat p-4 text-center cursor-not-allowed">
+                            <x-seats.unavailable slot="${seatId}" />
+                        </div>
+                    `;
+                }
             } else if (seat) {
                 if (applicant) {
                     const applicantExam = applicantExams.find(ae => ae.applicant_id === applicant.id);
@@ -177,8 +199,6 @@ function addSeats() {
                     if (colorCount === 0) {
                         colorCount = '';
                     }
-
-                    //console.log('Applicant:', applicant.id_number, 'Color:', bgColor, 'Color Count:', colorCount, 'Color Index:', colorIndex);
 
                     seatComponent = `
                         <div id="seat-${seatId}" class="seat p-4 text-center cursor-pointer" onclick="showApplicantModal('${seatId}', ${seat.id}, true)">
@@ -214,6 +234,9 @@ function addSeats() {
     updateValidSeatCountUI(validSeatCount);
     // updateValidSeatCountInDB(validSeatCount);
 }
+
+
+
 
 function updateValidSeatCountUI(validSeatCount) {
     document.getElementById('validSeatCount').textContent = validSeatCount;
@@ -563,6 +586,7 @@ function removeApplicantsFromRoom(roomId, examDate, examStartTime, examEndTime) 
 //         console.error('Error updating valid seat count in the database:', error);
 //     });
 // }
+
 
 </script>
 @endsection

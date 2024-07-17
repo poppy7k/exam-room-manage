@@ -327,7 +327,7 @@ class ExamController extends Controller
     {
         try {
             $currentDateTime = Carbon::now();
-    
+            //Log::info('Current date and time', ['currentDateTime' => $currentDateTime->toDateTimeString()]);
             // Get all exams
             $exams = Exam::all();
     
@@ -335,6 +335,13 @@ class ExamController extends Controller
                 $startTime = Carbon::parse($exam->exam_date)->setTimeFromTimeString($exam->exam_start_time);
                 $endTime = Carbon::parse($exam->exam_date)->setTimeFromTimeString($exam->exam_end_time);
     
+                // Log the current exam details
+                // Log::info('Processing exam', [
+                //     'exam_id' => $exam->id,
+                //     'startTime' => $startTime->toDateTimeString(),
+                //     'endTime' => $endTime->toDateTimeString(),
+                //     'currentStatus' => $exam->status
+                // ]);
                 // Log the current exam details
                 //Log::info('Processing exam', ['exam_id' => $exam->id]);
     
@@ -362,7 +369,7 @@ class ExamController extends Controller
                 //     'applicants' => $applicantsWithoutSeats->pluck('id')->toArray()
                 // ]);
     
-                if ($applicantsWithoutSeats->isNotEmpty()) {
+                if ($applicantsWithoutSeats->isNotEmpty() && $exam->status !== 'unready') {
                     // Update status to 'unready'
                     if ($exam->status === 'ready') {
                         $exam->status = 'unready';
@@ -383,13 +390,22 @@ class ExamController extends Controller
                     }
                 } elseif ($currentDateTime->gt($endTime)) {
                     // Update status to 'finished'
+                    // if ($exam->status === 'inprogress' || $exam->status === 'ready') { prevent to change to case finished immediately (testing case unfinished)
                     if ($exam->status === 'inprogress') {
                         $exam->status = 'finished';
                         $exam->save();
                         //Log::info("Updated exam status to 'finished'", ['exam_id' => $exam->id]);
+                    }elseif ($exam->status === 'unready'){
+                        $exam->status = 'unfinished';
+                        $exam->save();
+                        //Log::info("Updated exam status to 'unfinished'", ['exam_id' => $exam->id]);
                     }
                 }
             }
+            // Log::info('Final exam status after processing', [
+            //     'exam_id' => $exam->id,
+            //     'finalStatus' => $exam->status
+            // ]);
     
             return response()->json(['success' => true, 'message' => 'Exam statuses updated successfully', 'exams' => $exams]);
         } catch (\Exception $e) {
@@ -451,4 +467,88 @@ class ExamController extends Controller
         }
     }
     
+
+    public function getExamsWithAssignedSeats(Request $request)
+    {
+        $invalidSeats = $request->input('invalidSeats', []);
+        $roomId = $request->input('roomId');
+    
+        if (empty($invalidSeats)) {
+            return response()->json([]);
+        }
+    
+        Log::debug('Invalid Seats:', ['invalidSeats' => $invalidSeats]);
+    
+        $invalidSeatsParsed = array_map(function($seat) {
+            list($row, $columnLetter) = explode('-', $seat);
+            $columnNumber = 0;
+            $length = strlen($columnLetter);
+            for ($i = 0; $i < $length; $i++) {
+                $columnNumber = $columnNumber * 26 + (ord($columnLetter[$i]) - ord('A') + 1);
+            }
+            return ['row' => (int) $row, 'column' => $columnNumber];
+        }, $invalidSeats);
+    
+        $exams = DB::table('applicant_exam')
+            ->join('seats', 'applicant_exam.applicant_id', '=', 'seats.applicant_id')
+            ->join('exams', 'applicant_exam.exam_id', '=', 'exams.id')
+            ->join('selected_rooms', 'applicant_exam.exam_id', '=', 'selected_rooms.exam_id')
+            ->where('selected_rooms.room_id', $roomId)
+            ->where('applicant_exam.status', 'assigned')
+            ->where('exams.status', '!=', 'inprogress')
+            ->where('exams.status', '!=', 'finished')
+            ->where('exams.status', '!=', 'unfinished')
+            ->whereNotNull('applicant_exam.applicant_id')
+            ->where(function ($query) use ($invalidSeatsParsed) {
+                foreach ($invalidSeatsParsed as $seat) {
+                    $query->orWhere(function ($subQuery) use ($seat) {
+                        $subQuery->where('seats.row', $seat['row'])
+                                 ->where('seats.column', $seat['column']);
+                    });
+                }
+            })
+            ->select('exams.id', 'exams.subject as name')
+            ->distinct()
+            ->get();
+    
+        Log::debug('Fetched Exams:', ['exams' => $exams]);
+    
+        return response()->json($exams);
+    }
+    
+    public function updateExamStatusesForDeact(Request $request)
+    {
+        $examIds = $request->input('exams');
+        $invalidSeats = $request->input('invalidSeats');
+        $roomId = $request->input('roomId');
+    
+        // Convert seat columns from letters to numbers
+        $invalidSeatsParsed = array_map(function($seat) {
+            list($row, $columnLetter) = explode('-', $seat);
+            $columnNumber = 0;
+            $length = strlen($columnLetter);
+            for ($i = 0; $i < $length; $i++) {
+                $columnNumber = $columnNumber * 26 + (ord($columnLetter[$i]) - ord('A') + 1);
+            }
+            return ['row' => (int) $row, 'column' => $columnNumber];
+        }, $invalidSeats);
+    
+        DB::table('applicant_exam')
+            ->join('seats', 'applicant_exam.applicant_id', '=', 'seats.applicant_id')
+            ->join('selected_rooms', 'seats.selected_room_id', '=', 'selected_rooms.id')
+            ->whereIn('applicant_exam.exam_id', $examIds)
+            ->where('selected_rooms.room_id', $roomId)
+            ->where(function ($query) use ($invalidSeatsParsed) {
+                foreach ($invalidSeatsParsed as $seat) {
+                    $query->orWhere(function ($subQuery) use ($seat) {
+                        $subQuery->where('seats.row', $seat['row'])
+                                 ->where('seats.column', $seat['column']);
+                    });
+                }
+            })
+            ->update(['applicant_exam.status' => 'not_assigned', 'seats.applicant_id' => null]);
+    
+        return response()->json(['success' => true]);
+    }
+
 }
