@@ -25,9 +25,11 @@ class Applicant extends Model
         return $this->hasMany(Seat::class, 'applicant_id');
     }
 
-    public function exam()
+    public function exams()
     {
-        return $this->belongsTo(Exam::class);
+        return $this->belongsToMany(Exam::class, 'applicant_exam', 'applicant_id', 'exam_id')
+                    ->withPivot('status')
+                    ->withTimestamps();
     }
 
     public function room()
