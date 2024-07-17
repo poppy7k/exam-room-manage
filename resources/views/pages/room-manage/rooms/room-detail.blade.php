@@ -138,7 +138,7 @@
         </div>
     </div>
 </div>
-<form id="addSeatForm" method="POST" action="{{ route('examroominfo.saveInvalidSeats', ['buildingId' => $room->building_id, 'roomId' => $room->id]) }}" class="pt-4" enctype="multipart/form-data" onsubmit="saveSeats()">
+<form id="addSeatForm" method="POST" action="{{ route('examroominfo.saveInvalidSeats', ['buildingId' => $room->building_id, 'roomId' => $room->id]) }}" class="pt-4" enctype="multipart/form-data" onsubmit="saveSeats(event)">
     @csrf
     @method('PUT')
     <input type="hidden" id="invalidSeatsInput" name="invalid_seats">
@@ -150,196 +150,172 @@
     </x-buttons.primary>
 </form>
 
+<!-- Exam Status Modal -->
+<div id="exam-status-modal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
+    <div class="bg-white rounded-lg p-6 w-1/2">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-xl font-semibold">Exams with Assigned Applicants</h3>
+            <button id="close-exam-status-modal-btn" class="text-red-500">&times;</button>
+        </div>
+        <div id="exam-list" class="max-h-64 overflow-y-auto">
+            <!-- Exam list will be populated here -->
+        </div>
+        <div class="flex justify-end mt-4">
+            <button id="submit-exam-status-btn" class="px-5 py-2 bg-blue-500 text-white rounded">Submit</button>
+        </div>
+    </div>
+</div>
+<input type="hidden" id="examIdsInput">
+
+
 <script>
-let validSeatCount = {{ $room->valid_seat }};
-let invalidSeats = JSON.parse(@json($room->invalid_seats) || "[]");
-
-function toExcelColumn(n) {
-    let result = '';
-    while (n >= 0) {
-        result = String.fromCharCode((n % 26) + 65) + result;
-        n = Math.floor(n / 26) - 1;
+    let validSeatCount = {{ $room->valid_seat }};
+    let invalidSeats = JSON.parse(@json($room->invalid_seats) || "[]");
+    
+    function toExcelColumn(n) {
+        let result = '';
+        while (n >= 0) {
+            result = String.fromCharCode((n % 26) + 65) + result;
+            n = Math.floor(n / 26) - 1;
+        }
+        return result;
     }
-    return result;
-}
-
-function addSeats() {
-    const rows = parseInt(document.getElementById('row-count').textContent);
-    const columns = parseInt(document.getElementById('column-count').textContent);
-    const seatContainer = document.getElementById('seat-container');
-    seatContainer.innerHTML = '';
-    seatContainer.style.gridTemplateColumns = `repeat(${columns}, minmax(4rem, 1fr))`;
-
-    let seatComponents = '';
-    for (let i = 0; i < rows; i++) {
-        for (let j = 0; j < columns; j++) {
-            const seatId = `${i + 1}-${toExcelColumn(j)}`;
-            let seatComponent = '';
-            if (invalidSeats.includes(seatId)) {
-                seatComponent = `
-                    <div onclick="toggleSeat(${i + 1}, '${toExcelColumn(j)}')" id="seat-${seatId}" class="seat p-4 text-center cursor-pointer">
-                        <x-seats.unavailable>
-                            ${i + 1}-${toExcelColumn(j)}
-                        </x-seats.unavailable>
-                    </div>
-                `;
-            } else {
-                seatComponent = `
-                    <div onclick="toggleSeat(${i + 1}, '${toExcelColumn(j)}')" id="seat-${seatId}" class="seat p-4 text-center cursor-pointer">
-                        <x-seats.primary>
-                            ${i + 1}-${toExcelColumn(j)}
-                        </x-seats.primary>
-                    </div>
-                `;
+    
+    function addSeats() {
+        const rows = parseInt(document.getElementById('row-count').textContent);
+        const columns = parseInt(document.getElementById('column-count').textContent);
+        const seatContainer = document.getElementById('seat-container');
+        seatContainer.innerHTML = '';
+        seatContainer.style.gridTemplateColumns = `repeat(${columns}, minmax(4rem, 1fr))`;
+    
+        let seatComponents = '';
+        for (let i = 0; i < rows; i++) {
+            for (let j = 0; j < columns; j++) {
+                const seatId = `${i + 1}-${toExcelColumn(j)}`;
+                let seatComponent = '';
+                if (invalidSeats.includes(seatId)) {
+                    seatComponent = `
+                        <div onclick="toggleSeat(${i + 1}, '${toExcelColumn(j)}')" id="seat-${seatId}" class="seat p-4 text-center cursor-pointer">
+                            <x-seats.unavailable>${i + 1}-${toExcelColumn(j)}</x-seats.unavailable>
+                        </div>
+                    `;
+                } else {
+                    seatComponent = `
+                        <div onclick="toggleSeat(${i + 1}, '${toExcelColumn(j)}')" id="seat-${seatId}" class="seat p-4 text-center cursor-pointer">
+                            <x-seats.primary>${i + 1}-${toExcelColumn(j)}</x-seats.primary>
+                        </div>
+                    `;
+                }
+                seatComponents += seatComponent;
             }
-            seatComponents += seatComponent;
         }
+        seatContainer.innerHTML = seatComponents;
     }
-    seatContainer.innerHTML = seatComponents;
-}
-
-function toggleSeat(row, column) {
-    const seatId = `${row}-${column}`;
-    console.log('Before Toggle:', invalidSeats);
-
-    if (invalidSeats.includes(seatId)) {
-        invalidSeats = invalidSeats.filter(id => id !== seatId);
-        validSeatCount++;
-        document.getElementById(`seat-${seatId}`).innerHTML = `
-            <x-seats.primary>
-                ${seatId}
-            </x-seats.primary>
-        `;
-    } else {
-        invalidSeats.push(seatId);
-        validSeatCount--;
-        document.getElementById(`seat-${seatId}`).innerHTML = `
-            <x-seats.unavailable>
-                ${seatId}
-            </x-seats.unavailable>
-        `;
+    
+    function toggleSeat(row, column) {
+        const seatId = `${row}-${column}`;
+        console.log('Before Toggle:', invalidSeats);
+    
+        if (invalidSeats.includes(seatId)) {
+            invalidSeats = invalidSeats.filter(id => id !== seatId);
+            validSeatCount++;
+            document.getElementById(`seat-${seatId}`).innerHTML = `<x-seats.primary>${seatId}</x-seats.primary>`;
+        } else {
+            invalidSeats.push(seatId);
+            validSeatCount--;
+            document.getElementById(`seat-${seatId}`).innerHTML = `<x-seats.unavailable>${seatId}</x-seats.unavailable>`;
+        }
+    
+        console.log('After Toggle:', invalidSeats);
+    
+        document.getElementById('validSeatCount').textContent = validSeatCount;
+    
+        document.getElementById('invalidSeatsInput').value = JSON.stringify(invalidSeats);
+        document.getElementById('validSeatCountInput').value = validSeatCount;
     }
+    
+    function saveSeats(event) {
+        event.preventDefault(); // Prevent the form from submitting immediately
+        document.getElementById('invalidSeatsInput').value = JSON.stringify(invalidSeats);
+        document.getElementById('validSeatCountInput').value = validSeatCount;
+        document.getElementById('rowsInput').value = document.getElementById('row-count').textContent;
+        document.getElementById('columnsInput').value = document.getElementById('column-count').textContent;
+        
+        showExamStatusModal(); // Show the modal to confirm the exam status updates
+    }
+    
+    function showExamStatusModal() {
+    //console.log('Invalid Seats:', invalidSeats); 
+    fetch('/exams-with-assigned-seats', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+        body: JSON.stringify({
+            invalidSeats: invalidSeats,
+            roomId: {{ $room->id }} 
+        })
+    })
+    .then(response => response.json())
+    .then(exams => {
+        const examList = document.getElementById('exam-list');
+        examList.innerHTML = '';
 
-    console.log('After Toggle:', invalidSeats);
-
-    document.getElementById('validSeatCount').textContent = validSeatCount;
-
-    document.getElementById('invalidSeatsInput').value = JSON.stringify(invalidSeats);
-    document.getElementById('validSeatCountInput').value = validSeatCount;
-}
-
-function saveSeats() {
-    document.getElementById('invalidSeatsInput').value = JSON.stringify(invalidSeats);
-    document.getElementById('validSeatCountInput').value = validSeatCount;
-    document.getElementById('rowsInput').value = document.getElementById('row-count').textContent;
-    document.getElementById('columnsInput').value = document.getElementById('column-count').textContent;
-}
-
-function addColumn(position) {
-    let columns = parseInt(document.getElementById('column-count').textContent);
-    columns++;
-    document.getElementById('column-count').textContent = columns;
-
-    if (position === 'left') {
-        invalidSeats = invalidSeats.map(seat => {
-            const [row, col] = seat.split('-');
-            const colIndex = col.charCodeAt(0) - 65 + 1;
-            return `${row}-${toExcelColumn(colIndex)}`;
+        exams.forEach(exam => {
+            const div = document.createElement('div');
+            div.classList.add('flex', 'items-center', 'gap-2', 'mb-2', 'exam-item');
+            div.innerHTML = `<p>${exam.name}</p>`;
+            examList.appendChild(div);
         });
-    }
 
-    addSeats();
-    updateValidSeatCount();
-    updateTotalSeatCount();
+        // Store the exam IDs in a hidden field or a variable
+        const examIds = exams.map(exam => exam.id);
+        document.getElementById('examIdsInput').value = JSON.stringify(examIds);
+
+        document.getElementById('exam-status-modal').classList.remove('hidden');
+    })
+    .catch(error => {
+        console.error('Error fetching exams:', error);
+        alert('An error occurred while fetching exams.');
+    });
 }
 
-function removeColumn(position) {
-    let columns = parseInt(document.getElementById('column-count').textContent);
-    if (columns > 1) {
-        columns--;
-        document.getElementById('column-count').textContent = columns;
+document.getElementById('close-exam-status-modal-btn').addEventListener('click', function() {
+    document.getElementById('exam-status-modal').classList.add('hidden');
+});
 
-        if (position === 'right') {
-            invalidSeats = invalidSeats.filter(seat => {
-                const col = seat.split('-')[1];
-                return col.charCodeAt(0) - 65 < columns;
-            });
-        } else if (position === 'left') {
-            invalidSeats = invalidSeats.map(seat => {
-                const [row, col] = seat.split('-');
-                const colIndex = col.charCodeAt(0) - 65 - 1;
-                return `${row}-${toExcelColumn(colIndex)}`;
-            }).filter(seat => {
-                const col = seat.split('-')[1];
-                return col.charCodeAt(0) - 65 >= 0;
-            });
+document.getElementById('submit-exam-status-btn').addEventListener('click', function() {
+    const examIds = JSON.parse(document.getElementById('examIdsInput').value);
+    console.log('Selected Exams:', examIds);
+
+    fetch('/update-exam-statuses2', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+        body: JSON.stringify({
+            exams: examIds,
+            invalidSeats: invalidSeats, // Include invalid seats
+            roomId: {{ $room->id }} // Include room ID in the request
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Exam statuses updated successfully.');
+            document.getElementById('exam-status-modal').classList.add('hidden');
+            document.getElementById('addSeatForm').submit(); // Submit the form after the exam statuses have been updated
+        } else {
+            alert('Failed to update exam statuses.');
         }
-
-        addSeats();
-        updateValidSeatCount();
-        updateTotalSeatCount();
-    }
-}
-
-function addRow(position) {
-    let rows = parseInt(document.getElementById('row-count').textContent);
-    rows++;
-    document.getElementById('row-count').textContent = rows;
-
-    if (position === 'top') {
-        invalidSeats = invalidSeats.map(seat => {
-            const [row, col] = seat.split('-');
-            return `${parseInt(row) + 1}-${col}`;
-        });
-    }
-
-    addSeats();
-    updateValidSeatCount();
-    updateTotalSeatCount();
-}
-
-function removeRow(position) {
-    let rows = parseInt(document.getElementById('row-count').textContent);
-    if (rows > 1) {
-        rows--;
-        document.getElementById('row-count').textContent = rows;
-
-        if (position === 'bottom') {
-            invalidSeats = invalidSeats.filter(seat => {
-                const row = seat.split('-')[0];
-                return parseInt(row) <= rows;
-            });
-        } else if (position === 'top') {
-            invalidSeats = invalidSeats.map(seat => {
-                const [row, col] = seat.split('-');
-                return `${parseInt(row) - 1}-${col}`;
-            }).filter(seat => {
-                const row = seat.split('-')[0];
-                return parseInt(row) >= 1;
-            });
-        }
-
-        addSeats();
-        updateValidSeatCount();
-        updateTotalSeatCount();
-    }
-}
-
-function updateValidSeatCount() {
-    const rows = parseInt(document.getElementById('row-count').textContent);
-    const columns = parseInt(document.getElementById('column-count').textContent);
-    const totalSeats = rows * columns;
-    const occupiedSeats = invalidSeats.length;
-    validSeatCount = totalSeats - occupiedSeats;
-    document.getElementById('validSeatCount').textContent = validSeatCount;
-}
-
-function updateTotalSeatCount() {
-    const rows = parseInt(document.getElementById('row-count').textContent);
-    const columns = parseInt(document.getElementById('column-count').textContent);
-    const totalSeats = rows * columns;
-    document.getElementById('totalSeatCount').textContent = totalSeats;
-}
+    })
+    .catch(error => {
+        console.error('Error updating exam statuses:', error);
+        alert('An error occurred while updating exam statuses.');
+    });
+});
 
 document.addEventListener('DOMContentLoaded', addSeats);
 </script>

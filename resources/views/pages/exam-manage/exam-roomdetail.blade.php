@@ -130,56 +130,6 @@ function toExcelColumn(n) {
     }
     return result;
 }
-function showAlertForDeactivatedSeat(seatId, applicant) {
-    if (applicant.status !== 'not_assigned') {
-        alert(`Seat ${seatId} for exam ${examId} has an applicant (${applicant.id_number}).`);
-        updateApplicantStatus(applicant.id, examId, 'not_assigned', seatId);
-        location.reload();
-    }
-}
-
-function updateApplicantStatus(applicantId, examId, status, seatId) {
-    console.log('Sending update request:', { applicant_id: applicantId, exam_id: examId, status: status });
-
-    fetch('/update-applicant-status', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-        },
-        body: JSON.stringify({
-            applicant_id: applicantId,
-            exam_id: examId,
-            status: status,
-            seat_id: seatId
-        })
-    })
-    .then(response => {
-        console.log('Response:', response);
-        return response.json();
-    })
-    .then(data => {
-        console.log('Response data:', data);
-        if (data.success) {
-            console.log('Applicant status updated successfully.');
-            if (status === 'not_assigned') {
-                document.getElementById(`seat-${seatId}`).innerHTML = `
-                    <x-seats.primary>
-                        ${seatId}
-                    </x-seats.primary>
-                `;
-            }
-        } else {
-            console.error('Failed to update applicant status.');
-        }
-    })
-    .catch(error => {
-        console.error('Error updating applicant status:', error);
-    });
-}
-
-
-
 
 function addSeats() {
     const rows = parseInt(document.getElementById('row-count').textContent);
@@ -213,10 +163,11 @@ function addSeats() {
             let seatComponent = '';
             const seat = seats.find(seat => seat.row === (i + 1) && seat.column === (j + 1));
             const applicant = seat ? applicants.find(applicant => applicant.id === seat.applicant_id) : null;
+            const examStatus = exam.status;
 
-            if (['inprogress', 'finished', 'unfinished'].includes(exam.status)) {
-                // Do not alter seats if exam is inprogress, finished, or unfinished
-                if (seat && applicant) {
+            if (invalidSeats && invalidSeats.includes(seatId)) {
+                if (seat && applicant && ['inprogress', 'finished', 'unfinished'].includes(examStatus)) {
+                    // Don't replace the applicant seat if exam status is inprogress, finished, or unfinished
                     const applicantExam = applicantExams.find(ae => ae.applicant_id === applicant.id);
                     const bgColor = applicantExam ? examGroups[applicantExam.exam_id] : 'bg-gray-500';
                     const colorIndex = Object.keys(examGroups).indexOf(applicantExam.exam_id.toString()) % colors.length;
@@ -234,54 +185,33 @@ function addSeats() {
                         </div>
                     `;
                     assignedSeats++;
-                } else if (!seat) {
-                    seatComponent = `
-                        <div id="seat-${seatId}" class="seat p-4 text-center cursor-pointer" onclick="showApplicantModal('${seatId}', null, false)">
-                            <x-seats.primary>
-                                ${seatId}
-                            </x-seats.primary>
-                        </div>
-                    `;
-                }
-            } else {
-                // Handle seats normally for other statuses
-                if (invalidSeats && invalidSeats.includes(seatId)) {
-                    if (seat && applicant) {
-                        showAlertForDeactivatedSeat(seatId, applicant);
-                    }
+                } else {
+                    // Show deactivated seat if no applicant is assigned or exam status allows
                     seatComponent = `
                         <div id="seat-${seatId}" class="seat p-4 text-center cursor-not-allowed">
                             <x-seats.unavailable slot="${seatId}" />
                         </div>
                     `;
-                } else if (seat) {
-                    if (applicant) {
-                        const applicantExam = applicantExams.find(ae => ae.applicant_id === applicant.id);
-                        const bgColor = applicantExam ? examGroups[applicantExam.exam_id] : 'bg-gray-500';
-                        const colorIndex = Object.keys(examGroups).indexOf(applicantExam.exam_id.toString()) % colors.length;
-                        let colorCount = (Math.floor(Object.keys(examGroups).indexOf(applicantExam.exam_id.toString()) / colors.length) + 1) - 1;
+                }
+            } else if (seat) {
+                if (applicant) {
+                    const applicantExam = applicantExams.find(ae => ae.applicant_id === applicant.id);
+                    const bgColor = applicantExam ? examGroups[applicantExam.exam_id] : 'bg-gray-500';
+                    const colorIndex = Object.keys(examGroups).indexOf(applicantExam.exam_id.toString()) % colors.length;
+                    let colorCount = (Math.floor(Object.keys(examGroups).indexOf(applicantExam.exam_id.toString()) / colors.length) + 1) - 1;
 
-                        if (colorCount === 0) {
-                            colorCount = '';
-                        }
-
-                        seatComponent = `
-                            <div id="seat-${seatId}" class="seat p-4 text-center cursor-pointer" onclick="showApplicantModal('${seatId}', ${seat.id}, true)">
-                                <x-seats.assigned :bgColor="'${bgColor}'" applicant="${applicant.id_number}" colorCount="${colorCount}">
-                                    ${seatId}
-                                </x-seats.assigned>
-                            </div>
-                        `;
-                        assignedSeats++;
-                    } else {
-                        seatComponent = `
-                            <div id="seat-${seatId}" class="seat p-4 text-center cursor-pointer" onclick="showApplicantModal('${seatId}', null, false)">
-                                <x-seats.primary>
-                                    ${seatId}
-                                </x-seats.primary>
-                            </div>
-                        `;
+                    if (colorCount === 0) {
+                        colorCount = '';
                     }
+
+                    seatComponent = `
+                        <div id="seat-${seatId}" class="seat p-4 text-center cursor-pointer" onclick="showApplicantModal('${seatId}', ${seat.id}, true)">
+                            <x-seats.assigned :bgColor="'${bgColor}'" applicant="${applicant.id_number}" colorCount="${colorCount}">
+                                ${seatId}
+                            </x-seats.assigned>
+                        </div>
+                    `;
+                    assignedSeats++;
                 } else {
                     seatComponent = `
                         <div id="seat-${seatId}" class="seat p-4 text-center cursor-pointer" onclick="showApplicantModal('${seatId}', null, false)">
@@ -291,15 +221,25 @@ function addSeats() {
                         </div>
                     `;
                 }
+            } else {
+                seatComponent = `
+                    <div id="seat-${seatId}" class="seat p-4 text-center cursor-pointer" onclick="showApplicantModal('${seatId}', null, false)">
+                        <x-seats.primary>
+                            ${seatId}
+                        </x-seats.primary>
+                    </div>
+                `;
             }
             seatComponents += seatComponent;
         }
     }
-    validSeatCount = TotalSeat - assignedSeats; 
+    validSeatCount = TotalSeat - assignedSeats;
     seatContainer.innerHTML = seatComponents;
     updateValidSeatCountUI(validSeatCount);
     // updateValidSeatCountInDB(validSeatCount);
 }
+
+
 
 
 function updateValidSeatCountUI(validSeatCount) {

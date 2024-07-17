@@ -82,3 +82,6 @@ Route::get('/update-exam-statuses', [ExamController::class, 'updateExamStatuses'
 Route::get('/check-seat-deactivation/{seatId}', [ExamController::class, 'checkSeatDeactivation']);
 
 Route::post('/update-applicant-status', [ApplicantController::class, 'updateApplicantExamStatus']);
+
+Route::post('/exams-with-assigned-seats', [ExamController::class, 'getExamsWithAssignedSeats']);
+Route::post('/update-exam-statuses2', [ExamController::class, 'updateExamStatusesForDeact']);
