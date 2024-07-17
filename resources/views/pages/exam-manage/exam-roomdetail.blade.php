@@ -70,14 +70,17 @@
         </div>
         <div class="flex align-center gap-8">
             <div class="flex gap-4">
-                <x-buttons.danger type="button" onclick="" class="pl-2 py-2 z-10 rounded-lg fill-white">
+                <x-buttons.danger type="button" onclick="removeApplicantsFromRoom({{ $room->id }}, '{{ $selectedRooms->exam->exam_date }}', '{{ $selectedRooms->exam->exam_start_time }}', '{{ $selectedRooms->exam->exam_end_time }}')" class="pl-2 py-2 z-10 rounded-lg fill-white flex-col">
                     <svg xmlns="http://www.w3.org/2000/svg" class="translate-x-0.5" id="Outline" viewBox="0 0 24 24" width="24" height="24"><path d="M21,4H17.9A5.009,5.009,0,0,0,13,0H11A5.009,5.009,0,0,0,6.1,4H3A1,1,0,0,0,3,6H4V19a5.006,5.006,0,0,0,5,5h6a5.006,5.006,0,0,0,5-5V6h1a1,1,0,0,0,0-2ZM11,2h2a3.006,3.006,0,0,1,2.829,2H8.171A3.006,3.006,0,0,1,11,2Zm7,17a3,3,0,0,1-3,3H9a3,3,0,0,1-3-3V6H18Z"/><path d="M10,18a1,1,0,0,0,1-1V11a1,1,0,0,0-2,0v6A1,1,0,0,0,10,18Z"/><path d="M14,18a1,1,0,0,0,1-1V11a1,1,0,0,0-2,0v6A1,1,0,0,0,14,18Z"/></svg>
                     <x-tooltip title="ลบผู้เข้าสอบออกจากที่นั่ง" class="group-hover:-translate-x-[5.5rem] group-hover:translate-y-8"></x-tooltip>
                 </x-buttons.danger>
-                <x-buttons.primary type="button" onclick="" class="pl-2 py-2 z-10 rounded-lg fill-white">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="translate-x-1" id="Outline" viewBox="0 0 24 24" width="24" height="24"><path d="M23,11H21V9a1,1,0,0,0-2,0v2H17a1,1,0,0,0,0,2h2v2a1,1,0,0,0,2,0V13h2a1,1,0,0,0,0-2Z"/><path d="M9,12A6,6,0,1,0,3,6,6.006,6.006,0,0,0,9,12ZM9,2A4,4,0,1,1,5,6,4,4,0,0,1,9,2Z"/><path d="M9,14a9.01,9.01,0,0,0-9,9,1,1,0,0,0,2,0,7,7,0,0,1,14,0,1,1,0,0,0,2,0A9.01,9.01,0,0,0,9,14Z"/></svg>
-                    <x-tooltip title="เพิ่มผู้เข้าสอบลงที่นั่ง" class="group-hover:-translate-x-20 group-hover:translate-y-8"></x-tooltip>
-                </x-buttons.primary>
+                <div x-data="{ showApplicantAdd: false }" class="z-40">
+                    <x-buttons.primary  @click="showApplicantAdd = !showApplicantAdd" id="applicant-add" onclick="event.stopPropagation();" type="button" class="pl-2 py-2 z-10 rounded-lg fill-white">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="translate-x-1" id="Outline" viewBox="0 0 24 24" width="24" height="24"><path d="M23,11H21V9a1,1,0,0,0-2,0v2H17a1,1,0,0,0,0,2h2v2a1,1,0,0,0,2,0V13h2a1,1,0,0,0,0-2Z"/><path d="M9,12A6,6,0,1,0,3,6,6.006,6.006,0,0,0,9,12ZM9,2A4,4,0,1,1,5,6,4,4,0,0,1,9,2Z"/><path d="M9,14a9.01,9.01,0,0,0-9,9,1,1,0,0,0,2,0,7,7,0,0,1,14,0,1,1,0,0,0,2,0A9.01,9.01,0,0,0,9,14Z"/></svg>
+                        <x-tooltip title="เพิ่มผู้เข้าสอบลงที่นั่ง" class="group-hover:-translate-x-20 group-hover:translate-y-8"></x-tooltip>
+                    </x-buttons.primary>
+                    @include('components.dropdowns.exam-room-detail.applicant-add')
+                </div>
             </div>
             <x-buttons.primary id="select-examiners-btn" class="px-5 py-2 rounded-lg text-white">
                 เลือกผู้คุมสอบ
@@ -501,6 +504,39 @@ function fetchApplicantsWithoutSeats() {
             alert('An error occurred while fetching applicants.');
         });
 }
+
+function removeApplicantsFromRoom(roomId, examDate, examStartTime, examEndTime) {
+    console.log('Removing applicants from room:', roomId);
+    fetch(`/remove-applicants-from-room`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}' // Ensure this is correctly set in your Blade template
+        },
+        body: JSON.stringify({
+            room_id: roomId,
+            exam_date: examDate,
+            exam_start_time: examStartTime,
+            exam_end_time: examEndTime
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('Remove applicants response:', data);
+        if (data.success) {
+            alert('Applicants removed from room successfully.');
+            location.reload(); // Reload the page to reflect the changes
+        } else {
+            console.error('Server response:', data);
+            alert('Failed to remove applicants from room.');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while removing applicants from room.');
+    });
+}
+
 
 // function updateValidSeatCountInDB(validSeatCount) {
 //     fetch(`/update-valid-seat-count`, {

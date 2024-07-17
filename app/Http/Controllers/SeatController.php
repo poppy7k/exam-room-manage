@@ -397,6 +397,71 @@ class SeatController extends Controller
         }
     }
 
+    public function removeApplicantsFromRoom(Request $request)
+    {
+        Log::info('Starting to remove applicants from all seats in the rooms with matching exam and time', ['request_data' => $request->all()]);
+    
+        try {
+            $validatedData = $request->validate([
+                'exam_date' => 'required|date',
+                'exam_start_time' => 'required|date',
+                'exam_end_time' => 'required|date'
+            ]);
+    
+            Log::info('Request data validated successfully', ['validated_data' => $validatedData]);
+    
+            // Fetch the selected rooms with matching exam_id and exam times
+            $selectedRooms = SelectedRoom::whereHas('exam', function ($query) use ($validatedData) {
+                    $query->where('exam_date', $validatedData['exam_date'])
+                          ->where('exam_start_time', $validatedData['exam_start_time'])
+                          ->where('exam_end_time', $validatedData['exam_end_time']);
+                })
+                ->get();
+    
+            if ($selectedRooms->isNotEmpty()) {
+                Log::info('Selected rooms found', ['selected_rooms' => $selectedRooms]);
+    
+                // Loop through each selected room to fetch and update seats
+                foreach ($selectedRooms as $selectedRoom) {
+                    // Fetch all seats in the selected room
+                    $seats = Seat::where('selected_room_id', $selectedRoom->id)->get();
+    
+                    // Loop through all seats to remove applicants
+                    foreach ($seats as $seat) {
+                        // Ensure seat has an applicant assigned
+                        if ($seat->applicant_id !== null) {
+                            // Update the pivot table to set status to not_assigned
+                            $exam = Exam::find($selectedRoom->exam_id);
+                            if ($exam) {
+                                $exam->applicants()->updateExistingPivot($seat->applicant_id, ['status' => 'not_assigned']);
+                            }
+    
+                            // Remove the applicant from the seat
+                            $seat->applicant_id = null;
+                            $seat->save();
+    
+                            Log::info('Applicant removed from seat successfully', ['seat' => $seat]);
+                        } else {
+                            Log::warning('No applicant assigned to this seat', ['seat' => $seat]);
+                        }
+                    }
+                }
+    
+                Log::info('All applicants removed from rooms with matching exam and time successfully');
+                return response()->json(['success' => true]);
+            } else {
+                Log::warning('No selected rooms found with matching exam and time', ['exam_id' => $validatedData['exam_id'], 'exam_date' => $validatedData['exam_date'], 'exam_start_time' => $validatedData['exam_start_time'], 'exam_end_time' => $validatedData['exam_end_time']]);
+                return response()->json(['success' => false, 'message' => 'No selected rooms found with matching exam and time.'], 404);
+            }
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            Log::error('Validation failed', ['errors' => $e->errors()]);
+            return response()->json(['success' => false, 'message' => 'Validation failed.', 'errors' => $e->errors()], 422);
+        } catch (\Exception $e) {
+            Log::error('Error removing applicants from seats in the rooms', ['exception' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
+            return response()->json(['success' => false, 'message' => 'Failed to remove applicants from seats in the rooms.'], 500);
+        }
+    }    
+
     // public function updateValidSeatCount(Request $request)
     // {
     //     $validatedData = $request->validate([

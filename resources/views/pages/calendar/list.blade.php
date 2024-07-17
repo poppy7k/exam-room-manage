@@ -239,6 +239,7 @@
                                     title: `${statusCount[date][status]}`,
                                     start: date,
                                     allDay: true,
+                                    status: status,
                                 });
                             }
                         }
@@ -252,19 +253,59 @@
             },
             initialView: 'dayGridMonth',
             editable: false,
+            selectable: true,
+            dayCellContent: function(arg) {
+                // กำหนดเนื้อหาของแต่ละช่องวัน
+                var cellContent = document.createElement('div');
+                cellContent.textContent = arg.date.getDate(); // แสดงวันที่
+
+                // ใช้ Tailwind CSS ในการปรับแต่ง
+                cellContent.classList.add('text-lg', 'text-center');
+
+                return { domNodes: [cellContent] };
+            },
             eventContent: function(arg) {
                 // Custom rendering for event
                 let event = arg.event;
                 let content = document.createElement('div');
-                content.classList.add('custom-event');
+                content.classList.add('custom-event', 'items-center', 'rounded-full', 'px-2', 'py-0.5', 'w-max', 'text-center', 'bg-gradient-to-tr',);
+                // เช็ค status เพื่อปรับแต่งการแสดงผล
+                if (event.extendedProps.status === 'unready') {
+                    content.classList.add('from-red-400', 'to-red-600');
+                } else if (event.extendedProps.status === 'pending') {
+                    content.classList.add('from-yellow-400', 'to-yellow-600');
+                } else if (event.extendedProps.status === 'ready') {
+                    content.classList.add('from-green-400', 'to-green-600');
+                } else if (event.extendedProps.status === 'inprogress') {
+                    content.classList.add('from-cyan-400', 'to-cyan-600');
+                }
                 content.innerHTML = `
-                    <div class="ml-2 px-2 py-0.5 bg-yellow-500 rounded-full text-center">${event.title}</div>
+                    ${event.title}
+
                 `;
                 return { domNodes: [content] };
+            },
+            dateClick: function(info) {
+                // Clear previous selections
+                document.querySelectorAll('.fc-daygrid-day').forEach(function(el) {
+                el.classList.remove('selected-date');
+                });
+                
+                // Add selected-date class to the clicked date
+                var dateStr = info.dateStr;
+                document.querySelectorAll('[data-date="' + dateStr + '"]').forEach(function(el) {
+                el.classList.add('selected-date');
+                });
             }
         });
 
         calendar.render();
+
+        document.getElementById('rerenderBtn').addEventListener('click', function() {
+            setTimeout(function() {
+                calendar.render();
+            }, 500); 
+        });
     });
 
 
@@ -274,6 +315,14 @@
     .fc-event, .fc-event-dot {
         background-color: transparent !important; /* ลบสีพื้นหลัง */
         border-color: transparent !important; /* ลบเส้นขอบ */
+    }
+    .fc-daygrid-day-events {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: center;
+        padding-left: 4px;
+        padding-right: 4px;
     }
 </style>
 
