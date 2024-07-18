@@ -399,7 +399,7 @@ class SeatController extends Controller
 
     public function removeApplicantsFromRoom(Request $request)
     {
-        Log::info('Starting to remove applicants from all seats in the rooms with matching exam and time', ['request_data' => $request->all()]);
+        //Log::info('Starting to remove applicants from all seats in the rooms with matching exam and time', ['request_data' => $request->all()]);
     
         try {
             $validatedData = $request->validate([
@@ -408,7 +408,7 @@ class SeatController extends Controller
                 'exam_end_time' => 'required|date'
             ]);
     
-            Log::info('Request data validated successfully', ['validated_data' => $validatedData]);
+            //Log::info('Request data validated successfully', ['validated_data' => $validatedData]);
     
             // Fetch the selected rooms with matching exam_id and exam times
             $selectedRooms = SelectedRoom::whereHas('exam', function ($query) use ($validatedData) {
@@ -419,11 +419,15 @@ class SeatController extends Controller
                 ->get();
     
             if ($selectedRooms->isNotEmpty()) {
-                Log::info('Selected rooms found', ['selected_rooms' => $selectedRooms]);
+                //Log::info('Selected rooms found', ['selected_rooms' => $selectedRooms]);
     
                 // Loop through each selected room to fetch and update seats
                 foreach ($selectedRooms as $selectedRoom) {
                     // Fetch all seats in the selected room
+                    $exam = Exam::find($selectedRoom->exam_id);
+                    if (in_array($exam->status, ['inprogress', 'finished', 'unfinished'])) {
+                        return response()->json(['success' => false, 'message' => 'ไม่สามารถแก้ไขผู้เข้าสอบในวันเวลาดังกล่าว'], 400);
+                    }
                     $seats = Seat::where('selected_room_id', $selectedRoom->id)->get();
     
                     // Loop through all seats to remove applicants
@@ -440,14 +444,14 @@ class SeatController extends Controller
                             $seat->applicant_id = null;
                             $seat->save();
     
-                            Log::info('Applicant removed from seat successfully', ['seat' => $seat]);
+                            //Log::info('Applicant removed from seat successfully', ['seat' => $seat]);
                         } else {
                             Log::warning('No applicant assigned to this seat', ['seat' => $seat]);
                         }
                     }
                 }
     
-                Log::info('All applicants removed from rooms with matching exam and time successfully');
+                //Log::info('All applicants removed from rooms with matching exam and time successfully');
                 return response()->json(['success' => true]);
             } else {
                 Log::warning('No selected rooms found with matching exam and time', ['exam_id' => $validatedData['exam_id'], 'exam_date' => $validatedData['exam_date'], 'exam_start_time' => $validatedData['exam_start_time'], 'exam_end_time' => $validatedData['exam_end_time']]);
@@ -494,5 +498,214 @@ class SeatController extends Controller
     
     //     return response()->json(['success' => true]);
     // }
-    
+
+
+    public function assignAllApplicantsToSeats(Request $request)
+    {
+        Log::info('Starting to assign all applicants to seats', ['request_data' => $request->all()]);
+
+        $validatedData = $request->validate([
+            'exam_id' => 'required|exists:exams,id',
+            'room_id' => 'required|exists:exam_room_information,id',
+            'direction' => 'required|string|in:left-to-right,right-to-left,alternate-left-right,alternate-right-left,top-to-bottom,bottom-to-top,alternate-top-bottom,alternate-bottom-top'
+        ]);
+
+        $examId = $validatedData['exam_id'];
+        $roomId = $validatedData['room_id'];
+        $direction = $validatedData['direction'];
+
+        $exam = Exam::findOrFail($examId);
+        $room = ExamRoomInformation::findOrFail($roomId);
+
+        Log::info('Fetched exam and room details', ['exam' => $exam, 'room' => $room]);
+
+        // Fetch all applicants for the exam
+        $applicants = $exam->applicants()->wherePivot('status', 'not_assigned')->get();
+
+        Log::info('Fetched applicants', ['count' => $applicants->count()]);
+
+        if ($applicants->isEmpty()) {
+            return response()->json(['success' => false, 'message' => 'No applicants to assign.'], 400);
+        }
+
+        $seatsArray = [];
+        for ($i = 0; $i < $room->rows; $i++) {
+            for ($j = 0; $j < $room->columns; $j++) {
+                $seatsArray[] = ['row' => $i + 1, 'column' => $j + 1];
+            }
+        }
+
+        Log::info('Generated seats array', ['seatsArray' => $seatsArray]);
+
+        switch ($direction) {
+            case 'right-to-left':
+                $seatsArray = $this->sortSeatsRightToLeft($seatsArray, $room->rows, $room->columns);
+                break;
+            case 'alternate-left-right':
+                $seatsArray = $this->sortSeatsAlternateLeftRight($seatsArray, $room->rows, $room->columns);
+                break;
+            case 'alternate-right-left':
+                $seatsArray = $this->sortSeatsAlternateRightLeft($seatsArray, $room->rows, $room->columns);
+                break;
+            case 'top-to-bottom':
+                $seatsArray = $this->sortSeatsTopToBottom($seatsArray, $room->rows, $room->columns);
+                break;
+            case 'bottom-to-top':
+                $seatsArray = $this->sortSeatsBottomToTop($seatsArray, $room->rows, $room->columns);
+                break;
+            case 'alternate-top-bottom':
+                $seatsArray = $this->sortSeatsAlternateTopBottom($seatsArray, $room->rows, $room->columns);
+                break;
+            case 'alternate-bottom-top':
+                $seatsArray = $this->sortSeatsAlternateBottomTop($seatsArray, $room->rows, $room->columns);
+                break;
+            // Default is left-to-right, no need to sort
+        }
+
+        Log::info('Sorted seats array based on direction', ['direction' => $direction, 'seatsArray' => $seatsArray]);
+
+        $applicantIndex = 0;
+        $selectedRoom = SelectedRoom::firstOrCreate(['room_id' => $room->id, 'exam_id' => $exam->id]);
+
+        foreach ($seatsArray as $seat) {
+            if ($applicantIndex >= count($applicants)) {
+                break;
+            }
+
+            $seatRecord = Seat::where('row', $seat['row'])
+                ->where('column', $seat['column'])
+                ->where('selected_room_id', $selectedRoom->id)
+                ->first();
+
+            if ($seatRecord) {
+                Log::info('Found existing seat', ['seatRecord' => $seatRecord]);
+
+                if ($seatRecord->applicant_id === null) {
+                    $seatRecord->applicant_id = $applicants[$applicantIndex]->id;
+                    $seatRecord->save();
+
+                    Log::info('Updated existing seat with applicant', ['seatRecord' => $seatRecord]);
+
+                    // Update the status in the applicant_exam table
+                    $exam->applicants()->updateExistingPivot($applicants[$applicantIndex]->id, ['status' => 'assigned']);
+
+                    Log::info('Updated applicant status to assigned', ['applicant_id' => $applicants[$applicantIndex]->id]);
+
+                    $applicantIndex++;
+                }
+            } else {
+                $newSeat = Seat::create([
+                    'selected_room_id' => $selectedRoom->id,
+                    'applicant_id' => $applicants[$applicantIndex]->id,
+                    'row' => $seat['row'],
+                    'column' => $seat['column'],
+                ]);
+
+                Log::info('Created new seat', ['newSeat' => $newSeat]);
+
+                // Update the status in the applicant_exam table
+                $exam->applicants()->updateExistingPivot($applicants[$applicantIndex]->id, ['status' => 'assigned']);
+
+                Log::info('Updated applicant status to assigned', ['applicant_id' => $applicants[$applicantIndex]->id]);
+
+                $applicantIndex++;
+            }
+        }
+
+        Log::info('Finished assigning applicants to seats', ['assigned_count' => $applicantIndex]);
+
+        return response()->json(['success' => true, 'message' => 'Applicants assigned to seats successfully.']);
+    }
+
+    private function sortSeatsRightToLeft($seatsArray, $rows, $columns)
+    {
+        $sortedSeats = [];
+        for ($i = 0; $i < $rows; $i++) {
+            $rowSeats = array_slice($seatsArray, $i * $columns, $columns);
+            $rowSeats = array_reverse($rowSeats);
+            $sortedSeats = array_merge($sortedSeats, $rowSeats);
+        }
+        return $sortedSeats;
+    }
+
+    private function sortSeatsAlternateLeftRight($seatsArray, $rows, $columns)
+    {
+        $sortedSeats = [];
+        for ($i = 0; $i < $rows; $i++) {
+            $rowSeats = array_slice($seatsArray, $i * $columns, $columns);
+            if ($i % 2 == 1) {
+                $rowSeats = array_reverse($rowSeats);
+            }
+            $sortedSeats = array_merge($sortedSeats, $rowSeats);
+        }
+        return $sortedSeats;
+    }
+
+    private function sortSeatsAlternateRightLeft($seatsArray, $rows, $columns)
+    {
+        $sortedSeats = [];
+        for ($i = 0; $i < $rows; $i++) {
+            $rowSeats = array_slice($seatsArray, $i * $columns, $columns);
+            if ($i % 2 == 0) {
+                $rowSeats = array_reverse($rowSeats);
+            }
+            $sortedSeats = array_merge($sortedSeats, $rowSeats);
+        }
+        return $sortedSeats;
+    }
+
+    private function sortSeatsTopToBottom($seatsArray, $rows, $columns)
+    {
+        $sortedSeats = [];
+        for ($j = 0; $j < $columns; $j++) {
+            for ($i = 0; $i < $rows; $i++) {
+                $sortedSeats[] = $seatsArray[$i * $columns + $j];
+            }
+        }
+        return $sortedSeats;
+    }
+
+    private function sortSeatsBottomToTop($seatsArray, $rows, $columns)
+    {
+        $sortedSeats = [];
+        for ($j = 0; $j < $columns; $j++) {
+            for ($i = $rows - 1; $i >= 0; $i--) {
+                $sortedSeats[] = $seatsArray[$i * $columns + $j];
+            }
+        }
+        return $sortedSeats;
+    }
+
+    private function sortSeatsAlternateTopBottom($seatsArray, $rows, $columns)
+    {
+        $sortedSeats = [];
+        for ($j = 0; $j < $columns; $j++) {
+            $columnSeats = [];
+            for ($i = 0; $i < $rows; $i++) {
+                $columnSeats[] = $seatsArray[$i * $columns + $j];
+            }
+            if ($j % 2 == 1) {
+                $columnSeats = array_reverse($columnSeats);
+            }
+            $sortedSeats = array_merge($sortedSeats, $columnSeats);
+        }
+        return $sortedSeats;
+    }
+
+    private function sortSeatsAlternateBottomTop($seatsArray, $rows, $columns)
+    {
+        $sortedSeats = [];
+        for ($j = 0; $j < $columns; $j++) {
+            $columnSeats = [];
+            for ($i = 0; $i < $rows; $i++) {
+                $columnSeats[] = $seatsArray[$i * $columns + $j];
+            }
+            if ($j % 2 == 0) {
+                $columnSeats = array_reverse($columnSeats);
+            }
+            $sortedSeats = array_merge($sortedSeats, $columnSeats);
+        }
+        return $sortedSeats;
+    }
+
 }

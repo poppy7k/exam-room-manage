@@ -86,3 +86,5 @@ Route::post('/update-applicant-status', [ApplicantController::class, 'updateAppl
 
 Route::post('/exams-with-assigned-seats', [ExamController::class, 'getExamsWithAssignedSeats']);
 Route::post('/update-exam-statuses2', [ExamController::class, 'updateExamStatusesForDeact']);
+
+Route::post('/assign-all-applicants-to-seats', [SeatController::class, 'assignAllApplicantsToSeats']);

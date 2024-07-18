@@ -12,7 +12,7 @@
                 </p>
                 <div id="applicantAdd" class="flex gap-4">
                     <div class="w-full flex-col content-center justify-center">
-                        <x-buttons.primary id="applicant-add" onclick="event.stopPropagation();" type="button" class="pl-2 py-2 z-10 w-10 h-10 rounded-lg fill-white">
+                        <x-buttons.primary id="applicant-add-left-to-right" onclick="assignAllApplicantsToSeats('left-to-right')" type="button" class="pl-2 py-2 z-10 w-10 h-10 rounded-lg fill-white">
                             <div class="absolute -mt-1 ml-0.5">
                                 <svg xmlns="http://www.w3.org/2000/svg" id="Outline" viewBox="0 0 24 24" width="20" height="20"><path d="M23.12,9.91,19.25,6a1,1,0,0,0-1.42,0h0a1,1,0,0,0,0,1.41L21.39,11H1a1,1,0,0,0-1,1H0a1,1,0,0,0,1,1H21.45l-3.62,3.61a1,1,0,0,0,0,1.42h0a1,1,0,0,0,1.42,0l3.87-3.88A3,3,0,0,0,23.12,9.91Z"/></svg>
                                 <svg xmlns="http://www.w3.org/2000/svg" class="-mt-1.5" id="Outline" viewBox="0 0 24 24" width="20" height="20"><path d="M23.12,9.91,19.25,6a1,1,0,0,0-1.42,0h0a1,1,0,0,0,0,1.41L21.39,11H1a1,1,0,0,0-1,1H0a1,1,0,0,0,1,1H21.45l-3.62,3.61a1,1,0,0,0,0,1.42h0a1,1,0,0,0,1.42,0l3.87-3.88A3,3,0,0,0,23.12,9.91Z"/></svg>
@@ -20,7 +20,15 @@
                         </x-buttons.primary>
                     </div>
                     <div>
-                        <x-buttons.primary id="applicant-add" onclick="event.stopPropagation();" type="button" class="pl-2 py-2 z-10 w-10 h-10 rounded-lg fill-white">
+                        <x-buttons.primary id="applicant-add-right-to-left" onclick="assignAllApplicantsToSeats('right-to-left')" type="button" class="pl-2 py-2 z-10 w-10 h-10 rounded-lg fill-white">
+                            <div class="absolute -mt-1 ml-0.5">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="rotate-180" id="Outline" viewBox="0 0 24 24" width="20" height="20"><path d="M23.12,9.91,19.25,6a1,1,0,0,0-1.42,0h0a1,1,0,0,0,0,1.41L21.39,11H1a1,1,0,0,0-1,1H0a1,1,0,0,0,1,1H21.45l-3.62,3.61a1,1,0,0,0,0,1.42h0a1,1,0,0,0,1.42,0l3.87-3.88A3,3,0,0,0,23.12,9.91Z"/></svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="-mt-1.5 rotate-180" id="Outline" viewBox="0 0 24 24" width="20" height="20"><path d="M23.12,9.91,19.25,6a1,1,0,0,0-1.42,0h0a1,1,0,0,0,0,1.41L21.39,11H1a1,1,0,0,0-1,1H0a1,1,0,0,0,1,1H21.45l-3.62,3.61a1,1,0,0,0,0,1.42h0a1,1,0,0,0,1.42,0l3.87-3.88A3,3,0,0,0,23.12,9.91Z"/></svg>
+                            </div>
+                        </x-buttons.primary>
+                    </div>
+                    <div>
+                        <x-buttons.primary id="applicant-add-alternate-left-right" onclick="assignAllApplicantsToSeats('alternate-left-right')" type="button" class="pl-2 py-2 z-10 w-10 h-10 rounded-lg fill-white">
                             <div class="absolute -mt-1 ml-0.5">
                                 <svg xmlns="http://www.w3.org/2000/svg" id="Outline" viewBox="0 0 24 24" width="20" height="20"><path d="M23.12,9.91,19.25,6a1,1,0,0,0-1.42,0h0a1,1,0,0,0,0,1.41L21.39,11H1a1,1,0,0,0-1,1H0a1,1,0,0,0,1,1H21.45l-3.62,3.61a1,1,0,0,0,0,1.42h0a1,1,0,0,0,1.42,0l3.87-3.88A3,3,0,0,0,23.12,9.91Z"/></svg>
                                 <svg xmlns="http://www.w3.org/2000/svg" class="-mt-1.5 rotate-180" id="Outline" viewBox="0 0 24 24" width="20" height="20"><path d="M23.12,9.91,19.25,6a1,1,0,0,0-1.42,0h0a1,1,0,0,0,0,1.41L21.39,11H1a1,1,0,0,0-1,1H0a1,1,0,0,0,1,1H21.45l-3.62,3.61a1,1,0,0,0,0,1.42h0a1,1,0,0,0,1.42,0l3.87-3.88A3,3,0,0,0,23.12,9.91Z"/></svg>
@@ -28,7 +36,15 @@
                         </x-buttons.primary>
                     </div>
                     <div>
-                        <x-buttons.primary id="applicant-add" onclick="event.stopPropagation();" type="button" class="pl-2 py-2 z-10 w-10 h-10 rounded-lg fill-white">
+                        <x-buttons.primary id="applicant-add-alternate-right-left" onclick="assignAllApplicantsToSeats('alternate-right-left')" type="button" class="pl-2 py-2 z-10 w-10 h-10 rounded-lg fill-white">
+                            <div class="absolute -mt-1 ml-0.5">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="rotate-180" id="Outline" viewBox="0 0 24 24" width="20" height="20"><path d="M23.12,9.91,19.25,6a1,1,0,0,0-1.42,0h0a1,1,0,0,0,0,1.41L21.39,11H1a1,1,0,0,0-1,1H0a1,1,0,0,0,1,1H21.45l-3.62,3.61a1,1,0,0,0,0,1.42h0a1,1,0,0,0,1.42,0l3.87-3.88A3,3,0,0,0,23.12,9.91Z"/></svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="-mt-1.5" id="Outline" viewBox="0 0 24 24" width="20" height="20"><path d="M23.12,9.91,19.25,6a1,1,0,0,0-1.42,0h0a1,1,0,0,0,0,1.41L21.39,11H1a1,1,0,0,0-1,1H0a1,1,0,0,0,1,1H21.45l-3.62,3.61a1,1,0,0,0,0,1.42h0a1,1,0,0,0,1.42,0l3.87-3.88A3,3,0,0,0,23.12,9.91Z"/></svg>
+                            </div>
+                        </x-buttons.primary>
+                    </div>
+                    <div>
+                        <x-buttons.primary id="applicant-add-top-to-bottom" onclick="assignAllApplicantsToSeats('top-to-bottom')" type="button" class="pl-2 py-2 z-10 w-10 h-10 rounded-lg fill-white">
                             <div class="absolute -ml-1 mt-0.5 flex">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="rotate-90" id="Outline" viewBox="0 0 24 24" width="20" height="20"><path d="M23.12,9.91,19.25,6a1,1,0,0,0-1.42,0h0a1,1,0,0,0,0,1.41L21.39,11H1a1,1,0,0,0-1,1H0a1,1,0,0,0,1,1H21.45l-3.62,3.61a1,1,0,0,0,0,1.42h0a1,1,0,0,0,1.42,0l3.87-3.88A3,3,0,0,0,23.12,9.91Z"/></svg>
                                 <svg xmlns="http://www.w3.org/2000/svg" class="-ml-1.5 rotate-90" id="Outline" viewBox="0 0 24 24" width="20" height="20"><path d="M23.12,9.91,19.25,6a1,1,0,0,0-1.42,0h0a1,1,0,0,0,0,1.41L21.39,11H1a1,1,0,0,0-1,1H0a1,1,0,0,0,1,1H21.45l-3.62,3.61a1,1,0,0,0,0,1.42h0a1,1,0,0,0,1.42,0l3.87-3.88A3,3,0,0,0,23.12,9.91Z"/></svg>
@@ -36,10 +52,26 @@
                         </x-buttons.primary>
                     </div>
                     <div>
-                        <x-buttons.primary id="applicant-add" onclick="event.stopPropagation();" type="button" class="pl-2 py-2 z-10 w-10 h-10 rounded-lg fill-white">
+                        <x-buttons.primary id="applicant-add-bottom-to-top" onclick="assignAllApplicantsToSeats('bottom-to-top')" type="button" class="pl-2 py-2 z-10 w-10 h-10 rounded-lg fill-white">
+                            <div class="absolute -ml-1 mt-0.5 flex">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="-rotate-90" id="Outline" viewBox="0 0 24 24" width="20" height="20"><path d="M23.12,9.91,19.25,6a1,1,0,0,0-1.42,0h0a1,1,0,0,0,0,1.41L21.39,11H1a1,1,0,0,0-1,1H0a1,1,0,0,0,1,1H21.45l-3.62,3.61a1,1,0,0,0,0,1.42h0a1,1,0,0,0,1.42,0l3.87-3.88A3,3,0,0,0,23.12,9.91Z"/></svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="-ml-1.5 -rotate-90" id="Outline" viewBox="0 0 24 24" width="20" height="20"><path d="M23.12,9.91,19.25,6a1,1,0,0,0-1.42,0h0a1,1,0,0,0,0,1.41L21.39,11H1a1,1,0,0,0-1,1H0a1,1,0,0,0,1,1H21.45l-3.62,3.61a1,1,0,0,0,0,1.42h0a1,1,0,0,0,1.42,0l3.87-3.88A3,3,0,0,0,23.12,9.91Z"/></svg>
+                            </div>
+                        </x-buttons.primary>
+                    </div>
+                    <div>
+                        <x-buttons.primary id="applicant-add-alternate-top-bottom" onclick="assignAllApplicantsToSeats('alternate-top-bottom')" type="button" class="pl-2 py-2 z-10 w-10 h-10 rounded-lg fill-white">
                             <div class="absolute -ml-1 mt-0.5 flex">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="rotate-90" id="Outline" viewBox="0 0 24 24" width="20" height="20"><path d="M23.12,9.91,19.25,6a1,1,0,0,0-1.42,0h0a1,1,0,0,0,0,1.41L21.39,11H1a1,1,0,0,0-1,1H0a1,1,0,0,0,1,1H21.45l-3.62,3.61a1,1,0,0,0,0,1.42h0a1,1,0,0,0,1.42,0l3.87-3.88A3,3,0,0,0,23.12,9.91Z"/></svg>
                                 <svg xmlns="http://www.w3.org/2000/svg" class="-ml-1.5 -rotate-90" id="Outline" viewBox="0 0 24 24" width="20" height="20"><path d="M23.12,9.91,19.25,6a1,1,0,0,0-1.42,0h0a1,1,0,0,0,0,1.41L21.39,11H1a1,1,0,0,0-1,1H0a1,1,0,0,0,1,1H21.45l-3.62,3.61a1,1,0,0,0,0,1.42h0a1,1,0,0,0,1.42,0l3.87-3.88A3,3,0,0,0,23.12,9.91Z"/></svg>
+                            </div>
+                        </x-buttons.primary>
+                    </div>
+                    <div>
+                        <x-buttons.primary id="applicant-add-alternate-bottom-top" onclick="assignAllApplicantsToSeats('alternate-bottom-top')" type="button" class="pl-2 py-2 z-10 w-10 h-10 rounded-lg fill-white">
+                            <div class="absolute -ml-1 mt-0.5 flex">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="-rotate-90" id="Outline" viewBox="0 0 24 24" width="20" height="20"><path d="M23.12,9.91,19.25,6a1,1,0,0,0-1.42,0h0a1,1,0,0,0,0,1.41L21.39,11H1a1,1,0,0,0-1,1H0a1,1,0,0,0,1,1H21.45l-3.62,3.61a1,1,0,0,0,0,1.42h0a1,1,0,0,0,1.42,0l3.87-3.88A3,3,0,0,0,23.12,9.91Z"/></svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="-ml-1.5 rotate-90" id="Outline" viewBox="0 0 24 24" width="20" height="20"><path d="M23.12,9.91,19.25,6a1,1,0,0,0-1.42,0h0a1,1,0,0,0,0,1.41L21.39,11H1a1,1,0,0,0-1,1H0a1,1,0,0,0,1,1H21.45l-3.62,3.61a1,1,0,0,0,0,1.42h0a1,1,0,0,0,1.42,0l3.87-3.88A3,3,0,0,0,23.12,9.91Z"/></svg>
                             </div>
                         </x-buttons.primary>
                     </div>

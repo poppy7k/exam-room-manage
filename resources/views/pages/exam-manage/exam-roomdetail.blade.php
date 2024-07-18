@@ -553,7 +553,7 @@ function removeApplicantsFromRoom(roomId, examDate, examStartTime, examEndTime) 
             location.reload(); // Reload the page to reflect the changes
         } else {
             console.error('Server response:', data);
-            alert('Failed to remove applicants from room.');
+            alert(data.message);
         }
     })
     .catch(error => {
@@ -588,6 +588,38 @@ function removeApplicantsFromRoom(roomId, examDate, examStartTime, examEndTime) 
 //         console.error('Error updating valid seat count in the database:', error);
 //     });
 // }
+
+
+function assignAllApplicantsToSeats(direction) {
+    const examId = {{ $exam->id }};
+    const roomId = {{ $selectedRooms->room->id }};
+
+    fetch('/assign-all-applicants-to-seats', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+        body: JSON.stringify({
+            exam_id: examId,
+            room_id: roomId,
+            direction: direction
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(data.message);
+            location.reload();
+        } else {
+            alert(data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while assigning applicants to seats.');
+    });
+}
 
 
 </script>
