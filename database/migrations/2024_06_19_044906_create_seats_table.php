@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('selected_room_id');
             $table->unsignedBigInteger('applicant_id')->nullable();
-            $table->integer('row');
-            $table->integer('column');
+            $table->integer('row')->nullable();
+            $table->integer('column')->nullable();
             $table->foreign('selected_room_id')->references('id')->on('selected_rooms')->onDelete('cascade');
             $table->foreign('applicant_id')->references('id')->on('applicants')->onDelete('cascade');
             $table->timestamps();
