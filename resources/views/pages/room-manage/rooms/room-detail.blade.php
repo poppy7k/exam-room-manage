@@ -154,14 +154,14 @@
 <div id="exam-status-modal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
     <div class="bg-white rounded-lg p-6 w-1/2">
         <div class="flex justify-between items-center mb-4">
-            <h3 class="text-xl font-semibold">Exams with Assigned Applicants</h3>
+            <h3 class="text-xl font-semibold">รายการสอบที่มีผลกระทบต่อการเปลี่ยนแปลงที่นั้ง เนื่องจากมีผู้เข้าสอบในที่นั้ง</h3>
             <button id="close-exam-status-modal-btn" class="text-red-500">&times;</button>
         </div>
         <div id="exam-list" class="max-h-64 overflow-y-auto">
             <!-- Exam list will be populated here -->
         </div>
         <div class="flex justify-end mt-4">
-            <button id="submit-exam-status-btn" class="px-5 py-2 bg-blue-500 text-white rounded">Submit</button>
+            <button id="submit-exam-status-btn" class="px-5 py-2 bg-blue-500 text-white rounded">ตกลง</button>
         </div>
     </div>
 </div>
@@ -246,6 +246,8 @@
     
     function showExamStatusModal() {
     //console.log('Invalid Seats:', invalidSeats); 
+    const rows = document.getElementById('row-count').textContent;
+    const columns = document.getElementById('column-count').textContent;
     fetch('/exams-with-assigned-seats', {
         method: 'POST',
         headers: {
@@ -254,7 +256,9 @@
         },
         body: JSON.stringify({
             invalidSeats: invalidSeats,
-            roomId: {{ $room->id }} 
+            roomId: {{ $room->id }},
+            rows: rows,
+            columns: columns
         })
     })
     .then(response => response.json())
@@ -287,6 +291,8 @@ document.getElementById('close-exam-status-modal-btn').addEventListener('click',
 
 document.getElementById('submit-exam-status-btn').addEventListener('click', function() {
     const examIds = JSON.parse(document.getElementById('examIdsInput').value);
+    const rows = document.getElementById('row-count').textContent;
+    const columns = document.getElementById('column-count').textContent;
     console.log('Selected Exams:', examIds);
 
     fetch('/update-exam-statuses2', {
@@ -297,8 +303,10 @@ document.getElementById('submit-exam-status-btn').addEventListener('click', func
         },
         body: JSON.stringify({
             exams: examIds,
-            invalidSeats: invalidSeats, // Include invalid seats
-            roomId: {{ $room->id }} // Include room ID in the request
+            invalidSeats: invalidSeats,
+            roomId: {{ $room->id }},
+            rows: rows,
+            columns: columns
         })
     })
     .then(response => response.json())
@@ -306,7 +314,7 @@ document.getElementById('submit-exam-status-btn').addEventListener('click', func
         if (data.success) {
             alert('Exam statuses updated successfully.');
             document.getElementById('exam-status-modal').classList.add('hidden');
-            document.getElementById('addSeatForm').submit(); // Submit the form after the exam statuses have been updated
+            document.getElementById('addSeatForm').submit();
         } else {
             alert('Failed to update exam statuses.');
         }

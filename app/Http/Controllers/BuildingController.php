@@ -103,7 +103,7 @@ class BuildingController extends Controller
     
         if ($building) {
 
-            ExamRoomInformation::where('building_code', $buildingId)->delete();
+            ExamRoomInformation::where('building_id', $buildingId)->delete();
     
             if ($building->building_image) {
                 $imagePath = 'building_images/' . $building->building_image;
