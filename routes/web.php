@@ -84,7 +84,7 @@ Route::get('/check-seat-deactivation/{seatId}', [ExamController::class, 'checkSe
 
 Route::post('/update-applicant-status', [ApplicantController::class, 'updateApplicantExamStatus']);
 
-Route::post('/exams-with-assigned-seats', [ExamController::class, 'getExamsWithAssignedSeats']);
-Route::post('/update-exam-statuses2', [ExamController::class, 'updateExamStatusesForDeact']);
+Route::post('/exams-with-affected-layouts', [ExamController::class, 'getExamsWithAffectedChangeLayouts']);
+Route::post('/update-exam-seat-layouts', [ExamController::class, 'updateExamSeatLayouts']);
 
 Route::post('/assign-all-applicants-to-seats', [SeatController::class, 'assignAllApplicantsToSeats']);

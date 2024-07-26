@@ -9,6 +9,7 @@ use App\Models\SelectedRoom;
 use App\Models\Seat;
 use App\Models\Exam;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 
 class SeatController extends Controller
 {
@@ -573,7 +574,7 @@ class SeatController extends Controller
                     $seatRecord->column = $seat['column'];
                     $seatRecord->save();
     
-                    Log::info('Updated existing seat with row and column', ['seatRecord' => $seatRecord]);
+                    //Log::info('Updated existing seat with row and column', ['seatRecord' => $seatRecord]);
     
                     // Update the status in the applicant_exam table
                     $exam->applicants()->updateExistingPivot($applicants[$applicantIndex]->id, ['status' => 'assigned']);
@@ -697,4 +698,121 @@ class SeatController extends Controller
         return $sortedSeats;
     }
 
+
+    public function assignApplicantToSeatWithNewLayouts($applicantId, $selectedRoomId, $newRows, $newColumns, $invalidSeatsParsed, &$seatIndex)
+    {
+        // Log::debug('Starting seat assignment', [
+        //     'applicantId' => $applicantId,
+        //     'selectedRoomId' => $selectedRoomId,
+        //     'newRows' => $newRows,
+        //     'newColumns' => $newColumns
+        // ]);
+    
+        $totalSeats = $newRows * $newColumns;
+        if ($seatIndex >= $totalSeats) {
+            //Log::debug('No available seat for applicant', ['applicantId' => $applicantId]);
+            return;
+        }
+    
+        while ($seatIndex < $totalSeats) {
+            $row = (int)($seatIndex / $newColumns) + 1;
+            $col = ($seatIndex % $newColumns) + 1;
+            $seatIndex++;
+            $seat = ['row' => $row, 'column' => $col];
+    
+            if (!in_array($seat, $invalidSeatsParsed)) {
+                //Log::debug('Checking seat', ['row' => $row, 'column' => $col]);
+    
+                try {
+                    // Try to reuse an existing seat record with null row and column
+                    $seatRecord = Seat::where('selected_room_id', $selectedRoomId)
+                        ->whereNull('row')
+                        ->whereNull('column')
+                        ->first();
+    
+                    if ($seatRecord) {
+                        // Update the existing seat record
+                        //Log::debug('Reusing existing seat record', ['seatRecord' => $seatRecord]);
+                        $seatRecord->row = $row;
+                        $seatRecord->column = $col;
+                        $seatRecord->applicant_id = $applicantId;
+                        $seatRecord->save();
+                    } else {
+                        // Create a new seat record if no null row and column record is available
+                        $seatRecord = Seat::where('selected_room_id', $selectedRoomId)
+                            ->where('row', $row)
+                            ->where('column', $col)
+                            ->first();
+                        if ($seatRecord) {
+                            // Update the existing seat record
+                            //Log::debug('Updating existing seat record', ['seatRecord' => $seatRecord]);
+                            $seatRecord->applicant_id = $applicantId;
+                            $seatRecord->save();
+                        } else {
+                            // Create a new seat record if it doesn't exist
+                            //Log::debug('Creating new seat record', ['row' => $row, 'column' => $col, 'applicantId' => $applicantId]);
+                            Seat::create([
+                                'row' => $row,
+                                'column' => $col,
+                                'selected_room_id' => $selectedRoomId,
+                                'applicant_id' => $applicantId
+                            ]);
+                        }
+                    }
+    
+                    //Log::debug('Seat assigned', ['applicantId' => $applicantId, 'row' => $row, 'column' => $col]);
+    
+                    DB::table('applicant_exam')
+                        ->where('applicant_id', $applicantId)
+                        ->update(['status' => 'assigned']);
+                    return;
+                } catch (\Exception $e) {
+                    Log::error('Error assigning seat', ['error' => $e->getMessage()]);
+                }
+            }
+        }
+    
+        //Log::debug('Unable to assign seat for applicant', ['applicantId' => $applicantId]);
+    }
+    
+    public function deleteExtraSeats($roomId, $newRows, $newColumns)
+    {
+        $totalNewSeats = $newRows * $newColumns;
+    
+        // Fetch the selected_room_ids for the given room
+        $selectedRoomIds = DB::table('selected_rooms')
+            ->where('room_id', $roomId)
+            ->pluck('id');
+    
+        if ($selectedRoomIds->isEmpty()) {
+            //Log::debug('No selected_room_id found for room_id', ['room_id' => $roomId]);
+            return;
+        }
+    
+        // Fetch all seats for the selected rooms
+        $seatsToUpdate = DB::table('seats')
+            ->whereIn('selected_room_id', $selectedRoomIds)
+            ->get();
+    
+        $totalExistingSeats = $seatsToUpdate->count();
+    
+        //Log::debug('Total new seats', ['totalNewSeats' => $totalNewSeats]);
+        //Log::debug('Total existing seats', ['totalExistingSeats' => $totalExistingSeats]);
+    
+        if ($totalExistingSeats > $totalNewSeats) {
+            $extraSeats = $seatsToUpdate->splice($totalNewSeats);
+    
+            foreach ($extraSeats as $seat) {
+                DB::table('seats')->where('id', $seat->id)->delete();
+                // Log::debug('Deleted extra seat', [
+                //     'seatId' => $seat->id,
+                //     'applicantId' => $seat->applicant_id,
+                //     'row' => $seat->row,
+                //     'column' => $seat->column
+                // ]);
+            }
+        } else {
+            //Log::debug('No extra seats to delete');
+        }
+    }
 }

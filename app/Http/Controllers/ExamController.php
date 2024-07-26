@@ -468,7 +468,7 @@ class ExamController extends Controller
     }
     
 
-    public function getExamsWithAssignedSeats(Request $request)
+    public function getExamsWithAffectedChangeLayouts(Request $request)
     {
         $invalidSeats = $request->input('invalidSeats', []);
         $roomId = $request->input('roomId');
@@ -494,31 +494,33 @@ class ExamController extends Controller
             return ['row' => (int) $row, 'column' => $columnNumber];
         }, $invalidSeats);
     
-        // Check if new rows/columns are greater than or equal to old ones and no invalid seats are provided
-        if ($newRows >= $oldRows && $newColumns >= $oldColumns && empty($invalidSeatsParsed)) {
-            Log::debug('No changes in rows or columns, skipping update');
+        if ($newRows == $oldRows && $newColumns == $oldColumns && empty($invalidSeatsParsed)) {
+            //Log::debug('No changes in rows or columns, skipping update');
             return response()->json([]);
         }
+        //Log::debug('invalidSeatsParsed', ['invalidSeatsParsed' => $invalidSeatsParsed]);
     
-        // Calculate the list of removed seats
-        $removedSeats = [];
-        if ($newRows < $oldRows) {
-            for ($row = $newRows + 1; $row <= $oldRows; $row++) {
+        // Combine invalid seats with changes in rows/columns
+        $affectedSeats = $invalidSeatsParsed;
+    
+        // Check if rows or columns have changed
+        if ($newRows != $oldRows || $newColumns != $oldColumns) {
+            //Log::debug('Rows or columns have changed, adding all seats to affected list');
+            
+            for ($row = 1; $row <= $oldRows; $row++) {
                 for ($col = 1; $col <= $oldColumns; $col++) {
-                    $removedSeats[] = ['row' => $row, 'column' => $col];
-                }
-            }
-        }
-        if ($newColumns < $oldColumns) {
-            for ($col = $newColumns + 1; $col <= $oldColumns; $col++) {
-                for ($row = 1; $row <= $oldRows; $row++) {
-                    $removedSeats[] = ['row' => $row, 'column' => $col];
+                    // Only add if it's not already in invalid seats
+                    $seat = ['row' => $row, 'column' => $col];
+                    if (!in_array($seat, $invalidSeatsParsed)) {
+                        $affectedSeats[] = $seat;
+                    }
                 }
             }
         }
     
-        //Log::debug('Removed seats', ['removedSeats' => $removedSeats]);
+        //Log::debug('Affected seats', ['affectedSeats' => $affectedSeats]);
     
+        // Query exams for affected seats
         $exams = DB::table('applicant_exam')
             ->join('seats', 'applicant_exam.applicant_id', '=', 'seats.applicant_id')
             ->join('exams', 'applicant_exam.exam_id', '=', 'exams.id')
@@ -528,22 +530,15 @@ class ExamController extends Controller
             ->where('exams.status', '!=', 'inprogress')
             ->where('exams.status', '!=', 'finished')
             ->where('exams.status', '!=', 'unfinished')
-            ->where(function ($query) use ($removedSeats, $invalidSeatsParsed) {
-                foreach ($removedSeats as $seat) {
-                    $query->orWhere(function ($subQuery) use ($seat) {
-                        $subQuery->where('seats.row', $seat['row'])
-                                 ->where('seats.column', $seat['column']);
-                    });
-                }
-                // Include invalid seats in the condition
-                foreach ($invalidSeatsParsed as $seat) {
+            ->where(function ($query) use ($affectedSeats) {
+                foreach ($affectedSeats as $seat) {
                     $query->orWhere(function ($subQuery) use ($seat) {
                         $subQuery->where('seats.row', $seat['row'])
                                  ->where('seats.column', $seat['column']);
                     });
                 }
             })
-            ->select('exams.id', 'exams.subject as name')
+            ->select('exams.id', 'exams.exam_position as name')
             ->distinct()
             ->get();
     
@@ -552,24 +547,22 @@ class ExamController extends Controller
         return response()->json($exams);
     }
     
-    
-    
-    public function updateExamStatusesForDeact(Request $request)
+    public function updateExamSeatLayouts(Request $request)
     {
         $examIds = $request->input('exams');
         $roomId = $request->input('roomId');
         $newRows = (int)$request->input('rows');
         $newColumns = (int)$request->input('columns');
         $invalidSeats = $request->input('invalidSeats', []);
-    
+        
         // Fetch the room details to get the old values
         $room = ExamRoomInformation::findOrFail($roomId);
         $oldRows = $room->rows;
         $oldColumns = $room->columns;
-    
+        
         //Log::debug('Old rows and columns', ['oldRows' => $oldRows, 'oldColumns' => $oldColumns]);
         //Log::debug('New rows and columns', ['newRows' => $newRows, 'newColumns' => $newColumns]);
-    
+        
         // Parse invalid seats
         $invalidSeatsParsed = array_map(function($seat) {
             list($row, $columnLetter) = explode('-', $seat);
@@ -580,56 +573,65 @@ class ExamController extends Controller
             }
             return ['row' => (int) $row, 'column' => $columnNumber];
         }, $invalidSeats);
-    
-        // Calculate the list of removed seats
-        $removedSeats = [];
-        if ($newRows < $oldRows) {
-            for ($row = $newRows + 1; $row <= $oldRows; $row++) {
-                for ($col = 1; $col <= $oldColumns; $col++) {
-                    $removedSeats[] = ['row' => $row, 'column' => $col];
-                }
-            }
-        }
-        if ($newColumns < $oldColumns) {
-            for ($col = $newColumns + 1; $col <= $oldColumns; $col++) {
-                for ($row = 1; $row <= $oldRows; $row++) {
-                    $removedSeats[] = ['row' => $row, 'column' => $col];
-                }
-            }
-        }
-    
-        //Log::debug('Removed seats', ['removedSeats' => $removedSeats]);
-    
-        DB::table('applicant_exam')
+        
+        //Log::debug('Invalid seats parsed', ['invalidSeatsParsed' => $invalidSeatsParsed]);
+        
+        // Get applicants for affected exams sorted by id_number
+        $affectedApplicants = DB::table('applicant_exam')
             ->join('seats', 'applicant_exam.applicant_id', '=', 'seats.applicant_id')
-            ->join('selected_rooms', 'seats.selected_room_id', '=', 'selected_rooms.id')
+            ->join('selected_rooms', 'applicant_exam.exam_id', '=', 'selected_rooms.exam_id')
+            ->join('applicants', 'applicant_exam.applicant_id', '=', 'applicants.id')
             ->whereIn('applicant_exam.exam_id', $examIds)
             ->where('selected_rooms.room_id', $roomId)
-            ->where(function ($query) use ($removedSeats, $invalidSeatsParsed) {
-                foreach ($removedSeats as $seat) {
-                    $query->orWhere(function ($subQuery) use ($seat) {
-                        $subQuery->where('seats.row', $seat['row'])
-                                 ->where('seats.column', $seat['column']);
-                    });
-                }
-                // Include invalid seats in the condition
-                foreach ($invalidSeatsParsed as $seat) {
-                    $query->orWhere(function ($subQuery) use ($seat) {
-                        $subQuery->where('seats.row', $seat['row'])
-                                 ->where('seats.column', $seat['column']);
-                    });
-                }
-            })
-            ->update([
-                'applicant_exam.status' => 'not_assigned',
-                'seats.row' => null,
-                'seats.column' => null
-            ]);
+            ->select('applicant_exam.applicant_id', 'applicants.id_number', 'selected_rooms.id as selected_room_id')
+            ->distinct()
+            ->orderBy('applicants.id_number', 'asc')
+            ->get()
+            ->groupBy('selected_room_id');
+        
+        //Log::debug('Affected Applicants', ['affectedApplicants' => $affectedApplicants]);
+        
+        // Calculate affected seats based on the new layout
+        $affectedSeats = [];
+        for ($row = 1; $row <= $newRows; $row++) {
+            for ($col = 1; $col <= $newColumns; $col++) {
+                $affectedSeats[] = ['row' => $row, 'column' => $col];
+            }
+        }
+        
+        // Exclude invalid seats
+        $affectedSeats = array_filter($affectedSeats, function($seat) use ($invalidSeatsParsed) {
+            return !in_array($seat, $invalidSeatsParsed);
+        });
+        
+        //Log::debug('Affected seats calculated', ['affectedSeats' => $affectedSeats]);
+        
+        // Update seats to null for affected applicants
+        foreach ($affectedApplicants as $selectedRoomId => $applicants) {
+            $applicantIds = $applicants->pluck('applicant_id');
+            
+            $updateCount = DB::table('seats')
+                ->whereIn('applicant_id', $applicantIds)
+                ->where('selected_room_id', $selectedRoomId)
+                ->update(['row' => null, 'column' => null]);
+            
+            //Log::debug('Seats updated to null for affected applicants', ['selectedRoomId' => $selectedRoomId, 'updateCount' => $updateCount]);
+        }
+        
+        // Delete extra seats before creating new seat records
+        $this->seatController->deleteExtraSeats($roomId, $newRows, $newColumns);
     
-        //Log::debug('Exam statuses updated');
-    
+        // Reassign seats to all applicants
+        foreach ($affectedApplicants as $selectedRoomId => $applicants) {
+            $seatIndex = 0;
+            foreach ($applicants as $applicant) {
+                $this->seatController->assignApplicantToSeatWithNewLayouts($applicant->applicant_id, $selectedRoomId, $newRows, $newColumns, $invalidSeatsParsed, $seatIndex);
+            }
+        }
+        
+        //Log::debug('Exam statuses updated and seats reassigned');
+        
         return response()->json(['success' => true]);
     }
-    
 
 }

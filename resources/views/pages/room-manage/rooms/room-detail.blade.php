@@ -154,7 +154,7 @@
 <div id="exam-status-modal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
     <div class="bg-white rounded-lg p-6 w-1/2">
         <div class="flex justify-between items-center mb-4">
-            <h3 class="text-xl font-semibold">รายการสอบที่มีผลกระทบต่อการเปลี่ยนแปลงที่นั้ง เนื่องจากมีผู้เข้าสอบในที่นั้ง</h3>
+            <h3 class="text-xl font-semibold">รายการสอบที่มีผลกระทบต่อการเปลี่ยนแปลงที่นั้ง</h3>
             <button id="close-exam-status-modal-btn" class="text-red-500">&times;</button>
         </div>
         <div id="exam-list" class="max-h-64 overflow-y-auto">
@@ -248,7 +248,7 @@
     //console.log('Invalid Seats:', invalidSeats); 
     const rows = document.getElementById('row-count').textContent;
     const columns = document.getElementById('column-count').textContent;
-    fetch('/exams-with-assigned-seats', {
+    fetch('/exams-with-affected-layouts', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -295,7 +295,7 @@ document.getElementById('submit-exam-status-btn').addEventListener('click', func
     const columns = document.getElementById('column-count').textContent;
     console.log('Selected Exams:', examIds);
 
-    fetch('/update-exam-statuses2', {
+    fetch('/update-exam-seat-layouts', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
