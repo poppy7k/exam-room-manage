@@ -89,5 +89,17 @@ class ApplicantSeeder extends Seeder
             $applicant->department = "งานบริหารระบบเอกสารกลาง";
             $applicant->save();
         }
+
+        for ($i = 1; $i <= 150; $i++) {
+            $id_number = str_pad($i, 3, '0', STR_PAD_LEFT); // Pad the number to 6 digits
+            $applicant = new Applicant();
+            $applicant->id_number = "070" . $id_number;
+            $applicant->id_card = $faker->numerify('# #### ##### ## #'); // Generate random Thai ID card format
+            $applicant->name = "นาย --------------" . str_pad($i, 2, '0', STR_PAD_LEFT);
+            $applicant->degree = "ระดับปริญญาตรี";
+            $applicant->position = "นักประชาสัมพันธ์ระดับปฏิบัติการ";
+            $applicant->department = "งานสื่อสารองค์กร";
+            $applicant->save();
+        }
     }
 }

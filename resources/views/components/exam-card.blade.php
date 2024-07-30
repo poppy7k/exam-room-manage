@@ -11,6 +11,7 @@
     'exam_takers_quantity' => 'null',
     'subject' => 'null',
     'exam_id',
+    'exam_recent_change' => 'null'
 ])
 
 <div class="room-item relative flex bg-white flex-col bg-clip-border rounded-lg w-[260px] shadow-md mt-6 transition-all duration-500 hover:scale-105 hover:shadow-lg">
@@ -20,6 +21,7 @@
         <a href="{{ route('exam-buildinglist',['examId' => $examId])}}" class="absolute inset-0 z-0"></a>   
     @endif
     <div class="px-4 py-3 text-surface text-black flex flex-col">
+        <p>{{$exam_recent_change}}</p>
         <div class="group flex">
             <span class="relative group flex hover-trigger">
                 <x-tooltip title="{{ $department_name }}" class="group-hover:translate-y-4 z-20"></x-tooltip>

@@ -35,6 +35,7 @@
                     :building_name="$selectedRoom->room->building->building_th"
                     :exam_id="$exams->id"
                     :selectedroom_valid_seat="$selectedRoom->selectedroom_valid_seat"
+                    :recent_change="$selectedRoom->recent_change"
                 />
             @endif
         @empty

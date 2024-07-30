@@ -13,15 +13,16 @@ return new class extends Migration
     {
         Schema::create('exams', function (Blueprint $table) {
             $table->id();
-            $table->string('department_name')->nullable();//
+            $table->string('department_name')->nullable();
             $table->integer('exam_takers_quantity')->default(0);
-            $table->string('exam_position')->nullable();//
+            $table->string('exam_position')->nullable();
             $table->string('subject')->nullable();
-            $table->datetime('exam_date')->nullable();//
-            $table->datetime('exam_start_time')->nullable();//
-            $table->datetime('exam_end_time')->nullable();//
+            $table->datetime('exam_date')->nullable();
+            $table->datetime('exam_start_time')->nullable();
+            $table->datetime('exam_end_time')->nullable();
             $table->string('organization')->nullable();
             $table->string('status')->default('pending');
+            $table->integer('exam_recent_change')->default(0);
             $table->timestamps();
         });
     }

@@ -575,6 +575,22 @@ class ExamController extends Controller
         }, $invalidSeats);
         
         //Log::debug('Invalid seats parsed', ['invalidSeatsParsed' => $invalidSeatsParsed]);
+
+        // Set recent_change to 0 for all selected_rooms
+        DB::table('selected_rooms')->update(['recent_change' => 0]);
+        // Set exam_recent_change to 0 for all exams
+        DB::table('exams')->update(['exam_recent_change' => 0]);
+        //update the one that changed to 1
+        DB::table('selected_rooms')->where('room_id', $roomId)->update(['recent_change' => 1]);
+
+        // Update exam_recent_change to 1 for exams with any selected_room having recent_change = 1
+        DB::table('exams')
+            ->whereIn('id', function ($query) {
+                $query->select('exam_id')
+                      ->from('selected_rooms')
+                      ->where('recent_change', 1);
+            })
+            ->update(['exam_recent_change' => 1]);
         
         // Get applicants for affected exams sorted by id_number
         $affectedApplicants = DB::table('applicant_exam')

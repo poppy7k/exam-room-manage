@@ -8,7 +8,8 @@
     'selectedroom_valid_seat' => '0',
     'selected_room_id',
     'building_name',
-    'exam_id'
+    'exam_id',
+    'recent_change' => 'null'
 ])
 
 <div class="room-item relative flex bg-white flex-col bg-clip-border rounded-lg w-[260px] shadow-md mt-6 transition-all duration-500 hover:scale-105 hover:shadow-lg"">
@@ -29,6 +30,7 @@
             <p class="absolute justify-end -mx-1 -my-7 px-2 py-1 bg-gradient-to-tr from-green-600 to-green-400 rounded-lg text-sm text-white shadow-md">
                 {{ $selected_room_applicant_quantity }} ที่นั่ง
             </p>
+            <p>{{ $recent_change }}</p>
         </div>
         <span class="relative group flex hover-trigger">
             <x-tooltip title="{{ $building_name }}" class="group-hover:translate-y-4 z-20"></x-tooltip>
