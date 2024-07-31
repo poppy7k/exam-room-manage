@@ -164,7 +164,7 @@
         });
 
         // Reset selectedRooms if any other button is clicked
-        document.querySelectorAll('button:not(#add-room-from-other-building)').forEach(button => {
+        document.querySelectorAll('button:not(#add-room-from-other-building, .select-room-button)').forEach(button => {
             button.addEventListener('click', function () {
                 localStorage.removeItem('selectedRooms');
             });
