@@ -175,6 +175,7 @@ class SeatController extends Controller
                 ->where('exam_date', $exam->exam_date)
                 ->where('exam_start_time', $exam->exam_start_time)
                 ->where('exam_end_time', $exam->exam_end_time)
+                ->where('id', '!=', $exam->id)
                 ->exists();
     
             //Log::debug('Conflict exists', ['conflictExists' => $conflictExists]);
