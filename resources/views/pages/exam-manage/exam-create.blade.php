@@ -5,24 +5,6 @@
     <p class="pb-2 text-2xl font-bold">สร้างการสอบ</p>
     <form method="POST" class="pt-4" action="{{ route('exams.store') }}" enctype="multipart/form-data" onsubmit="return validateForm()">
         @csrf
-        <div class="mb-4">
-            <label for="department_name" class="block font-semibold">ชื่อฝ่ายงาน</label>
-            <input list="department_list" type="text" id="department_name" name="department_name" placeholder="กรอกชื่อฝ่ายงาน" required class="w-full my-2 px-3 py-2 rounded ring-1 shadow-sm ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-green-600 transition-all duration-300 outline-none">
-            <span id="department_name_error" class="error-message" style="color: red; display: none;">* กรุณากรอกชื่อฝ่ายงานให้ถูกต้อง</span>
-            <datalist id="department_list">
-                @php
-                    $addedDepartments = [];
-                @endphp
-                @foreach($departments as $department)
-                    @if (!in_array($department, $addedDepartments))
-                        <option value="{{ $department }}"></option>
-                        @php
-                            $addedDepartments[] = $department;
-                        @endphp
-                    @endif
-                @endforeach
-            </datalist>
-        </div>
         <div class="flex mb-4 justify-between">
             <div class="">
                 <label for="exam_date" class="block font-semibold">วันที่การสอบ</label>
@@ -46,6 +28,24 @@
                     @endfor
                 </datalist>
             </div>
+        </div>
+        <div class="mb-4">
+            <label for="department_name" class="block font-semibold">ชื่อฝ่ายงาน</label>
+            <input list="department_list" type="text" id="department_name" name="department_name" placeholder="กรอกชื่อฝ่ายงาน" required class="w-full my-2 px-3 py-2 rounded ring-1 shadow-sm ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-green-600 transition-all duration-300 outline-none">
+            <span id="department_name_error" class="error-message" style="color: red; display: none;">* กรุณากรอกชื่อฝ่ายงานให้ถูกต้อง</span>
+            <datalist id="department_list">
+                @php
+                    $addedDepartments = [];
+                @endphp
+                @foreach($departments as $department)
+                    @if (!in_array($department, $addedDepartments))
+                        <option value="{{ $department }}"></option>
+                        @php
+                            $addedDepartments[] = $department;
+                        @endphp
+                    @endif
+                @endforeach
+            </datalist>
         </div>
         <div class="mb-4">
             <label for="exam_position" class="block font-semibold">ตำแหน่ง</label>
@@ -73,6 +73,7 @@
         <x-buttons.primary type="submit" class="py-2 w-full hover:scale-105 justify-center">
             สร้างการสอบ
         </x-buttons.primary>
+        
     </form>
 </div>
 
