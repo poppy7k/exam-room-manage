@@ -89,12 +89,12 @@
                     เลือกผู้คุมสอบ
                 </x-buttons.primary>
             </div>
-            <div>
+            <!--<div>
                 <x-buttons.primary type="button" class="px-5 py-2 rounded-lg text-white"
                     onclick="window.location.href = '{{ route('exam-buildinglist', ['examId' => $exam->id]) }}'">
                     เลือกห้องใหม่
                 </x-buttons.primary>
-            </div>
+            </div> -->
         </div>
     </div>
     <div class="bg-white shadow-md my-3 rounded-lg max-h-screen flex flex-col">
