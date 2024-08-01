@@ -16,11 +16,11 @@
     @endif
         <div class="flex justify-end">
             @if ($valid_seat > 0)
-            <p class="absolute mx-3 my-3 px-2 py-2 bg-gradient-to-tr from-green-600 to-green-400 rounded-lg text-sm text-white shadow-md">
+            <p class="absolute mx-2 my-2 px-2 py-2 bg-gradient-to-tr from-green-600 to-green-400 rounded-lg text-sm text-white shadow-md">
                 {{ $valid_seat }} ที่นั่ง
             </p>
             @else
-            <p class="absolute mx-3 my-3 px-2 py-2 bg-gradient-to-tr from-red-600 to-red-400 rounded-lg text-sm text-white shadow-md">
+            <p class="absolute mx-2 my-2 px-2 py-2 bg-gradient-to-tr from-red-600 to-red-400 rounded-lg text-sm text-white shadow-md">
                 ไม่ว่าง
             </p>
             @endif

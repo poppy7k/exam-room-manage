@@ -93,19 +93,21 @@
                 {{ $exams->exam_takers_quantity }}
             </p>
         </div>
-        <form class="my-auto mx-5" id="submit-form" method="POST" action="{{ route('create-exams') }}">
-            @csrf
-            <input type="hidden" name="exam_id" value="{{ $exams->id }}">
-            <input type="hidden" name="selected_rooms" id="selected-rooms-input">
-            <x-buttons.primary type="submit" class="px-5 py-auto">
-                ยืนยัน
-            </x-buttons.primary>
-        </form>
-        <form class="my-auto mx-5" method="GET" action="{{ route('exam-buildinglist', ['examId' => $exams->id]) }}">
-            <x-buttons.primary type="submit" class="px-5 py-auto" id="add-room-from-other-building">
-                เลือกห้องเพิ่ม จากตึกอื่น
-            </x-buttons.primary>
-        </form>
+        <div class="flex gap-2 mx-5">
+            <form class="my-auto" method="GET" action="{{ route('exam-buildinglist', ['examId' => $exams->id]) }}">
+                <x-buttons.info type="submit" class="px-5 py-auto" id="add-room-from-other-building">
+                    เลือกห้องเพิ่มจากอาคารอื่น
+                </x-buttons.info>
+            </form>
+            <form class="my-auto" id="submit-form" method="POST" action="{{ route('create-exams') }}">
+                @csrf
+                <input type="hidden" name="exam_id" value="{{ $exams->id }}">
+                <input type="hidden" name="selected_rooms" id="selected-rooms-input">
+                <x-buttons.primary type="submit" class="px-5 py-auto">
+                    ยืนยัน
+                </x-buttons.primary>
+            </form>
+        </div>
     </div>
 </div>
 

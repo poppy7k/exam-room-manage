@@ -31,7 +31,7 @@
         <div class="flex">
         </div>
     </div>
-    <div class="bg-white shadow-md my-3 rounded-lg max-h-screen flex flex-col">
+    <div class="bg-white shadow-md my-6 rounded-lg max-h-screen flex flex-col">
         <!-- Div ด้านบน -->
         <div class="bg-white grow rounded-lg h-12 text-center group hover:h-28 transition-all duration-500 flex gap-4 justify-center items-center">
             <div class="absolute group-hover:hidden">

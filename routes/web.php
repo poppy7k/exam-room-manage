@@ -59,6 +59,8 @@ Route::post('/create-exams', [ExamController::class, 'createExams'])->name('crea
 Route::get('/exams/{examId}/selectedrooms', [SelectedRoomController::class, 'showSelectedRooms'])->name('exam-selectedroom');
 Route::get('/exams/{examId}/selectedrooms/{selected_room_id}', [ExamController::class, 'showExamRoomDetail'])->name('exam-roomdetail');
 
+Route::get('/calendar/exams/{date}', [ExamController::class, 'getExamsByDate']);
+
 // Alert //
 Route::post('/set-alert-message', function (Illuminate\Http\Request $request) {
     session()->flash('status', 'success');
@@ -66,7 +68,7 @@ Route::post('/set-alert-message', function (Illuminate\Http\Request $request) {
 });
 
 // Calendar //
-Route::get('/calendar', [CalendarController::class, 'index'])->name('pages.calendar');
+Route::get('/calendar', [CalendarController::class, 'index'])->name('pages.calendar.list');
 Route::get('/calendar/exams', [ExamController::class, 'getExam'])->name('exam.getExam');
 
 Route::get('/staffs', [StaffController::class, 'index'])->name('staffs.index');

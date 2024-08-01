@@ -37,11 +37,11 @@
         </div>
         <div class="flex justify-end">
             @if ($valid_seat > 0 )
-            <p class="absolute justify-end -mx-1 -my-7 px-2 py-1 bg-gradient-to-tr from-green-600 to-green-400 rounded-lg text-sm text-white shadow-md">
+            <p class="absolute justify-end -mx-2 -my-8 px-2 py-1 bg-gradient-to-tr from-green-600 to-green-400 rounded-lg text-sm text-white shadow-md">
                 {{ $valid_seat }} ที่นั่ง
             </p>
             @else
-            <p class="absolute justify-end -mx-1 -my-7 px-2 py-1 bg-gradient-to-tr from-red-600 to-red-400 rounded-lg text-sm text-white shadow-md">
+            <p class="absolute justify-end -mx-2 -my-8 px-2 py-1 bg-gradient-to-tr from-red-600 to-red-400 rounded-lg text-sm text-white shadow-md">
                 ไม่ว่าง
             </p>
             @endif

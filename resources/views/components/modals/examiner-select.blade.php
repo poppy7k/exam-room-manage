@@ -25,7 +25,7 @@
                 <x-buttons.secondary id="close-modal-btn" type="button" class="hover:scale-105 py-2 w-12 justify-center">
                     ยกเลิก
                 </x-buttons.secondary>
-                <x-buttons.primary type="submit" class="hover:scale-105 py-2 px-12 w-12 justify-center">
+                <x-buttons.primary id="save-examiners-btn" class="hover:scale-105 py-2 px-12 w-12 justify-center">
                     บันทึก
                 </x-buttons.primary>
             </div>

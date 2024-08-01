@@ -22,8 +22,8 @@
                 <x-tooltip title="{{ $room }} ชั้น {{ $floor }}" class="group-hover:-translate-x-20 group-hover:translate-y-4 z-20"></x-tooltip>
             </span> 
         </div>
-        <div class="flex justify-end">
-            <p class="absolute justify-end -mx-1 -my-7 px-2 py-1 bg-gradient-to-tr from-green-600 to-green-400 rounded-lg text-sm text-white shadow-md">
+        <div class="flex justify-end -mx-2 -mt-8">
+            <p class="flex px-2 pt-1.5 pb-1 bg-gradient-to-tr from-green-600 to-green-400 rounded-lg text-sm text-white shadow-md">
                 {{ $valid_seat }} ที่นั่ง
             </p>
         </div>

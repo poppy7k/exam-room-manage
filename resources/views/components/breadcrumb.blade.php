@@ -1,6 +1,6 @@
 @props(['breadcrumbs'])
 
-<ol id="breadcrumb" class="breadcrumb -translate-x-44 transition-all duration-500 flex">
+<ol id="breadcrumb" class="breadcrumb -translate-x-44 transition-all duration-500 hidden lg:flex">
     @foreach ($breadcrumbs as $breadcrumb)
         @if ($loop->last)
             @if ($breadcrumb['title'] == 'หน้าหลัก')

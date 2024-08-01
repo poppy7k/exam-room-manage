@@ -4,200 +4,7 @@
 <div class="flex justify-between">
     <div id="calendar" class="w-full h-max px-8 pb-8 pt-6 my-3 bg-white rounded-lg shadow-md"></div>
     <div class="w-full ml-6 mr-2 my-3 max-h-screen overflow-y-auto">
-        <div class="flex flex-col gap-4">
-            <div class="bg-white rounded-lg shadow-md px-3 py-3 font-light">
-                <div class="px-2 pt-1 fill-gray-500 text-gray-500 flex items-center gap-1.5"> 
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" id="Layer_1" data-name="Layer 1" viewBox="0 0 24 24" width="512" height="512"><path d="M13,2.051V1a1,1,0,0,0-2,0V2.051A10.98,10.98,0,0,0,3.681,20.176,3.024,3.024,0,0,0,2,23a1,1,0,0,0,2,0,1.2,1.2,0,0,1,1.11-1.229.932.932,0,0,0,.2-.062,10.924,10.924,0,0,0,13.39,0,1.033,1.033,0,0,0,.182.064A1.2,1.2,0,0,1,20,23a1,1,0,0,0,2,0,3.024,3.024,0,0,0-1.681-2.824A10.98,10.98,0,0,0,13,2.051ZM3,13a9,9,0,1,1,9,9A9.011,9.011,0,0,1,3,13Z"/><path d="M19.215,0a1,1,0,0,0,0,2A2.59,2.59,0,0,1,22,4.5a1,1,0,0,0,2,0A4.6,4.6,0,0,0,19.215,0Z"/><path d="M2,4.5A2.59,2.59,0,0,1,4.785,2a1,1,0,0,0,0-2A4.6,4.6,0,0,0,0,4.5a1,1,0,0,0,2,0Z"/><path d="M13,11.586V7a1,1,0,0,0-2,0v5a1,1,0,0,0,.293.707l3,3a1,1,0,0,0,1.414-1.414Z"/></svg>
-                    <p>9.00</p>
-                    <p>-</p>
-                    <p>12.00</p>
-                    <p class="w-max ml-2 py-1 px-2 -translate-y-0.5 bg-gradient-to-tr from-yellow-600 to-yellow-400 rounded-lg text-sm text-white shadow-md">
-                        รอการเลือกห้องสอบ
-                    </p>
-                </div>
-                <div class="px-2 pt-1 font-semibold text-2xl">
-                    <p>เจ้าหน้าที่บริหารงานทั่วไประดับปฏิบัติการ</p>
-                </div>
-                <div class="px-2 pt-1 flex items-center gap-1.5">
-                    <p id="department_name">งานบริหารระบบเอกสารกลาง,</p>
-                    <p id="organization">สำนักกองบริหารกลาง</p>
-                </div>
-                <div class="px-2 pt-1 pb-1 fill-gray-500 text-gray-500 flex items-center gap-1.5"> 
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" id="Layer_1" data-name="Layer 1" viewBox="0 0 24 24" width="512" height="512"><path d="M12,12A4,4,0,1,0,8,8,4,4,0,0,0,12,12Zm0-6a2,2,0,1,1-2,2A2,2,0,0,1,12,6ZM16,22.03l8,1.948V13.483a3,3,0,0,0-2.133-2.871l-2.1-.7A8.037,8.037,0,0,0,20,8.006a8,8,0,0,0-16,0,8.111,8.111,0,0,0,.1,1.212A2.992,2.992,0,0,0,0,12v9.752l7.983,2.281ZM7.757,3.764a6,6,0,0,1,8.493,8.477L12,16.4,7.757,12.249a6,6,0,0,1,0-8.485ZM2,12a.985.985,0,0,1,.446-.832A1.007,1.007,0,0,1,3.43,11.1l1.434.518a8.036,8.036,0,0,0,1.487,2.056L12,19.2l5.657-5.533a8.032,8.032,0,0,0,1.4-1.882l2.217.741a1,1,0,0,1,.725.961v7.949L16,19.97l-7.98,2L2,20.246Z"/></svg>
-                    <p>ศูนย์เรียนรวม 3</p>
-                    <svg id="Layer_1" class="w-4 h-4 ml-2" height="512" viewBox="0 0 24 24" width="512" xmlns="http://www.w3.org/2000/svg" data-name="Layer 1"><path d="m23 14h-1v-9a5.006 5.006 0 0 0 -5-5h-10a5.006 5.006 0 0 0 -5 5v9h-1a1 1 0 0 0 0 2h10v4h-2a3 3 0 0 0 -3 3 1 1 0 0 0 2 0 1 1 0 0 1 1-1h6a1 1 0 0 1 1 1 1 1 0 0 0 2 0 3 3 0 0 0 -3-3h-2v-4h10a1 1 0 0 0 0-2zm-19-9a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3v9h-16z"/></svg>
-                    <p>213, 214</p>
-                </div>
-            </div>
-            <div class="bg-white rounded-lg shadow-md px-3 py-3 font-light">
-                <div class="px-2 pt-1 fill-gray-500 text-gray-500 flex items-center gap-1.5"> 
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" id="Layer_1" data-name="Layer 1" viewBox="0 0 24 24" width="512" height="512"><path d="M13,2.051V1a1,1,0,0,0-2,0V2.051A10.98,10.98,0,0,0,3.681,20.176,3.024,3.024,0,0,0,2,23a1,1,0,0,0,2,0,1.2,1.2,0,0,1,1.11-1.229.932.932,0,0,0,.2-.062,10.924,10.924,0,0,0,13.39,0,1.033,1.033,0,0,0,.182.064A1.2,1.2,0,0,1,20,23a1,1,0,0,0,2,0,3.024,3.024,0,0,0-1.681-2.824A10.98,10.98,0,0,0,13,2.051ZM3,13a9,9,0,1,1,9,9A9.011,9.011,0,0,1,3,13Z"/><path d="M19.215,0a1,1,0,0,0,0,2A2.59,2.59,0,0,1,22,4.5a1,1,0,0,0,2,0A4.6,4.6,0,0,0,19.215,0Z"/><path d="M2,4.5A2.59,2.59,0,0,1,4.785,2a1,1,0,0,0,0-2A4.6,4.6,0,0,0,0,4.5a1,1,0,0,0,2,0Z"/><path d="M13,11.586V7a1,1,0,0,0-2,0v5a1,1,0,0,0,.293.707l3,3a1,1,0,0,0,1.414-1.414Z"/></svg>
-                    <p>9.00</p>
-                    <p>-</p>
-                    <p>12.00</p>
-                    <p class="w-max ml-2 py-1 px-2 -translate-y-0.5 bg-gradient-to-tr from-green-600 to-green-400 rounded-lg text-sm text-white shadow-md">
-                        พร้อมจัดสอบ
-                    </p>
-                </div>
-                <div class="px-2 pt-1 font-semibold text-2xl">
-                    <p>เจ้าหน้าที่บริหารงานทั่วไประดับปฏิบัติการ</p>
-                </div>
-                <div class="px-2 pt-1 flex items-center gap-1.5">
-                    <p id="department_name">งานบริหารระบบเอกสารกลาง,</p>
-                    <p id="organization">สำนักกองบริหารกลาง</p>
-                </div>
-                <div class="px-2 pt-1 pb-1 fill-gray-500 text-gray-500 flex items-center gap-1.5"> 
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" id="Layer_1" data-name="Layer 1" viewBox="0 0 24 24" width="512" height="512"><path d="M12,12A4,4,0,1,0,8,8,4,4,0,0,0,12,12Zm0-6a2,2,0,1,1-2,2A2,2,0,0,1,12,6ZM16,22.03l8,1.948V13.483a3,3,0,0,0-2.133-2.871l-2.1-.7A8.037,8.037,0,0,0,20,8.006a8,8,0,0,0-16,0,8.111,8.111,0,0,0,.1,1.212A2.992,2.992,0,0,0,0,12v9.752l7.983,2.281ZM7.757,3.764a6,6,0,0,1,8.493,8.477L12,16.4,7.757,12.249a6,6,0,0,1,0-8.485ZM2,12a.985.985,0,0,1,.446-.832A1.007,1.007,0,0,1,3.43,11.1l1.434.518a8.036,8.036,0,0,0,1.487,2.056L12,19.2l5.657-5.533a8.032,8.032,0,0,0,1.4-1.882l2.217.741a1,1,0,0,1,.725.961v7.949L16,19.97l-7.98,2L2,20.246Z"/></svg>
-                    <p>ศูนย์เรียนรวม 3</p>
-                    <svg id="Layer_1" class="w-4 h-4 ml-2" height="512" viewBox="0 0 24 24" width="512" xmlns="http://www.w3.org/2000/svg" data-name="Layer 1"><path d="m23 14h-1v-9a5.006 5.006 0 0 0 -5-5h-10a5.006 5.006 0 0 0 -5 5v9h-1a1 1 0 0 0 0 2h10v4h-2a3 3 0 0 0 -3 3 1 1 0 0 0 2 0 1 1 0 0 1 1-1h6a1 1 0 0 1 1 1 1 1 0 0 0 2 0 3 3 0 0 0 -3-3h-2v-4h10a1 1 0 0 0 0-2zm-19-9a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3v9h-16z"/></svg>
-                    <p>213, 214</p>
-                </div>
-            </div>
-            <div class="bg-white rounded-lg shadow-md px-3 py-3 font-light">
-                <div class="px-2 pt-1 fill-gray-500 text-gray-500 flex items-center gap-1.5"> 
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" id="Layer_1" data-name="Layer 1" viewBox="0 0 24 24" width="512" height="512"><path d="M13,2.051V1a1,1,0,0,0-2,0V2.051A10.98,10.98,0,0,0,3.681,20.176,3.024,3.024,0,0,0,2,23a1,1,0,0,0,2,0,1.2,1.2,0,0,1,1.11-1.229.932.932,0,0,0,.2-.062,10.924,10.924,0,0,0,13.39,0,1.033,1.033,0,0,0,.182.064A1.2,1.2,0,0,1,20,23a1,1,0,0,0,2,0,3.024,3.024,0,0,0-1.681-2.824A10.98,10.98,0,0,0,13,2.051ZM3,13a9,9,0,1,1,9,9A9.011,9.011,0,0,1,3,13Z"/><path d="M19.215,0a1,1,0,0,0,0,2A2.59,2.59,0,0,1,22,4.5a1,1,0,0,0,2,0A4.6,4.6,0,0,0,19.215,0Z"/><path d="M2,4.5A2.59,2.59,0,0,1,4.785,2a1,1,0,0,0,0-2A4.6,4.6,0,0,0,0,4.5a1,1,0,0,0,2,0Z"/><path d="M13,11.586V7a1,1,0,0,0-2,0v5a1,1,0,0,0,.293.707l3,3a1,1,0,0,0,1.414-1.414Z"/></svg>
-                    <p>9.00</p>
-                    <p>-</p>
-                    <p>12.00</p>
-                    <p class="w-max ml-2 py-1 px-2 -translate-y-0.5 bg-gradient-to-tr from-green-600 to-green-400 rounded-lg text-sm text-white shadow-md">
-                พร้อมจัดสอบ
-            </p>
-                </div>
-                <div class="px-2 pt-1 font-semibold text-2xl">
-                    <p>เจ้าหน้าที่บริหารงานทั่วไประดับปฏิบัติการ</p>
-                </div>
-                <div class="px-2 pt-1 flex items-center gap-1.5">
-                    <p id="department_name">งานบริหารระบบเอกสารกลาง,</p>
-                    <p id="organization">สำนักกองบริหารกลาง</p>
-                </div>
-                <div class="px-2 pt-1 pb-1 fill-gray-500 text-gray-500 flex items-center gap-1.5"> 
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" id="Layer_1" data-name="Layer 1" viewBox="0 0 24 24" width="512" height="512"><path d="M12,12A4,4,0,1,0,8,8,4,4,0,0,0,12,12Zm0-6a2,2,0,1,1-2,2A2,2,0,0,1,12,6ZM16,22.03l8,1.948V13.483a3,3,0,0,0-2.133-2.871l-2.1-.7A8.037,8.037,0,0,0,20,8.006a8,8,0,0,0-16,0,8.111,8.111,0,0,0,.1,1.212A2.992,2.992,0,0,0,0,12v9.752l7.983,2.281ZM7.757,3.764a6,6,0,0,1,8.493,8.477L12,16.4,7.757,12.249a6,6,0,0,1,0-8.485ZM2,12a.985.985,0,0,1,.446-.832A1.007,1.007,0,0,1,3.43,11.1l1.434.518a8.036,8.036,0,0,0,1.487,2.056L12,19.2l5.657-5.533a8.032,8.032,0,0,0,1.4-1.882l2.217.741a1,1,0,0,1,.725.961v7.949L16,19.97l-7.98,2L2,20.246Z"/></svg>
-                    <p>ศูนย์เรียนรวม 3</p>
-                    <svg id="Layer_1" class="w-4 h-4 ml-2" height="512" viewBox="0 0 24 24" width="512" xmlns="http://www.w3.org/2000/svg" data-name="Layer 1"><path d="m23 14h-1v-9a5.006 5.006 0 0 0 -5-5h-10a5.006 5.006 0 0 0 -5 5v9h-1a1 1 0 0 0 0 2h10v4h-2a3 3 0 0 0 -3 3 1 1 0 0 0 2 0 1 1 0 0 1 1-1h6a1 1 0 0 1 1 1 1 1 0 0 0 2 0 3 3 0 0 0 -3-3h-2v-4h10a1 1 0 0 0 0-2zm-19-9a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3v9h-16z"/></svg>
-                    <p>213, 214</p>
-                </div>
-            </div>
-            <div class="bg-white rounded-lg shadow-md px-3 py-3 font-light">
-                <div class="px-2 pt-1 fill-gray-500 text-gray-500 flex items-center gap-1.5"> 
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" id="Layer_1" data-name="Layer 1" viewBox="0 0 24 24" width="512" height="512"><path d="M13,2.051V1a1,1,0,0,0-2,0V2.051A10.98,10.98,0,0,0,3.681,20.176,3.024,3.024,0,0,0,2,23a1,1,0,0,0,2,0,1.2,1.2,0,0,1,1.11-1.229.932.932,0,0,0,.2-.062,10.924,10.924,0,0,0,13.39,0,1.033,1.033,0,0,0,.182.064A1.2,1.2,0,0,1,20,23a1,1,0,0,0,2,0,3.024,3.024,0,0,0-1.681-2.824A10.98,10.98,0,0,0,13,2.051ZM3,13a9,9,0,1,1,9,9A9.011,9.011,0,0,1,3,13Z"/><path d="M19.215,0a1,1,0,0,0,0,2A2.59,2.59,0,0,1,22,4.5a1,1,0,0,0,2,0A4.6,4.6,0,0,0,19.215,0Z"/><path d="M2,4.5A2.59,2.59,0,0,1,4.785,2a1,1,0,0,0,0-2A4.6,4.6,0,0,0,0,4.5a1,1,0,0,0,2,0Z"/><path d="M13,11.586V7a1,1,0,0,0-2,0v5a1,1,0,0,0,.293.707l3,3a1,1,0,0,0,1.414-1.414Z"/></svg>
-                    <p>9.00</p>
-                    <p>-</p>
-                    <p>12.00</p>
-                    <p class="w-max ml-2 py-1 px-2 -translate-y-0.5 bg-gradient-to-tr from-green-600 to-green-400 rounded-lg text-sm text-white shadow-md">
-                พร้อมจัดสอบ
-            </p>
-                </div>
-                <div class="px-2 pt-1 font-semibold text-2xl">
-                    <p>เจ้าหน้าที่บริหารงานทั่วไประดับปฏิบัติการ</p>
-                </div>
-                <div class="px-2 pt-1 flex items-center gap-1.5">
-                    <p id="department_name">งานบริหารระบบเอกสารกลาง,</p>
-                    <p id="organization">สำนักกองบริหารกลาง</p>
-                </div>
-                <div class="px-2 pt-1 pb-1 fill-gray-500 text-gray-500 flex items-center gap-1.5"> 
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" id="Layer_1" data-name="Layer 1" viewBox="0 0 24 24" width="512" height="512"><path d="M12,12A4,4,0,1,0,8,8,4,4,0,0,0,12,12Zm0-6a2,2,0,1,1-2,2A2,2,0,0,1,12,6ZM16,22.03l8,1.948V13.483a3,3,0,0,0-2.133-2.871l-2.1-.7A8.037,8.037,0,0,0,20,8.006a8,8,0,0,0-16,0,8.111,8.111,0,0,0,.1,1.212A2.992,2.992,0,0,0,0,12v9.752l7.983,2.281ZM7.757,3.764a6,6,0,0,1,8.493,8.477L12,16.4,7.757,12.249a6,6,0,0,1,0-8.485ZM2,12a.985.985,0,0,1,.446-.832A1.007,1.007,0,0,1,3.43,11.1l1.434.518a8.036,8.036,0,0,0,1.487,2.056L12,19.2l5.657-5.533a8.032,8.032,0,0,0,1.4-1.882l2.217.741a1,1,0,0,1,.725.961v7.949L16,19.97l-7.98,2L2,20.246Z"/></svg>
-                    <p>ศูนย์เรียนรวม 3</p>
-                    <svg id="Layer_1" class="w-4 h-4 ml-2" height="512" viewBox="0 0 24 24" width="512" xmlns="http://www.w3.org/2000/svg" data-name="Layer 1"><path d="m23 14h-1v-9a5.006 5.006 0 0 0 -5-5h-10a5.006 5.006 0 0 0 -5 5v9h-1a1 1 0 0 0 0 2h10v4h-2a3 3 0 0 0 -3 3 1 1 0 0 0 2 0 1 1 0 0 1 1-1h6a1 1 0 0 1 1 1 1 1 0 0 0 2 0 3 3 0 0 0 -3-3h-2v-4h10a1 1 0 0 0 0-2zm-19-9a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3v9h-16z"/></svg>
-                    <p>213, 214</p>
-                </div>
-            </div>
-            <div class="bg-white rounded-lg shadow-md px-3 py-3 font-light">
-                <div class="px-2 pt-1 fill-gray-500 text-gray-500 flex items-center gap-1.5"> 
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" id="Layer_1" data-name="Layer 1" viewBox="0 0 24 24" width="512" height="512"><path d="M13,2.051V1a1,1,0,0,0-2,0V2.051A10.98,10.98,0,0,0,3.681,20.176,3.024,3.024,0,0,0,2,23a1,1,0,0,0,2,0,1.2,1.2,0,0,1,1.11-1.229.932.932,0,0,0,.2-.062,10.924,10.924,0,0,0,13.39,0,1.033,1.033,0,0,0,.182.064A1.2,1.2,0,0,1,20,23a1,1,0,0,0,2,0,3.024,3.024,0,0,0-1.681-2.824A10.98,10.98,0,0,0,13,2.051ZM3,13a9,9,0,1,1,9,9A9.011,9.011,0,0,1,3,13Z"/><path d="M19.215,0a1,1,0,0,0,0,2A2.59,2.59,0,0,1,22,4.5a1,1,0,0,0,2,0A4.6,4.6,0,0,0,19.215,0Z"/><path d="M2,4.5A2.59,2.59,0,0,1,4.785,2a1,1,0,0,0,0-2A4.6,4.6,0,0,0,0,4.5a1,1,0,0,0,2,0Z"/><path d="M13,11.586V7a1,1,0,0,0-2,0v5a1,1,0,0,0,.293.707l3,3a1,1,0,0,0,1.414-1.414Z"/></svg>
-                    <p>9.00</p>
-                    <p>-</p>
-                    <p>12.00</p>
-                    <p class="w-max ml-2 py-1 px-2 -translate-y-0.5 bg-gradient-to-tr from-green-600 to-green-400 rounded-lg text-sm text-white shadow-md">
-                พร้อมจัดสอบ
-            </p>
-                </div>
-                <div class="px-2 pt-1 font-semibold text-2xl">
-                    <p>เจ้าหน้าที่บริหารงานทั่วไประดับปฏิบัติการ</p>
-                </div>
-                <div class="px-2 pt-1 flex items-center gap-1.5">
-                    <p id="department_name">งานบริหารระบบเอกสารกลาง,</p>
-                    <p id="organization">สำนักกองบริหารกลาง</p>
-                </div>
-                <div class="px-2 pt-1 pb-1 fill-gray-500 text-gray-500 flex items-center gap-1.5"> 
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" id="Layer_1" data-name="Layer 1" viewBox="0 0 24 24" width="512" height="512"><path d="M12,12A4,4,0,1,0,8,8,4,4,0,0,0,12,12Zm0-6a2,2,0,1,1-2,2A2,2,0,0,1,12,6ZM16,22.03l8,1.948V13.483a3,3,0,0,0-2.133-2.871l-2.1-.7A8.037,8.037,0,0,0,20,8.006a8,8,0,0,0-16,0,8.111,8.111,0,0,0,.1,1.212A2.992,2.992,0,0,0,0,12v9.752l7.983,2.281ZM7.757,3.764a6,6,0,0,1,8.493,8.477L12,16.4,7.757,12.249a6,6,0,0,1,0-8.485ZM2,12a.985.985,0,0,1,.446-.832A1.007,1.007,0,0,1,3.43,11.1l1.434.518a8.036,8.036,0,0,0,1.487,2.056L12,19.2l5.657-5.533a8.032,8.032,0,0,0,1.4-1.882l2.217.741a1,1,0,0,1,.725.961v7.949L16,19.97l-7.98,2L2,20.246Z"/></svg>
-                    <p>ศูนย์เรียนรวม 3</p>
-                    <svg id="Layer_1" class="w-4 h-4 ml-2" height="512" viewBox="0 0 24 24" width="512" xmlns="http://www.w3.org/2000/svg" data-name="Layer 1"><path d="m23 14h-1v-9a5.006 5.006 0 0 0 -5-5h-10a5.006 5.006 0 0 0 -5 5v9h-1a1 1 0 0 0 0 2h10v4h-2a3 3 0 0 0 -3 3 1 1 0 0 0 2 0 1 1 0 0 1 1-1h6a1 1 0 0 1 1 1 1 1 0 0 0 2 0 3 3 0 0 0 -3-3h-2v-4h10a1 1 0 0 0 0-2zm-19-9a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3v9h-16z"/></svg>
-                    <p>213, 214</p>
-                </div>
-            </div>
-            <div class="bg-white rounded-lg shadow-md px-3 py-3 font-light">
-                <div class="px-2 pt-1 fill-gray-500 text-gray-500 flex items-center gap-1.5"> 
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" id="Layer_1" data-name="Layer 1" viewBox="0 0 24 24" width="512" height="512"><path d="M13,2.051V1a1,1,0,0,0-2,0V2.051A10.98,10.98,0,0,0,3.681,20.176,3.024,3.024,0,0,0,2,23a1,1,0,0,0,2,0,1.2,1.2,0,0,1,1.11-1.229.932.932,0,0,0,.2-.062,10.924,10.924,0,0,0,13.39,0,1.033,1.033,0,0,0,.182.064A1.2,1.2,0,0,1,20,23a1,1,0,0,0,2,0,3.024,3.024,0,0,0-1.681-2.824A10.98,10.98,0,0,0,13,2.051ZM3,13a9,9,0,1,1,9,9A9.011,9.011,0,0,1,3,13Z"/><path d="M19.215,0a1,1,0,0,0,0,2A2.59,2.59,0,0,1,22,4.5a1,1,0,0,0,2,0A4.6,4.6,0,0,0,19.215,0Z"/><path d="M2,4.5A2.59,2.59,0,0,1,4.785,2a1,1,0,0,0,0-2A4.6,4.6,0,0,0,0,4.5a1,1,0,0,0,2,0Z"/><path d="M13,11.586V7a1,1,0,0,0-2,0v5a1,1,0,0,0,.293.707l3,3a1,1,0,0,0,1.414-1.414Z"/></svg>
-                    <p>9.00</p>
-                    <p>-</p>
-                    <p>12.00</p>
-                    <p class="w-max ml-2 py-1 px-2 -translate-y-0.5 bg-gradient-to-tr from-green-600 to-green-400 rounded-lg text-sm text-white shadow-md">
-                พร้อมจัดสอบ
-            </p>
-                </div>
-                <div class="px-2 pt-1 font-semibold text-2xl">
-                    <p>เจ้าหน้าที่บริหารงานทั่วไประดับปฏิบัติการ</p>
-                </div>
-                <div class="px-2 pt-1 flex items-center gap-1.5">
-                    <p id="department_name">งานบริหารระบบเอกสารกลาง,</p>
-                    <p id="organization">สำนักกองบริหารกลาง</p>
-                </div>
-                <div class="px-2 pt-1 pb-1 fill-gray-500 text-gray-500 flex items-center gap-1.5"> 
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" id="Layer_1" data-name="Layer 1" viewBox="0 0 24 24" width="512" height="512"><path d="M12,12A4,4,0,1,0,8,8,4,4,0,0,0,12,12Zm0-6a2,2,0,1,1-2,2A2,2,0,0,1,12,6ZM16,22.03l8,1.948V13.483a3,3,0,0,0-2.133-2.871l-2.1-.7A8.037,8.037,0,0,0,20,8.006a8,8,0,0,0-16,0,8.111,8.111,0,0,0,.1,1.212A2.992,2.992,0,0,0,0,12v9.752l7.983,2.281ZM7.757,3.764a6,6,0,0,1,8.493,8.477L12,16.4,7.757,12.249a6,6,0,0,1,0-8.485ZM2,12a.985.985,0,0,1,.446-.832A1.007,1.007,0,0,1,3.43,11.1l1.434.518a8.036,8.036,0,0,0,1.487,2.056L12,19.2l5.657-5.533a8.032,8.032,0,0,0,1.4-1.882l2.217.741a1,1,0,0,1,.725.961v7.949L16,19.97l-7.98,2L2,20.246Z"/></svg>
-                    <p>ศูนย์เรียนรวม 3</p>
-                    <svg id="Layer_1" class="w-4 h-4 ml-2" height="512" viewBox="0 0 24 24" width="512" xmlns="http://www.w3.org/2000/svg" data-name="Layer 1"><path d="m23 14h-1v-9a5.006 5.006 0 0 0 -5-5h-10a5.006 5.006 0 0 0 -5 5v9h-1a1 1 0 0 0 0 2h10v4h-2a3 3 0 0 0 -3 3 1 1 0 0 0 2 0 1 1 0 0 1 1-1h6a1 1 0 0 1 1 1 1 1 0 0 0 2 0 3 3 0 0 0 -3-3h-2v-4h10a1 1 0 0 0 0-2zm-19-9a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3v9h-16z"/></svg>
-                    <p>213, 214</p>
-                </div>
-            </div>
-            <div class="bg-white rounded-lg shadow-md px-3 py-3 font-light">
-                <div class="px-2 pt-1 fill-gray-500 text-gray-500 flex items-center gap-1.5"> 
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" id="Layer_1" data-name="Layer 1" viewBox="0 0 24 24" width="512" height="512"><path d="M13,2.051V1a1,1,0,0,0-2,0V2.051A10.98,10.98,0,0,0,3.681,20.176,3.024,3.024,0,0,0,2,23a1,1,0,0,0,2,0,1.2,1.2,0,0,1,1.11-1.229.932.932,0,0,0,.2-.062,10.924,10.924,0,0,0,13.39,0,1.033,1.033,0,0,0,.182.064A1.2,1.2,0,0,1,20,23a1,1,0,0,0,2,0,3.024,3.024,0,0,0-1.681-2.824A10.98,10.98,0,0,0,13,2.051ZM3,13a9,9,0,1,1,9,9A9.011,9.011,0,0,1,3,13Z"/><path d="M19.215,0a1,1,0,0,0,0,2A2.59,2.59,0,0,1,22,4.5a1,1,0,0,0,2,0A4.6,4.6,0,0,0,19.215,0Z"/><path d="M2,4.5A2.59,2.59,0,0,1,4.785,2a1,1,0,0,0,0-2A4.6,4.6,0,0,0,0,4.5a1,1,0,0,0,2,0Z"/><path d="M13,11.586V7a1,1,0,0,0-2,0v5a1,1,0,0,0,.293.707l3,3a1,1,0,0,0,1.414-1.414Z"/></svg>
-                    <p>9.00</p>
-                    <p>-</p>
-                    <p>12.00</p>
-                    <p class="w-max ml-2 py-1 px-2 -translate-y-0.5 bg-gradient-to-tr from-green-600 to-green-400 rounded-lg text-sm text-white shadow-md">
-                พร้อมจัดสอบ
-            </p>
-                </div>
-                <div class="px-2 pt-1 font-semibold text-2xl">
-                    <p>เจ้าหน้าที่บริหารงานทั่วไประดับปฏิบัติการ</p>
-                </div>
-                <div class="px-2 pt-1 flex items-center gap-1.5">
-                    <p id="department_name">งานบริหารระบบเอกสารกลาง,</p>
-                    <p id="organization">สำนักกองบริหารกลาง</p>
-                </div>
-                <div class="px-2 pt-1 pb-1 fill-gray-500 text-gray-500 flex items-center gap-1.5"> 
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" id="Layer_1" data-name="Layer 1" viewBox="0 0 24 24" width="512" height="512"><path d="M12,12A4,4,0,1,0,8,8,4,4,0,0,0,12,12Zm0-6a2,2,0,1,1-2,2A2,2,0,0,1,12,6ZM16,22.03l8,1.948V13.483a3,3,0,0,0-2.133-2.871l-2.1-.7A8.037,8.037,0,0,0,20,8.006a8,8,0,0,0-16,0,8.111,8.111,0,0,0,.1,1.212A2.992,2.992,0,0,0,0,12v9.752l7.983,2.281ZM7.757,3.764a6,6,0,0,1,8.493,8.477L12,16.4,7.757,12.249a6,6,0,0,1,0-8.485ZM2,12a.985.985,0,0,1,.446-.832A1.007,1.007,0,0,1,3.43,11.1l1.434.518a8.036,8.036,0,0,0,1.487,2.056L12,19.2l5.657-5.533a8.032,8.032,0,0,0,1.4-1.882l2.217.741a1,1,0,0,1,.725.961v7.949L16,19.97l-7.98,2L2,20.246Z"/></svg>
-                    <p>ศูนย์เรียนรวม 3</p>
-                    <svg id="Layer_1" class="w-4 h-4 ml-2" height="512" viewBox="0 0 24 24" width="512" xmlns="http://www.w3.org/2000/svg" data-name="Layer 1"><path d="m23 14h-1v-9a5.006 5.006 0 0 0 -5-5h-10a5.006 5.006 0 0 0 -5 5v9h-1a1 1 0 0 0 0 2h10v4h-2a3 3 0 0 0 -3 3 1 1 0 0 0 2 0 1 1 0 0 1 1-1h6a1 1 0 0 1 1 1 1 1 0 0 0 2 0 3 3 0 0 0 -3-3h-2v-4h10a1 1 0 0 0 0-2zm-19-9a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3v9h-16z"/></svg>
-                    <p>213, 214</p>
-                </div>
-            </div>
-            <div class="bg-white rounded-lg shadow-md px-3 py-3 font-light">
-                <div class="px-2 pt-1 fill-gray-500 text-gray-500 flex items-center gap-1.5"> 
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" id="Layer_1" data-name="Layer 1" viewBox="0 0 24 24" width="512" height="512"><path d="M13,2.051V1a1,1,0,0,0-2,0V2.051A10.98,10.98,0,0,0,3.681,20.176,3.024,3.024,0,0,0,2,23a1,1,0,0,0,2,0,1.2,1.2,0,0,1,1.11-1.229.932.932,0,0,0,.2-.062,10.924,10.924,0,0,0,13.39,0,1.033,1.033,0,0,0,.182.064A1.2,1.2,0,0,1,20,23a1,1,0,0,0,2,0,3.024,3.024,0,0,0-1.681-2.824A10.98,10.98,0,0,0,13,2.051ZM3,13a9,9,0,1,1,9,9A9.011,9.011,0,0,1,3,13Z"/><path d="M19.215,0a1,1,0,0,0,0,2A2.59,2.59,0,0,1,22,4.5a1,1,0,0,0,2,0A4.6,4.6,0,0,0,19.215,0Z"/><path d="M2,4.5A2.59,2.59,0,0,1,4.785,2a1,1,0,0,0,0-2A4.6,4.6,0,0,0,0,4.5a1,1,0,0,0,2,0Z"/><path d="M13,11.586V7a1,1,0,0,0-2,0v5a1,1,0,0,0,.293.707l3,3a1,1,0,0,0,1.414-1.414Z"/></svg>
-                    <p>9.00</p>
-                    <p>-</p>
-                    <p>12.00</p>
-                    <p class="w-max ml-2 py-1 px-2 -translate-y-0.5 bg-gradient-to-tr from-green-600 to-green-400 rounded-lg text-sm text-white shadow-md">
-                พร้อมจัดสอบ
-            </p>
-                </div>
-                <div class="px-2 pt-1 font-semibold text-2xl">
-                    <p>เจ้าหน้าที่บริหารงานทั่วไประดับปฏิบัติการ</p>
-                </div>
-                <div class="px-2 pt-1 flex items-center gap-1.5">
-                    <p id="department_name">งานบริหารระบบเอกสารกลาง,</p>
-                    <p id="organization">สำนักกองบริหารกลาง</p>
-                </div>
-                <div class="px-2 pt-1 pb-1 fill-gray-500 text-gray-500 flex items-center gap-1.5"> 
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" id="Layer_1" data-name="Layer 1" viewBox="0 0 24 24" width="512" height="512"><path d="M12,12A4,4,0,1,0,8,8,4,4,0,0,0,12,12Zm0-6a2,2,0,1,1-2,2A2,2,0,0,1,12,6ZM16,22.03l8,1.948V13.483a3,3,0,0,0-2.133-2.871l-2.1-.7A8.037,8.037,0,0,0,20,8.006a8,8,0,0,0-16,0,8.111,8.111,0,0,0,.1,1.212A2.992,2.992,0,0,0,0,12v9.752l7.983,2.281ZM7.757,3.764a6,6,0,0,1,8.493,8.477L12,16.4,7.757,12.249a6,6,0,0,1,0-8.485ZM2,12a.985.985,0,0,1,.446-.832A1.007,1.007,0,0,1,3.43,11.1l1.434.518a8.036,8.036,0,0,0,1.487,2.056L12,19.2l5.657-5.533a8.032,8.032,0,0,0,1.4-1.882l2.217.741a1,1,0,0,1,.725.961v7.949L16,19.97l-7.98,2L2,20.246Z"/></svg>
-                    <p>ศูนย์เรียนรวม 3</p>
-                    <svg id="Layer_1" class="w-4 h-4 ml-2" height="512" viewBox="0 0 24 24" width="512" xmlns="http://www.w3.org/2000/svg" data-name="Layer 1"><path d="m23 14h-1v-9a5.006 5.006 0 0 0 -5-5h-10a5.006 5.006 0 0 0 -5 5v9h-1a1 1 0 0 0 0 2h10v4h-2a3 3 0 0 0 -3 3 1 1 0 0 0 2 0 1 1 0 0 1 1-1h6a1 1 0 0 1 1 1 1 1 0 0 0 2 0 3 3 0 0 0 -3-3h-2v-4h10a1 1 0 0 0 0-2zm-19-9a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3v9h-16z"/></svg>
-                    <p>213, 214</p>
-                </div>
-            </div>
-            
+        <div id="examDetails" class="flex flex-col gap-4">
         </div>
     </div>
 </div>
@@ -208,6 +15,11 @@
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
     });
+
+    function formatTime(dateTimeStr) {
+        const date = new Date(dateTimeStr);
+        return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
 
     document.addEventListener('DOMContentLoaded', function() {
         var calendarEl = document.getElementById('calendar');
@@ -300,10 +112,100 @@
                 document.querySelectorAll('[data-date="' + dateStr + '"]').forEach(function(el) {
                 el.classList.add('selected-date');
                 });
+
+                document.getElementById('examDetails').innerHTML = '';
+
+                var selectedDate = info.dateStr;
+
+                $.ajax({
+                    url: '/calendar/exams/' + selectedDate,
+                    type: 'GET',
+                    success: function(data) {
+                        var examsList = '';
+                        if (data.length === 0) {
+                            examsList = '<p>ไม่มีการสอบในวันที่เลือก</p>';
+                        } else {
+                            data.forEach(function(exam) {
+                                switch (exam.status) {
+                                    case 'pending':
+                                        statusClass = 'bg-gradient-to-tr from-yellow-600 to-yellow-400';
+                                        statusText = 'รอการเลือกห้องสอบ';
+                                        break;
+                                    case 'ready':
+                                        statusClass = 'bg-gradient-to-tr from-green-600 to-green-400';
+                                        statusText = 'พร้อมจัดสอบ';
+                                        break;
+                                    case 'inprogress':
+                                        statusClass = 'bg-gradient-to-tr from-cyan-600 to-cyan-400';
+                                        statusText = 'ระหว่างการสอบ';
+                                        break;
+                                    case 'finished':
+                                        statusClass = 'bg-gradient-to-tr from-gray-600 to-gray-400';
+                                        statusText = 'การสอบเสร็จสิ้น';
+                                        break;
+                                    case 'unready':
+                                        statusClass = 'bg-gradient-to-tr from-red-600 to-red-400';
+                                        statusText = 'ไม่พร้อมจัดสอบ';
+                                        break;
+                                    case 'unfinished':
+                                        statusClass = 'bg-gradient-to-tr from-orange-600 to-orange-400';
+                                        statusText = 'จัดสอบไม่สำเร็จ';
+                                        break;
+                                    default:
+                                        statusClass = 'bg-gray-500'; // กำหนดค่าดีฟอลต์ถ้าสถานะไม่ตรงกับกรณีที่กำหนด
+                                        statusText = 'สถานะไม่ทราบ';
+                                }
+                                examsList += `
+                                    <div class="bg-white rounded-lg shadow-md px-3 py-3 font-light">
+                                        <div class="px-2 pt-1 fill-gray-500 text-gray-500 flex items-center gap-1.5"> 
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" id="Layer_1" data-name="Layer 1" viewBox="0 0 24 24" width="512" height="512"><path d="M13,2.051V1a1,1,0,0,0-2,0V2.051A10.98,10.98,0,0,0,3.681,20.176,3.024,3.024,0,0,0,2,23a1,1,0,0,0,2,0,1.2,1.2,0,0,1,1.11-1.229.932.932,0,0,0,.2-.062,10.924,10.924,0,0,0,13.39,0,1.033,1.033,0,0,0,.182.064A1.2,1.2,0,0,1,20,23a1,1,0,0,0,2,0,3.024,3.024,0,0,0-1.681-2.824A10.98,10.98,0,0,0,13,2.051ZM3,13a9,9,0,1,1,9,9A9.011,9.011,0,0,1,3,13Z"/><path d="M19.215,0a1,1,0,0,0,0,2A2.59,2.59,0,0,1,22,4.5a1,1,0,0,0,2,0A4.6,4.6,0,0,0,19.215,0Z"/><path d="M2,4.5A2.59,2.59,0,0,1,4.785,2a1,1,0,0,0,0-2A4.6,4.6,0,0,0,0,4.5a1,1,0,0,0,2,0Z"/><path d="M13,11.586V7a1,1,0,0,0-2,0v5a1,1,0,0,0,.293.707l3,3a1,1,0,0,0,1.414-1.414Z"/></svg>
+                                            <p>${formatTime(exam.exam_start_time)}</p>
+                                            <p>-</p>
+                                            <p>${formatTime(exam.exam_end_time)}</p>
+                                            <p class="w-max ml-2 py-1 px-2 -translate-y-0.5 ${statusClass} rounded-lg text-sm text-white shadow-md">
+                                                ${statusText}
+                                            </p>
+                                        </div>
+                                        <div class="px-2 pt-1 font-semibold text-2xl">
+                                            <p>${exam.exam_position}</p>
+                                        </div>
+                                        <div class="px-2 pt-1 flex items-center gap-1.5">
+                                            <p id="department_name">${exam.department_name},</p>
+                                            <p id="organization">${exam.organization},</p>
+                                            <p id="subject">${exam.subject}</p>
+                                        </div>
+                                        <div class="px-2 pt-1 pb-1 fill-gray-500 text-gray-500 flex items-center gap-1.5"> 
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" id="Layer_1" data-name="Layer 1" viewBox="0 0 24 24" width="512" height="512"><path d="M12,12A4,4,0,1,0,8,8,4,4,0,0,0,12,12Zm0-6a2,2,0,1,1-2,2A2,2,0,0,1,12,6ZM16,22.03l8,1.948V13.483a3,3,0,0,0-2.133-2.871l-2.1-.7A8.037,8.037,0,0,0,20,8.006a8,8,0,0,0-16,0,8.111,8.111,0,0,0,.1,1.212A2.992,2.992,0,0,0,0,12v9.752l7.983,2.281ZM7.757,3.764a6,6,0,0,1,8.493,8.477L12,16.4,7.757,12.249a6,6,0,0,1,0-8.485ZM2,12a.985.985,0,0,1,.446-.832A1.007,1.007,0,0,1,3.43,11.1l1.434.518a8.036,8.036,0,0,0,1.487,2.056L12,19.2l5.657-5.533a8.032,8.032,0,0,0,1.4-1.882l2.217.741a1,1,0,0,1,.725.961v7.949L16,19.97l-7.98,2L2,20.246Z"/></svg>
+                                            <p class="max-w-52 truncate">${exam.buildings}</p>
+                                            <svg id="Layer_1" class="w-4 h-4 ml-2" height="512" viewBox="0 0 24 24" width="512" xmlns="http://www.w3.org/2000/svg" data-name="Layer 1"><path d="m23 14h-1v-9a5.006 5.006 0 0 0 -5-5h-10a5.006 5.006 0 0 0 -5 5v9h-1a1 1 0 0 0 0 2h10v4h-2a3 3 0 0 0 -3 3 1 1 0 0 0 2 0 1 1 0 0 1 1-1h6a1 1 0 0 1 1 1 1 1 0 0 0 2 0 3 3 0 0 0 -3-3h-2v-4h10a1 1 0 0 0 0-2zm-19-9a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3v9h-16z"/></svg>
+                                            <p class="max-w-52 truncate">${exam.rooms}</p>
+                                        </div>
+                                    </div>
+                                `;
+                            });
+                        }
+                        document.getElementById('examDetails').innerHTML = examsList;
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        console.error('Error fetching exams:', textStatus, errorThrown);
+                        document.getElementById('examDetails').innerHTML = '<p>เกิดข้อผิดพลาดในการดึงข้อมูล</p>';
+                    }
+                });
             }
         });
 
         calendar.render();
+
+        var today = new Date().toISOString().split('T')[0];
+        calendar.getEvents().forEach(function(event) {
+            if (event.startStr === today) {
+                // Simulate dateClick for today
+                calendar.dateClick({
+                    dateStr: today,
+                    date: new Date(today)
+                });
+            }
+        });
 
         document.getElementById('rerenderBtn').addEventListener('click', function() {
             setTimeout(function() {

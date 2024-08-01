@@ -538,7 +538,7 @@ class ExamController extends Controller
                     });
                 }
             })
-            ->select('exams.id', 'exams.exam_position as name')
+            ->select('exams.id', 'exams.department_name as name')
             ->distinct()
             ->get();
     
@@ -650,4 +650,61 @@ class ExamController extends Controller
         return response()->json(['success' => true]);
     }
 
+    public function getExamsByDate($date)
+    {
+        // ดึงข้อมูลการสอบตามวันที่
+        $exams = Exam::whereDate('exam_date', $date)->get();
+
+        // ดึง exam_id จากการสอบ
+        $examIds = $exams->pluck('id');
+
+        // ดึง SelectedRoom ที่มี exam_id ตรงกับที่ดึงมา
+        $selectedRooms = SelectedRoom::whereIn('exam_id', $examIds)->get();
+
+        // ดึง room_id จาก SelectedRoom
+        $roomIds = $selectedRooms->pluck('room_id')->unique()->toArray();
+
+        // ดึงข้อมูล ExamRoomInformation ที่มี room_id ตรงกับที่ดึงมา
+        $rooms = ExamRoomInformation::whereIn('id', $roomIds)->get()->keyBy('id');
+
+        // ดึงข้อมูล Building สำหรับห้องที่เกี่ยวข้อง
+        $buildingIds = $rooms->pluck('building_id')->unique()->toArray();
+        $buildings = Building::whereIn('id', $buildingIds)->get()->keyBy('id');
+
+        // เพิ่มข้อมูลห้องและอาคารไปที่แต่ละ exam
+        $exams->each(function($exam) use ($selectedRooms, $rooms, $buildings) {
+            // ข้อมูลห้องที่เกี่ยวข้องกับการสอบ
+            $exam->rooms = $selectedRooms->where('exam_id', $exam->id)
+                ->pluck('room_id')
+                ->map(function($roomId) use ($rooms) {
+                    $room = $rooms->get($roomId);
+                    return $room ? $room->room : '';
+                })
+                ->filter()
+                ->whenEmpty(function($query) {
+                    return $query->push('ยังไม่ได้เลือก');
+                })
+                ->implode(', '); // ใช้ ', ' เป็นตัวคั่นระหว่างห้อง
+        
+            // ข้อมูลอาคารที่เกี่ยวข้องกับห้องที่มีการสอบ
+            $exam->buildings = $selectedRooms->where('exam_id', $exam->id)
+                ->pluck('room_id')
+                ->map(function($roomId) use ($rooms, $buildings) {
+                    $room = $rooms->get($roomId);
+                    if ($room) {
+                        $building = $buildings->get($room->building_id);
+                        return $building ? $building->building_th : 'Unknown Building';
+                    }
+                    return 'Unknown Building';
+                })
+                ->unique()
+                ->whenEmpty(function($query) {
+                    return $query->push('ยังไม่ได้เลือก');
+                })
+                ->implode(', '); // ใช้ ', ' เป็นตัวคั่นระหว่างชื่ออาคาร
+        });
+
+        // ส่งข้อมูลกลับเป็น JSON
+        return response()->json($exams);
+    }
 }

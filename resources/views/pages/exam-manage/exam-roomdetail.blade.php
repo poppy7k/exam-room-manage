@@ -3,7 +3,7 @@
 
 @section('content')
 <div class="flex flex-col w-full max-h-full">
-    <div class="flex justify-between items-center">
+    <div class="flex justify-between">
         <div class="flex flex-col bg-white rounded-lg px-4 py-3 shadow-md overflow-y-auto max-h-32 mb-3">
             <div class="flex">
                 <p class="font-semibold align-baseline text-2xl">
@@ -68,12 +68,14 @@
                 @endforeach
             </div>
         </div>
-        <div class="flex align-center gap-8">
-            <div class="flex gap-4">
-                <x-buttons.danger type="button" onclick="removeApplicantsFromRoom({{ $room->id }}, '{{ $selectedRooms->exam->exam_date }}', '{{ $selectedRooms->exam->exam_start_time }}', '{{ $selectedRooms->exam->exam_end_time }}')" class="pl-2 py-2 z-10 rounded-lg fill-white flex-col">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="translate-x-0.5" id="Outline" viewBox="0 0 24 24" width="24" height="24"><path d="M21,4H17.9A5.009,5.009,0,0,0,13,0H11A5.009,5.009,0,0,0,6.1,4H3A1,1,0,0,0,3,6H4V19a5.006,5.006,0,0,0,5,5h6a5.006,5.006,0,0,0,5-5V6h1a1,1,0,0,0,0-2ZM11,2h2a3.006,3.006,0,0,1,2.829,2H8.171A3.006,3.006,0,0,1,11,2Zm7,17a3,3,0,0,1-3,3H9a3,3,0,0,1-3-3V6H18Z"/><path d="M10,18a1,1,0,0,0,1-1V11a1,1,0,0,0-2,0v6A1,1,0,0,0,10,18Z"/><path d="M14,18a1,1,0,0,0,1-1V11a1,1,0,0,0-2,0v6A1,1,0,0,0,14,18Z"/></svg>
-                    <x-tooltip title="ลบผู้เข้าสอบออกจากที่นั่ง" class="group-hover:-translate-x-[5.5rem] group-hover:translate-y-8"></x-tooltip>
-                </x-buttons.danger>
+        <div class="flex gap-2 items-end mb-2.5">
+            <div class="flex gap-2">
+                <div>
+                    <x-buttons.danger type="button" onclick="removeApplicantsFromRoom({{ $room->id }}, '{{ $selectedRooms->exam->exam_date }}', '{{ $selectedRooms->exam->exam_start_time }}', '{{ $selectedRooms->exam->exam_end_time }}')" class="pl-2 py-2 z-10 rounded-lg fill-white flex-col">
+                        <svg id="Layer_1" height="24" class="translate-x-0.5" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg" data-name="Layer 1"><path d="m17 24a1 1 0 0 1 -1-1 7 7 0 0 0 -14 0 1 1 0 0 1 -2 0 9 9 0 0 1 18 0 1 1 0 0 1 -1 1zm6-11h-6a1 1 0 0 1 0-2h6a1 1 0 0 1 0 2zm-14-1a6 6 0 1 1 6-6 6.006 6.006 0 0 1 -6 6zm0-10a4 4 0 1 0 4 4 4 4 0 0 0 -4-4z"/></svg>
+                        <x-tooltip title="ลบผู้เข้าสอบออกจากที่นั่ง" class="group-hover:-translate-x-[5.5rem] group-hover:translate-y-8"></x-tooltip>
+                    </x-buttons.danger>
+                </div>
                 <div x-data="{ showApplicantAdd: false }" class="z-40">
                     <x-buttons.primary  @click="showApplicantAdd = !showApplicantAdd" id="applicant-add" onclick="event.stopPropagation();" type="button" class="pl-2 py-2 z-10 rounded-lg fill-white">
                         <svg xmlns="http://www.w3.org/2000/svg" class="translate-x-1" id="Outline" viewBox="0 0 24 24" width="24" height="24"><path d="M23,11H21V9a1,1,0,0,0-2,0v2H17a1,1,0,0,0,0,2h2v2a1,1,0,0,0,2,0V13h2a1,1,0,0,0,0-2Z"/><path d="M9,12A6,6,0,1,0,3,6,6.006,6.006,0,0,0,9,12ZM9,2A4,4,0,1,1,5,6,4,4,0,0,1,9,2Z"/><path d="M9,14a9.01,9.01,0,0,0-9,9,1,1,0,0,0,2,0,7,7,0,0,1,14,0,1,1,0,0,0,2,0A9.01,9.01,0,0,0,9,14Z"/></svg>
@@ -82,13 +84,17 @@
                     @include('components.dropdowns.exam-room-detail.applicant-add')
                 </div>
             </div>
-            <x-buttons.primary id="select-examiners-btn" class="px-5 py-2 rounded-lg text-white">
-                เลือกผู้คุมสอบ
-            </x-buttons.primary>
-            <x-buttons.primary type="button" class="px-5 py-2 rounded-lg text-white"
-                onclick="window.location.href = '{{ route('exam-buildinglist', ['examId' => $exam->id]) }}'">
-                เลือกห้องใหม่
-            </x-buttons.primary>
+            <div>
+                <x-buttons.primary id="select-examiners-btn" class="px-5 py-2 rounded-lg text-white">
+                    เลือกผู้คุมสอบ
+                </x-buttons.primary>
+            </div>
+            <div>
+                <x-buttons.primary type="button" class="px-5 py-2 rounded-lg text-white"
+                    onclick="window.location.href = '{{ route('exam-buildinglist', ['examId' => $exam->id]) }}'">
+                    เลือกห้องใหม่
+                </x-buttons.primary>
+            </div>
         </div>
     </div>
     <div class="bg-white shadow-md my-3 rounded-lg max-h-screen flex flex-col">
@@ -324,23 +330,24 @@ document.addEventListener('DOMContentLoaded', function() {
                         const div = document.createElement('div');
                         div.classList.add('flex', 'items-center', 'gap-2', 'mb-2', 'staff-item');
                         div.innerHTML = `
-<label class="flex items-center w-full px-3 py-1.5 cursor-pointer transition-all duration-300 hover:bg-gray-200 rounded-md">
+                            <label class="flex items-center w-full px-3 py-1.5 cursor-pointer transition-all duration-300 hover:bg-gray-200 rounded-md peer-disabled:cursor-not-allowed">
                                 <div class="grid mr-3 place-items-center">
                                     <div class="inline-flex items-center">
-                                        <label for="staff-${ staff.id }" class="relative flex items-center p-0 rounded-full cursor-pointer">
-                                            <input id="staff-${ staff.id }" type="radio" value="${staff.id}" data-name="${staff.name}" ${isAlreadySelected ? 'checked' : ''} ${isAssigned ? 'disabled' : ''}
-                                                class="staff-checkbox before:content[''] peer relative h-5 w-5 cursor-pointer appearance-none rounded-full border border-gray-800 text-gray-900 transition-all before:absolute before:top-2/4 before:left-2/4 before:block before:h-12 before:w-12 before:-translate-y-2/4 before:-translate-x-2/4 before:rounded-full before:bg-blue-gray-00 before:opacity-0 before:transition-opacity checked:border-gray-900 checked:before:bg-gray-900 hover:before:opacity-0" />
-                                            <span class="absolute text-gray-900 transition-opacity opacity-0 pointer-events-none top-2/4 left-2/4 -translate-y-2/4 -translate-x-2/4 peer-checked:opacity-100">
+                                        <label for="staff-${staff.id}" class="relative flex items-center p-0 rounded-sm cursor-pointer">
+                                            <input id="staff-${staff.id}" type="checkbox" value="${staff.id}" data-name="${staff.name}" ${isAlreadySelected ? 'checked' : ''} ${isAssigned ? 'disabled' : ''}
+                                                class="staff-checkbox peer relative h-5 w-5 cursor-pointer appearance-none rounded-sm border-2 border-gray-800 transition-all checked:border-gray-900 hover:bg-gray-200 disabled:bg-gray-300 disabled:cursor-not-allowed disabled:border-gray-300" />
+                                            <span class="absolute text-gray-900 transition-opacity opacity-0 pointer-events-none top-2/4 left-2/4 -translate-y-2/4 -translate-x-2/4 peer-checked:opacity-100 peer-disabled:opacity-10">
                                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 16 16" fill="currentColor">
-                                                    <circle data-name="ellipse" cx="8" cy="8" r="8"></circle>
+                                                    <rect x="0" y="0" width="32" height="32"></rect>
                                                 </svg>
                                             </span>
                                         </label>
                                     </div>
                                 </div>
-                                <p class="block font-sans text-base antialiased font-medium leading-relaxed text-gray-900">
+                                <p class="block font-sans text-base antialiased font-medium leading-relaxed text-gray-900 peer-disabled:text-gray-300">
                                     ${staff.name}
                                 </p>
+                            </label>
                         `;
 
                         if (isAlreadySelected) {

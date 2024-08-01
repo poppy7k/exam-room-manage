@@ -12,6 +12,9 @@
     <div id="modal">
         @include('components.modals.applicant-modal')
     </div>
+    <div>
+        @include('components.modals.exam-status')
+    </div>
     @include('layouts.navbar')
     <main class="flex flex-grow h-full">
         @include('layouts.sidebar')

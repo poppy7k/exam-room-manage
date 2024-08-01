@@ -4,7 +4,7 @@
         <div class="relative border-b border-white/20">
             <div class="flex justify-between px-6 py-6">
                 <a class="items-center">
-                    <h6 class="block antialiased tracking-normal font-sans text-base font-semibold leading-relaxed text-white">ระบบการจัดการห้องสอบ</h6> 
+                    <h6 class="block antialiased tracking-normal font-sans text-base font-semibold leading-relaxed text-white">ระบบการจัดห้องสอบ</h6> 
                 </a>
                 <button id="rerenderBtn" class="col-start-4 pl-2" onclick="openSidebar()">
                     <svg xmlns="http://www.w3.org/2000/svg" id="collapse-arrow" viewBox="0 0 24 24" width="20" height="20" class="fill-white right-0">
@@ -22,7 +22,7 @@
                         [
                             'route' => 'index',
                             'label' => 'หน้าหลัก',
-                            'icon' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" class="sidebar-menu-icon w-5 h-5 mt-0.5 translate-x-8 text-inherit transition-all duration-500 ease-in-out"><path d="M11.47 3.84a.75.75 0 011.06 0l8.69 8.69a.75.75 0 101.06-1.06l-8.689-8.69a2.25 2.25 0 00-3.182 0l-8.69 8.69a.75.75 0 001.061 1.06l8.69-8.69z"></path><path d="M12 5.432l8.159 8.159c.03.03.06.058.091.086v6.198c0 1.035-.84 1.875-1.875 1.875H15a.75.75 0 01-.75-.75v-4.5a.75.75 0 00-.75-.75h-3a.75.75 0 00-.75.75V21a.75.75 0 01-.75.75H5.625a1.875 1.875 0 01-1.875-1.875v-6.198a2.29 2.29 0 00.091-.086L12 5.43z"></path></svg>',
+                            'icon' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" class="sidebar-menu-icon duration-0 w-5 h-5 mt-0.5 translate-x-8 text-inherit transition-all duration-500 ease-in-out"><path d="M11.47 3.84a.75.75 0 011.06 0l8.69 8.69a.75.75 0 101.06-1.06l-8.689-8.69a2.25 2.25 0 00-3.182 0l-8.69 8.69a.75.75 0 001.061 1.06l8.69-8.69z"></path><path d="M12 5.432l8.159 8.159c.03.03.06.058.091.086v6.198c0 1.035-.84 1.875-1.875 1.875H15a.75.75 0 01-.75-.75v-4.5a.75.75 0 00-.75-.75h-3a.75.75 0 00-.75.75V21a.75.75 0 01-.75.75H5.625a1.875 1.875 0 01-1.875-1.875v-6.198a2.29 2.29 0 00.091-.086L12 5.43z"></path></svg>',
                         ],
                         [
                             'route' => 'building-list',
@@ -33,6 +33,11 @@
                             'route' => 'exam-list',
                             'label' => 'จัดการการสอบ',
                             'icon' => '<svg id="Layer_1" height="512" class="sidebar-menu-icon w-5 h-5 mt-0.5 translate-x-8 text-inherit transition-all duration-500 ease-in-out" viewBox="0 0 24 24" width="512" xmlns="http://www.w3.org/2000/svg" data-name="Layer 1"><path d="m16 17a1 1 0 0 1 0 2h-1a1 1 0 0 1 0-2zm-2-2a1 1 0 0 1 -1-1v-1h-2v1a1 1 0 0 1 -2 0v-4a3 3 0 0 1 6 0v4a1 1 0 0 1 -1 1zm-1-4v-1a1 1 0 0 0 -2 0v1zm-1.711 5.3-1.612 1.63a.25.25 0 0 1 -.344.01l-.616-.64a1 1 0 0 0 -1.434 1.4l.626.644a2.255 2.255 0 0 0 3.186 0l1.616-1.644a1 1 0 0 0 -1.422-1.4zm9.711-9.643v12.343a5.006 5.006 0 0 1 -5 5h-8a5.006 5.006 0 0 1 -5-5v-14a5.006 5.006 0 0 1 5-5h6.343a4.969 4.969 0 0 1 3.536 1.465l1.656 1.656a4.969 4.969 0 0 1 1.465 3.536zm-4.535-3.778a3.042 3.042 0 0 0 -.465-.379v2.5h2.5a3.042 3.042 0 0 0 -.38-.465zm2.535 4.121h-3a2 2 0 0 1 -2-2v-3h-6a3 3 0 0 0 -3 3v14a3 3 0 0 0 3 3h8a3 3 0 0 0 3-3z"/></svg>',
+                        ],
+                        [
+                            'route' => 'pages.calendar.list',
+                            'label' => 'ปฏิทินการสอบ',
+                            'icon' => '<svg xmlns="http://www.w3.org/2000/svg" class="sidebar-menu-icon w-5 h-5 mt-0.5 ml-0.5 translate-x-8 text-inherit transition-all duration-500 ease-in-out" id="Layer_1" data-name="Layer 1" viewBox="0 0 24 24" width="512" height="512"><path d="M19,2h-1V1c0-.552-.447-1-1-1s-1,.448-1,1v1H8V1c0-.552-.447-1-1-1s-1,.448-1,1v1h-1C2.243,2,0,4.243,0,7v12c0,2.757,2.243,5,5,5h14c2.757,0,5-2.243,5-5V7c0-2.757-2.243-5-5-5ZM5,4h14c1.654,0,3,1.346,3,3v1H2v-1c0-1.654,1.346-3,3-3Zm14,18H5c-1.654,0-3-1.346-3-3V10H22v9c0,1.654-1.346,3-3,3Zm0-8c0,.552-.447,1-1,1H6c-.553,0-1-.448-1-1s.447-1,1-1h12c.553,0,1,.448,1,1Zm-7,4c0,.552-.447,1-1,1H6c-.553,0-1-.448-1-1s.447-1,1-1h5c.553,0,1,.448,1,1Z"/></svg>'
                         ]
                     ];
                 @endphp
@@ -40,15 +45,17 @@
                 <li class="sidebar-menu-list translate-x-3 transition-all duration-500">
                     <a aria-current="page" class="active" href="{{ route($item['route']) }}">
                         @if(session('sidebar') == (string)($index + 1))
-                            <x-buttons.primary type="button" class="sidebar-menu-button w-full py-3 px-12 rounded-lg pl-10 justify-end h-12" onclick="">
+                            <x-buttons.sidebar-primary type="button" class="sidebar-menu-button w-full py-3 px-12 rounded-lg pl-10 justify-end h-12" onclick="">
                                 {!! $item['icon'] !!}
-                                <p class="sidebar-menu-label hidden">{{ $item['label'] }}</p>
-                            </x-buttons.primary>
+                                <p class="sidebar-menu-label mt-0.5 hidden">{{ $item['label'] }}</p>
+                            </x-buttons.sidebar-primary>
                         @else
-                            <x-buttons.secondary type="button" class="sidebar-menu-button w-full py-3 px-12 rounded-lg pl-10 justify-end h-12" onclick="">
-                                {!! $item['icon'] !!}
-                                <p class="sidebar-menu-label hidden">{{ $item['label'] }}</p>
-                            </x-buttons.secondary>
+                            <x-buttons.sidebar-secondary type="button" class="sidebar-menu-button w-full py-3 px-12 rounded-lg pl-10 justify-end h-12" onclick="">
+                                <div class="fill-white text-white group-hover:fill-black group-hover:text-black">
+                                    {!! $item['icon'] !!}
+                                </div>
+                                <p class="sidebar-menu-label mt-0.5 text-white group-hover:text-black hidden">{{ $item['label'] }}</p>
+                            </x-buttons.sidebar-secondary>
                         @endif
                     </a>
                 </li>
