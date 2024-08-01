@@ -355,13 +355,17 @@ class ExamController extends Controller
                 // ]);
     
                 // Filter applicants without seats
-                $applicantsWithoutSeats = $registeredApplicants->filter(function ($applicant) use ($exam) {
-                    return !Seat::where('applicant_id', $applicant->id)
-                                ->whereHas('selectedRoom', function ($query) use ($exam) {
-                                    $query->where('exam_id', $exam->id);
-                                })
-                                ->exists();
-                });
+                // $applicantsWithoutSeats = $registeredApplicants->filter(function ($applicant) use ($exam) {
+                //     return !Seat::where('applicant_id', $applicant->id)
+                //                 ->whereHas('selectedRoom', function ($query) use ($exam) {
+                //                     $query->where('exam_id', $exam->id);
+                //                 })
+                //                 ->exists();
+                // });
+                $applicantsWithoutSeats = DB::table('applicant_exam')
+                ->where('exam_id', $exam->id)
+                ->where('status', 'not_assigned')
+                ->pluck('applicant_id');
     
                 // Log applicants without seats
                 // Log::info('Applicants without seats for exam', [
