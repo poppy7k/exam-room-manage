@@ -2,10 +2,37 @@
 
 @section('content')
 <div class="flex justify-between">
-    <div id="calendar" class="w-full h-max px-8 pb-8 pt-6 my-3 bg-white rounded-lg shadow-md"></div>
-    <div class="w-full ml-6 mr-2 my-3 max-h-screen overflow-y-auto">
-        <div id="examDetails" class="flex flex-col gap-4">
+    <div class="w-full h-max"> 
+        <div id="calendar" class="px-8 pb-8 pt-6 my-3 bg-white rounded-lg shadow-md"></div>
+        <div class="flex gap-2 flex-wrap">
+            <div class="mx-2 flex gap-2 items-center">
+                <div class="rounded-full w-5 h-5 bg-gradient-to-tr from-green-400 to-green-600"></div>
+                <p class="font-semibold">พร้อมจัดสอบ</p>
+            </div>
+            <div class="mx-2 flex gap-2 items-center">
+                <div class="rounded-full w-5 h-5 bg-gradient-to-tr from-yellow-400 to-yellow-600"></div>
+                <p class="font-semibold">รอการเลือกห้องสอบ</p>
+            </div>
+            <div class="mx-2 flex gap-2 items-center">
+                <div class="rounded-full w-5 h-5 bg-gradient-to-tr from-cyan-400 to-cyan-600"></div>
+                <p class="font-semibold">ระหว่างการสอบ</p>
+            </div>
+            <div class="mx-2 flex gap-2 items-center">
+                <div class="rounded-full w-5 h-5 bg-gradient-to-tr from-gray-400 to-gray-600"></div>
+                <p class="font-semibold">การสอบเสร็จสิ้น</p>
+            </div>
+            <div class="mx-2 flex gap-2 items-center">
+                <div class="rounded-full w-5 h-5 bg-gradient-to-tr from-red-400 to-red-600"></div>
+                <p class="font-semibold">ไม่พร้อมจัดสอบ</p>
+            </div>
+            <div class="mx-2 flex gap-2 items-center">
+                <div class="rounded-full w-5 h-5 bg-gradient-to-tr from-orange-400 to-orange-600"></div>
+                <p class="font-semibold">จัดสอบไม่สำเร็จ</p>
+            </div>
         </div>
+    </div>
+    <div class="w-full ml-6 mr-2 my-3 max-h-screen overflow-y-auto">
+        <div id="examDetails" class="flex flex-col gap-4"></div>
     </div>
 </div>
 

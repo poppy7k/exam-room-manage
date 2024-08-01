@@ -424,9 +424,7 @@ class SeatController extends Controller
                         if ($seat->row !== null && $seat->column !== null) {
                         // Update the pivot table to set status to not_assigned
                             $exam = Exam::find($selectedRoom->exam_id);
-                            if ($exam) {
-                                $exam->applicants()->updateExistingPivot($seat->applicant_id, ['status' => 'not_assigned']);
-                            }
+                            $exam->applicants()->updateExistingPivot($seat->applicant_id, ['status' => 'not_assigned']);
     
                             // Remove the row and column from the seat
                             $seat->row = null;
