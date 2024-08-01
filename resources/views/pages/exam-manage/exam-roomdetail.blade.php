@@ -71,7 +71,7 @@
         <div class="flex gap-2 items-end mb-2.5">
             <div class="flex gap-2">
                 <div>
-                    <x-buttons.danger type="button" onclick="removeApplicantsFromRoom({{ $room->id }}, '{{ $selectedRooms->exam->exam_date }}', '{{ $selectedRooms->exam->exam_start_time }}', '{{ $selectedRooms->exam->exam_end_time }}')" class="pl-2 py-2 z-10 rounded-lg fill-white flex-col">
+                    <x-buttons.danger type="button" onclick="removeApplicantsFromRoom('{{ $selectedRooms->id }}')" class="pl-2 py-2 z-10 rounded-lg fill-white flex-col">
                         <svg id="Layer_1" height="24" class="translate-x-0.5" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg" data-name="Layer 1"><path d="m17 24a1 1 0 0 1 -1-1 7 7 0 0 0 -14 0 1 1 0 0 1 -2 0 9 9 0 0 1 18 0 1 1 0 0 1 -1 1zm6-11h-6a1 1 0 0 1 0-2h6a1 1 0 0 1 0 2zm-14-1a6 6 0 1 1 6-6 6.006 6.006 0 0 1 -6 6zm0-10a4 4 0 1 0 4 4 4 4 0 0 0 -4-4z"/></svg>
                         <x-tooltip title="ลบผู้เข้าสอบออกจากที่นั่ง" class="group-hover:-translate-x-[5.5rem] group-hover:translate-y-8"></x-tooltip>
                     </x-buttons.danger>
@@ -442,41 +442,6 @@ document.getElementById('save-applicant-to-seat-btn').addEventListener('click', 
     }
 });
 
-function saveApplicantToSeat(seatId, applicantId, examId) {
-    console.log('Saving applicant to seat:', { seatId, applicantId, roomId, examId });
-    fetch(`/save-applicant-to-seat`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-        },
-        body: JSON.stringify({
-            seat_id: seatId,
-            applicant_id: applicantId,
-            room_id: roomId,
-            exam_id: examId
-        })
-    })
-    .then(response => response.json())
-    .then(data => {
-        console.log('Save applicant response:', data);
-        if (data.success) {
-            validSeatCount--;
-            updateValidSeatCountUI(validSeatCount);
-            // updateValidSeatCountInDB(validSeatCount);
-            location.reload();
-            alert('Applicant assigned to seat successfully.');
-        } else {
-            console.error('Server response:', data);
-            alert(data.message);
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('An error occurred while assigning applicant to seat.');
-    });
-}
-
 function removeApplicantFromSeat(seatId) {
     console.log('Removing applicant from seat:', { seatId: seatId, roomId });
     fetch(`/remove-applicant-from-seat`, {
@@ -541,8 +506,8 @@ function fetchApplicantsWithoutSeats() {
         });
 }
 
-function removeApplicantsFromRoom(roomId, examDate, examStartTime, examEndTime) {
-    console.log('Removing applicants from room:', roomId);
+function removeApplicantsFromRoom(selected_room_id) {
+    console.log('Removing applicants from room:', selected_room_id);
     fetch(`/remove-applicants-from-room`, {
         method: 'POST',
         headers: {
@@ -550,10 +515,7 @@ function removeApplicantsFromRoom(roomId, examDate, examStartTime, examEndTime) 
             'X-CSRF-TOKEN': '{{ csrf_token() }}' // Ensure this is correctly set in your Blade template
         },
         body: JSON.stringify({
-            room_id: roomId,
-            exam_date: examDate,
-            exam_start_time: examStartTime,
-            exam_end_time: examEndTime
+            selectedRoom_id: selected_room_id,
         })
     })
     .then(response => response.json())
