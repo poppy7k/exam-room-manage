@@ -307,7 +307,7 @@ class SeatController extends Controller
             $exam->applicants()->syncWithoutDetaching([$applicantId => ['status' => 'assigned']]);
     
             // Decrement the selectedroom_valid_seat by 1
-            $selectedRoom->decrement('selectedroom_valid_seat');
+            $selectedRoom->increment('applicant_seat_quantity');
             $selectedRoom->save();
     
             return response()->json(['success' => true, 'message' => 'Applicant assigned to seat successfully.']);
@@ -422,12 +422,10 @@ class SeatController extends Controller
                         $exam->applicants()->updateExistingPivot($seat->applicant_id, ['status' => 'not_assigned']);
         
                         // Remove the row and column from the seat
-                        $seat->row = null;
-                        $seat->column = null;
-                        $seat->save();
+                        $seat->delete();
         
                         // Increment the selectedroom_valid_seat by 1
-                        $selectedRoom->increment('selectedroom_valid_seat');
+                        $selectedRoom->decrement('applicant_seat_quantity');
                         $selectedRoom->save();
                     } else {
                         Log::warning('No row and column assigned to this seat', ['seat' => $seat]);
@@ -587,7 +585,7 @@ class SeatController extends Controller
     
                 // Update the status in the applicant_exam table
                 $exam->applicants()->updateExistingPivot($applicants[$applicantIndex]->id, ['status' => 'assigned']);
-    
+                $selectedRoom->increment('applicant_seat_quantity');
                 //Log::info('Updated applicant status to assigned', ['applicant_id' => $applicants[$applicantIndex]->id]);
     
                 $applicantIndex++;
