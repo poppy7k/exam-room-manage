@@ -101,5 +101,14 @@ class ApplicantSeeder extends Seeder
             $applicant->department = "งานสื่อสารองค์กร";
             $applicant->save();
         }
+
+        $applicant = new Applicant();
+        $applicant->id_number = "060002";
+        $applicant->id_card = "7 6485 55345 68 6";
+        $applicant->name = "นาย --------------02(06)";
+        $applicant->degree = "ระดับปริญญาตรี";
+        $applicant->position = "เจ้าหน้าที่บริหารงานทั่วไประดับปฏิบัติการ5";
+        $applicant->department = "งานบริหารระบบเอกสารกลาง5";
+        $applicant->save();
     }
 }

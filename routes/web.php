@@ -90,3 +90,6 @@ Route::post('/exams-with-affected-layouts', [ExamController::class, 'getExamsWit
 Route::post('/update-exam-seat-layouts', [ExamController::class, 'updateExamSeatLayouts']);
 
 Route::post('/assign-all-applicants-to-seats', [SeatController::class, 'assignAllApplicantsToSeats']);
+
+Route::get('/get-new-applicants/{examId}', [ApplicantController::class,'getNewApplicants']);
+Route::post('/update-new-applicants/{examId}', [ApplicantController::class,'updateNewApplicants']);

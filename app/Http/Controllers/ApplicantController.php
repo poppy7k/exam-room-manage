@@ -72,8 +72,52 @@ class ApplicantController extends Controller
     
         return response()->json($applicantsWithoutSeats);
     }
+
+    public function getNewApplicants($examId)
+    {
+        $exam = Exam::findOrFail($examId);
+        $applicants = Applicant::where('department', $exam->department_name)
+                               ->where('position', $exam->exam_position)
+                               ->get();
     
+        $newApplicants = [];
+        foreach ($applicants as $applicant) {
+            $exists = DB::table('applicant_exam')
+                ->where('applicant_id', $applicant->id)
+                ->where('exam_id', $examId)
+                ->exists();
     
+            if (!$exists) {
+                $newApplicants[] = $applicant;
+            }
+        }
     
+        return response()->json(['success' => true, 'newApplicants' => $newApplicants]);
+    }
+
+    public function updateNewApplicants($examId)
+    {
+        $exam = Exam::findOrFail($examId);
+        $applicants = Applicant::where('department', $exam->department_name)
+                               ->where('position', $exam->exam_position)
+                               ->get();
+    
+        foreach ($applicants as $applicant) {
+            $exists = DB::table('applicant_exam')
+                ->where('applicant_id', $applicant->id)
+                ->where('exam_id', $examId)
+                ->exists();
+    
+            if (!$exists) {
+                DB::table('applicant_exam')->insert([
+                    'applicant_id' => $applicant->id,
+                    'exam_id' => $examId,
+                    'status' => 'not_assigned',
+                ]);
+            }
+        }
+    
+        return response()->json(['success' => true]);
+    }
 
 }
