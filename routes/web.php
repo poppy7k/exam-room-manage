@@ -93,3 +93,7 @@ Route::post('/assign-all-applicants-to-seats', [SeatController::class, 'assignAl
 
 Route::get('/get-new-applicants/{examId}', [ApplicantController::class,'getNewApplicants']);
 Route::post('/update-new-applicants/{examId}', [ApplicantController::class,'updateNewApplicants']);
+
+Route::get('/get-applicants-to-delete/{examId}', [ApplicantController::class, 'getApplicantsToDelete']);
+Route::post('/delete-applicants/{examId}', [ApplicantController::class, 'deleteApplicants']);
+

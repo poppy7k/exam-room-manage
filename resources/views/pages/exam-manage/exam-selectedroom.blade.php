@@ -9,8 +9,11 @@
             <p class="font-normal text-md mt-1.5">ทั้งหมด {{ count($selectedRooms) }}</p>
         </div> 
         <div class="flex gap-1">
+            <x-buttons.info type="button" class="px-5 py-2 rounded-lg text-white" id="delete-applicants-button">
+                ลบผู้เข้าสอบ
+            </x-buttons.info>
             <x-buttons.info type="button" class="px-5 py-2 rounded-lg text-white" id="update-applicants-button">
-                อัปเดตผู้เข้าสอบ
+                เพิ่มผู้เข้าสอบ
             </x-buttons.info>
             <x-buttons.primary type="button" class="px-5 py-2 rounded-lg text-white"
                 onclick="window.location.href = '{{ route('exam-buildinglist', ['examId' => $exams->id]) }}'">
@@ -78,10 +81,18 @@
 
     document.addEventListener('DOMContentLoaded', function () {
     const updateButton = document.getElementById('update-applicants-button');
+    const deleteButton = document.getElementById('delete-applicants-button');
     const modal = document.getElementById('updateApplicantsModal');
+    const deleteModal = document.getElementById('deleteApplicantsModal');
     const cancelUpdateButton = document.getElementById('cancel-update-applicants');
+    const cancelDeleteButton = document.getElementById('cancel-delete-applicants');
     const confirmUpdateButton = document.getElementById('confirm-update-applicants');
+    const confirmDeleteButton = document.getElementById('confirm-delete-applicants');
     const newApplicantsList = document.getElementById('new-applicants-list');
+    const deleteApplicantsList = document.getElementById('delete-applicants-list');
+    const selectAllButton = document.getElementById('select-all-applicants');
+    const selectAllDeleteButton = document.getElementById('select-all-delete-applicants');
+    let allSelected = false;
 
     updateButton.addEventListener('click', async function () {
         try {
@@ -92,7 +103,13 @@
             if (data.success && data.newApplicants.length > 0) {
                 data.newApplicants.forEach(applicant => {
                     const listItem = document.createElement('li');
-                    listItem.textContent = `${applicant.name} (${applicant.id_card})`;
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.value = applicant.id;
+                    checkbox.classList.add('applicant-checkbox');
+                    checkbox.addEventListener('change', updateSelectAllButtonState);
+                    listItem.appendChild(checkbox);
+                    listItem.appendChild(document.createTextNode(` ${applicant.name} (${applicant.id_card})`));
                     newApplicantsList.appendChild(listItem);
                 });
                 modal.classList.remove('hidden');
@@ -104,11 +121,63 @@
         }
     });
 
+    deleteButton.addEventListener('click', async function () {
+        try {
+            const response = await fetch('/get-applicants-to-delete/{{ $exams->id }}');
+            const data = await response.json();
+            deleteApplicantsList.innerHTML = '';
+
+            if (data.success && data.applicants.length > 0) {
+                data.applicants.forEach(applicant => {
+                    const listItem = document.createElement('li');
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.value = applicant.id;
+                    checkbox.classList.add('applicant-checkbox-delete');
+                    checkbox.addEventListener('change', updateSelectAllDeleteButtonState);
+                    listItem.appendChild(checkbox);
+                    listItem.appendChild(document.createTextNode(` ${applicant.name} (${applicant.id_card})`));
+                    deleteApplicantsList.appendChild(listItem);
+                });
+                deleteModal.classList.remove('hidden');
+            } else {
+                alert('No applicants to delete.');
+            }
+        } catch (error) {
+            console.error('Error fetching applicants to delete:', error);
+        }
+    });
+
+    selectAllButton.addEventListener('click', function () {
+        const checkboxes = document.querySelectorAll('.applicant-checkbox');
+        allSelected = !allSelected;
+        checkboxes.forEach(checkbox => checkbox.checked = allSelected);
+        selectAllButton.textContent = allSelected ? 'ไม่เลือกทั้งหมด' : 'เลือกทั้งหมด';
+    });
+
+    selectAllDeleteButton.addEventListener('click', function () {
+        const checkboxes = document.querySelectorAll('.applicant-checkbox-delete');
+        allSelected = !allSelected;
+        checkboxes.forEach(checkbox => checkbox.checked = allSelected);
+        selectAllDeleteButton.textContent = allSelected ? 'ไม่เลือกทั้งหมด' : 'เลือกทั้งหมด';
+    });
+
     cancelUpdateButton.addEventListener('click', function () {
         modal.classList.add('hidden');
     });
 
+    cancelDeleteButton.addEventListener('click', function () {
+        deleteModal.classList.add('hidden');
+    });
+
     confirmUpdateButton.addEventListener('click', async function () {
+        const selectedApplicants = Array.from(document.querySelectorAll('.applicant-checkbox:checked')).map(cb => cb.value);
+
+        if (selectedApplicants.length === 0) {
+            alert('โปรดเลือกผู้สมัครก่อนกดตกลง');
+            return;
+        }
+
         try {
             const response = await fetch('/update-new-applicants/{{ $exams->id }}', {
                 method: 'POST',
@@ -116,7 +185,7 @@
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
                 },
-                body: JSON.stringify({}),
+                body: JSON.stringify({ applicants: selectedApplicants }),
             });
             const data = await response.json();
 
@@ -130,8 +199,56 @@
             console.error('Error updating applicants:', error);
         }
     });
+
+    confirmDeleteButton.addEventListener('click', async function () {
+        const selectedApplicants = Array.from(document.querySelectorAll('.applicant-checkbox-delete:checked')).map(cb => cb.value);
+
+        if (selectedApplicants.length === 0) {
+            alert('โปรดเลือกผู้สมัครก่อนกดตกลง');
+            return;
+        }
+
+        try {
+            const response = await fetch('/delete-applicants/{{ $exams->id }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({ applicants: selectedApplicants }),
+            });
+            const data = await response.json();
+
+            if (data.success) {
+                alert('Applicants deleted successfully.');
+                deleteModal.classList.add('hidden');
+            } else {
+                alert('Failed to delete applicants.');
+            }
+        } catch (error) {
+            console.error('Error deleting applicants:', error);
+        }
+    });
+
+    function updateSelectAllButtonState() {
+        const checkboxes = document.querySelectorAll('.applicant-checkbox');
+        const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+        const anyChecked = Array.from(checkboxes).some(cb => cb.checked);
+
+        selectAllButton.textContent = allChecked ? 'ไม่เลือกทั้งหมด' : 'เลือกทั้งหมด';
+        allSelected = allChecked;
+    }
+
+    function updateSelectAllDeleteButtonState() {
+        const checkboxes = document.querySelectorAll('.applicant-checkbox-delete');
+        const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+        const anyChecked = Array.from(checkboxes).some(cb => cb.checked);
+
+        selectAllDeleteButton.textContent = allChecked ? 'ไม่เลือกทั้งหมด' : 'เลือกทั้งหมด';
+        allSelected = allChecked;
+    }
 });
 
 </script>
-@endsection
 
+@endsection

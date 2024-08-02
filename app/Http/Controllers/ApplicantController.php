@@ -95,29 +95,48 @@ class ApplicantController extends Controller
         return response()->json(['success' => true, 'newApplicants' => $newApplicants]);
     }
 
-    public function updateNewApplicants($examId)
+    public function updateNewApplicants(Request $request, $examId)
     {
-        $exam = Exam::findOrFail($examId);
-        $applicants = Applicant::where('department', $exam->department_name)
-                               ->where('position', $exam->exam_position)
-                               ->get();
-    
-        foreach ($applicants as $applicant) {
-            $exists = DB::table('applicant_exam')
-                ->where('applicant_id', $applicant->id)
-                ->where('exam_id', $examId)
-                ->exists();
-    
-            if (!$exists) {
-                DB::table('applicant_exam')->insert([
-                    'applicant_id' => $applicant->id,
-                    'exam_id' => $examId,
-                    'status' => 'not_assigned',
-                ]);
-            }
+        $applicants = $request->input('applicants', []);
+        
+        foreach ($applicants as $applicantId) {
+            DB::table('applicant_exam')->updateOrInsert(
+                ['applicant_id' => $applicantId, 'exam_id' => $examId],
+                ['status' => 'not_assigned']
+            );
         }
-    
+        
         return response()->json(['success' => true]);
     }
+
+    public function getApplicantsToDelete($examId)
+    {
+        try {
+            $exam = Exam::findOrFail($examId);
+            $applicants = $exam->applicants;
+    
+            return response()->json(['success' => true, 'applicants' => $applicants]);
+        } catch (\Exception $e) {
+            Log::error('Error fetching applicants to delete', ['exception' => $e->getMessage()]);
+            return response()->json(['success' => false, 'message' => 'Failed to fetch applicants to delete.'], 500);
+        }
+    }
+    
+    public function deleteApplicants(Request $request, $examId)
+    {
+        try {
+            $applicantIds = $request->input('applicants');
+    
+            DB::transaction(function () use ($applicantIds, $examId) {
+                DB::table('seats')->whereIn('applicant_id', $applicantIds)->delete();
+                DB::table('applicant_exam')->where('exam_id', $examId)->whereIn('applicant_id', $applicantIds)->delete();
+            });
+    
+            return response()->json(['success' => true, 'message' => 'Applicants deleted successfully.']);
+        } catch (\Exception $e) {
+            Log::error('Error deleting applicants', ['exception' => $e->getMessage()]);
+            return response()->json(['success' => false, 'message' => 'Failed to delete applicants.'], 500);
+        }
+    }    
 
 }

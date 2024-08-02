@@ -20,6 +20,9 @@
     <div>
         @include('components.modals.applicant-update')
     </div>
+    <div>
+        @include('components.modals.applicant-delete')
+    </div>
     @include('layouts.navbar')
     <main class="flex flex-grow h-full">
         @include('layouts.sidebar')
