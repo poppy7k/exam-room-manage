@@ -38,9 +38,9 @@
                 x-transition:enter-end="opacity-100 scale-100"
                 x-transition:leave="transition ease-in duration-300"
                 x-transition:leave-start="opacity-100 scale-100"
-                x-transition:leave-end="opacity-50 -translate-y-60 scale-75"
+                x-transition:leave-end="opacity-90 translate-x-60 scale-75"
                 x-init="() => { setTimeout(() => show = true, 100); setTimeout(() => show = false, 2100); }"
-                class="flex items-center justify-between fixed rounded-lg top-0 transform w-max z-20 bg-green-200 border-2 border-green-500 my-[84px] px-5 py-3 text-green-700"
+                class="flex items-center justify-between fixed rounded-lg bottom-6 right-6 transform w-max z-20 bg-green-400 border-2 px-5 py-3 text-black"
             >
                 {{ session('message') }}
                 <button @click="show = false">

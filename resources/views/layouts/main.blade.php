@@ -17,6 +17,9 @@
     <div>
         @include('components.modals.exam-edit')
     </div>
+    <div>
+        @include('components.modals.applicant-update')
+    </div>
     @include('layouts.navbar')
     <main class="flex flex-grow h-full">
         @include('layouts.sidebar')
