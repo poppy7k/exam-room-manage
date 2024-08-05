@@ -28,8 +28,6 @@
     <body class="flex min-h-screen bg-gray-200">
         <x-notification />
         <x-modals.confirmation />
-        <x-modals.building-edit />
-        <x-modals.room-edit />
         @yield('body')
     </body>
 </html>

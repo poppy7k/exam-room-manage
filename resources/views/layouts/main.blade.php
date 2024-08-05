@@ -3,22 +3,25 @@
 @section('body')
 <div class="flex flex-col min-h-screen">
     <!-- Pop-up -->
+    <div id="popup">
+        @include('components.modals.building-edit')
+        @include('components.modals.room-edit')
+        @include('components.modals.examiner-select')
+    </div>
     <div id="modal">
-        <div id="room">
-            <x-modals.room-edit />
-        </div>
-        <div id="applicant"> 
-            <x-modals.applicant-modal />
-            <x-modals.applicant-update />
-            <x-modals.applicant-delete />
-        </div>
-        <div id="exam">
-            <x-modals.exam-status />
-            <x-modals.exam-edit />
-        </div>
-        <x-modals.confirmation />
-        <x-modals.building-edit />
-        <x-modals.examiner-select />
+        @include('components.modals.applicant-modal')
+    </div>
+    <div>
+        @include('components.modals.exam-status')
+    </div>
+    <div>
+        @include('components.modals.exam-edit')
+    </div>
+    <div>
+        @include('components.modals.applicant-update')
+    </div>
+    <div>
+        @include('components.modals.applicant-delete')
     </div>
     @include('layouts.navbar')
     <main class="flex flex-grow h-full">

@@ -7,7 +7,6 @@ use App\Models\Exam;
 use App\Models\Building;
 use App\Models\Applicant;
 use App\Models\ExamRoomInformation;
-use App\Http\Controllers\NotificationController;
 use App\Models\SelectedRoom;
 use App\Models\Seat;
 use App\Models\Staff;
@@ -19,13 +18,11 @@ class ExamController extends Controller
 {
     protected $staffController;
     protected $seatController;
-    protected $notifications;
 
-    public function __construct(StaffController $staffController, SeatController $seatController, NotificationController $notifications)
+    public function __construct(StaffController $staffController, SeatController $seatController)
     {
         $this->staffController = $staffController;
         $this->seatController = $seatController;
-        $this->notifications = $notifications;
     }
 
     public function index() {
@@ -138,6 +135,9 @@ class ExamController extends Controller
         $departments = Applicant::pluck('department');
         $positions = Applicant::pluck('position');
         $applicants = Applicant::all();
+        
+        Log::info('Departments:', $departments->toArray());
+        Log::info('Positions:', $positions->toArray());
 
         $exam_takers_quantity = 0;
 
