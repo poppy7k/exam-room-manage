@@ -9,6 +9,7 @@ use App\Http\Controllers\StaffController;
 use App\Http\Controllers\SelectedRoomController;
 use App\Http\Controllers\ApplicantController;
 use App\Http\Controllers\SeatController;
+use App\Http\Controllers\NotificationController;
 
 
 Route::get('/', [BuildingController::class, 'index'])->name('index');
@@ -62,10 +63,7 @@ Route::get('/exams/{examId}/selectedrooms/{selected_room_id}', [ExamController::
 Route::get('/calendar/exams/{date}', [ExamController::class, 'getExamsByDate']);
 
 // Alert //
-Route::post('/set-alert-message', function (Illuminate\Http\Request $request) {
-    session()->flash('status', 'success');
-    session()->flash('message', $request->message);
-});
+Route::post('/notifications', [NotificationController::class, 'show'])->name('notifications.show');
 
 // Calendar //
 Route::get('/calendar', [CalendarController::class, 'index'])->name('pages.calendar.list');

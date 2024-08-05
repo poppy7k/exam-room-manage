@@ -8,9 +8,17 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
+use App\Http\Controllers\NotificationController;
 
 class BuildingController extends Controller
 {
+    protected $notifications;
+
+    public function __construct(NotificationController $notifications)
+    {
+        $this->notifications = $notifications;
+    }
+
     public function create()
     {
         $breadcrumbs = [
@@ -26,10 +34,14 @@ class BuildingController extends Controller
     {
         $validatedData = $request->validate([
             'building_th' => 'required|string',
-            'building_en' => 'required|string',
+            'building_en' => 'nullable|string',
             'building_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'building_map_url' => 'nullable|url',
         ]);
+
+        if (empty($validatedData['building_en'])) {
+            $validatedData['building_en'] = 'default_building_en';
+        }
     
         if ($request->hasFile('building_image')) {
             $fileName = $validatedData['building_en'] . '.' . $request->file('building_image')->getClientOriginalExtension();
@@ -50,9 +62,8 @@ class BuildingController extends Controller
         ]);
     
         // alerts-box
-        session()->flash('status', 'success');
-        session()->flash('message', 'สร้างอาคารสอบสำเร็จ!');
-    
+        $this->notifications->success('สร้างอาคารสอบเสร็จสิ้น!');
+        
         return redirect()->route('pages.room-list', ['buildingId' => $building->id])
                          ->with('buildingData', $building->toArray());
     }
@@ -92,7 +103,7 @@ class BuildingController extends Controller
             ['url' => '/buildings', 'title' => 'รายการอาคารสอบ'],
         ];
         session()->flash('sidebar', '2');
-    
+        
         return view('pages.room-manage.buildings.building-list', compact('breadcrumbs', 'buildings'));
     }
 
@@ -112,10 +123,12 @@ class BuildingController extends Controller
                 }
             }
             $building->delete();
+            $this->notifications->success('ลบอาคารสอบสำเร็จ!', $building->building_th);
     
             return response()->json(['success' => true, 'message' => 'Building and associated exam room information deleted successfully.']);
         } else {
             return response()->json(['success' => false, 'message' => 'Building not found.'], 404);
+            $this->notifications->danger('ไม่พบอาคารที่คุณต้องการ!', $building->building_th);
         }
     }
 

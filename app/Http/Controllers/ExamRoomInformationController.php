@@ -6,9 +6,16 @@ use App\Models\Building;
 use App\Models\ExamRoomInformation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\NotificationController;
 
 class ExamRoomInformationController extends Controller
 {
+    protected $notifications;
+
+    public function __construct(NotificationController $notifications)
+    {
+        $this->notifications = $notifications;
+    }
 
     public function create($buildingId)
     {
@@ -50,6 +57,8 @@ class ExamRoomInformationController extends Controller
         // Log::info('Rows1: ' . $request->rows);
         // Log::info('Columns1: ' . $request->columns);
         // Log::info('Total Seats1: ' . $totalSeats);
+
+        $this->notifications->success('สร้างห้องสอบสำเร็จ!');
 
         return redirect()->route('pages.room-list', ['buildingId' => $buildingId])->with('success', 'Room created successfully.');
     }
@@ -112,6 +121,7 @@ class ExamRoomInformationController extends Controller
         if ($room) {
 
             $room->delete();
+            $this->notifications->success('ลบห้องสอบสำเร็จ!', $room->room);
 
             return response()->json(['success' => true, 'message' => 'Room deleted successfully.']);
         } else {
@@ -162,8 +172,10 @@ class ExamRoomInformationController extends Controller
         $room->columns = $request->columns;
         $room->total_seat = $request->rows * $request->columns;
         $room->save();
+
+        $this->notifications->success('บันทึกผังห้องสำเร็จ!', $room->room);
     
-        return redirect()->route('room-detail', ['buildingId' => $buildingId, 'roomId' => $roomId])
+        return redirect()->route('pages.room-list', ['buildingId' => $buildingId])
                          ->with('success', 'Selected seats saved successfully.');
     }
     

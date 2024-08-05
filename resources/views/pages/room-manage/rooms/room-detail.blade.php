@@ -312,7 +312,7 @@ document.getElementById('submit-exam-status-btn').addEventListener('click', func
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            alert('Exam statuses updated successfully.');
+            //alert('Exam statuses updated successfully.');
             document.getElementById('exam-status-modal').classList.add('hidden');
             document.getElementById('addSeatForm').submit();
         } else {

@@ -14,7 +14,7 @@
         </div>
         <div class="mb-4">
             <label for="building_en" class="block font-semibold">ชื่ออาคาร (English)</label>
-            <input type="text" id="building_en" name="building_en" placeholder="กรอกชื่ออาคาร (English)" required class="w-full my-2 px-3 py-2 rounded ring-1 shadow-sm ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-green-600 transition-all duration-300 outline-none">
+            <input type="text" id="building_en" name="building_en" placeholder="กรอกชื่ออาคาร (English)" class="w-full my-2 px-3 py-2 rounded ring-1 shadow-sm ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-green-600 transition-all duration-300 outline-none">
             <span id="building_en_error" class="error-message" style="color: red; display: none;">* กรุณากรอกชื่ออาคารด้วยภาษาอังกฤษหรือตัวเลขเท่านั้น!</span>
         </div>
         <div class="mb-4">
@@ -46,7 +46,7 @@
         } else {
             buildingThError.style.display = 'none';
         }
-        if (!englishPattern.test(buildingEn)) {
+        if (!englishPattern.test(buildingEn) && !buildingEn === "") {
             buildingEnError.style.display = 'block';
             isValid = false;
         } else {

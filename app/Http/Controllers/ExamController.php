@@ -7,6 +7,7 @@ use App\Models\Exam;
 use App\Models\Building;
 use App\Models\Applicant;
 use App\Models\ExamRoomInformation;
+use App\Http\Controllers\NotificationController;
 use App\Models\SelectedRoom;
 use App\Models\Seat;
 use App\Models\Staff;
@@ -18,11 +19,13 @@ class ExamController extends Controller
 {
     protected $staffController;
     protected $seatController;
+    protected $notifications;
 
-    public function __construct(StaffController $staffController, SeatController $seatController)
+    public function __construct(StaffController $staffController, SeatController $seatController, NotificationController $notifications)
     {
         $this->staffController = $staffController;
         $this->seatController = $seatController;
+        $this->notifications = $notifications;
     }
 
     public function index() {
@@ -655,7 +658,7 @@ class ExamController extends Controller
         }
         
         //Log::debug('Exam statuses updated and seats reassigned');
-        
+
         return response()->json(['success' => true]);
     }
 
