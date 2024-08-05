@@ -30,6 +30,8 @@ class Exam extends Model
 
     public function applicants()
     {
-        return $this->belongsToMany(Applicant::class);
+        return $this->belongsToMany(Applicant::class, 'applicant_exam', 'exam_id', 'applicant_id')
+                    ->withPivot('status')
+                    ->withTimestamps();
     }
 }
