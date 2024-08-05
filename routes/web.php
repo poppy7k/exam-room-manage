@@ -95,3 +95,4 @@ Route::post('/update-new-applicants/{examId}', [ApplicantController::class,'upda
 Route::get('/get-applicants-to-delete/{examId}', [ApplicantController::class, 'getApplicantsToDelete']);
 Route::post('/delete-applicants/{examId}', [ApplicantController::class, 'deleteApplicants']);
 
+Route::get('/fetch-applicants', [ApplicantController::class, 'fetchApplicants'])->name('fetch.applicants');

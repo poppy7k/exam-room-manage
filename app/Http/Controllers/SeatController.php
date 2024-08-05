@@ -14,6 +14,147 @@ use Illuminate\Support\Facades\DB;
 class SeatController extends Controller
 {
     
+    // public function assignApplicantsToSeats($departmentName, $examPosition, $selectedRooms, $exam)
+    // {
+    //     // Log::debug('Starting assignApplicantsToSeats', [
+    //     //     'departmentName' => $departmentName,
+    //     //     'examPosition' => $examPosition,
+    //     //     'selectedRooms' => $selectedRooms,
+    //     //     'exam' => $exam
+    //     // ]);
+    
+    //     $applicants = Applicant::where('department', $departmentName)
+    //                            ->where('position', $examPosition)
+    //                            ->get();
+    
+    //     //Log::debug('Applicants retrieved', ['count' => $applicants->count()]);
+    
+    //     $applicantIndex = 0;
+    
+    //     // Check for conflicts
+    //     $conflictedApplicants = $this->checkApplicantConflicts($applicants, $exam);
+    //     //Log::debug('Conflicted Applicants', ['count' => count($conflictedApplicants)]);
+    
+    //     if (count($conflictedApplicants) > 0) {
+    //         return $conflictedApplicants;
+    //     }
+    
+    //     // Remove conflicted applicants from the list
+    //     $applicants = $applicants->filter(function ($applicant) use ($conflictedApplicants) {
+    //         return !in_array($applicant->name, $conflictedApplicants);
+    //     });
+    
+    //     //Log::debug('Filtered Applicants', ['count' => $applicants->count()]);
+    
+    //     $totalSeats = 0;
+    //     foreach ($selectedRooms as $roomData) {
+    //         $room = ExamRoomInformation::findOrFail($roomData['id']);
+    //         $totalSeats += $room->rows * $room->columns;
+    //     }
+    
+    //     //Log::debug('Total Seats Available', ['totalSeats' => $totalSeats]);
+    
+    //     if ($applicants->count() > $totalSeats) {
+    //         // Log::error('Not enough seats for all applicants', [
+    //         //     'required_seats' => $applicants->count(),
+    //         //     'available_seats' => $totalSeats
+    //         // ]);
+    //         return array_unique($conflictedApplicants);
+    //     }
+    
+    //     $selectedRoomIds = array_column($selectedRooms, 'id');
+    //     $isMultiRoomSameTimeSingleExam = (count($selectedRoomIds) > 1);
+    //     //Log::debug("multiroom", ['isMultiRoomSameTimeSingleExam' => $isMultiRoomSameTimeSingleExam]);
+
+    //     foreach ($selectedRooms as $roomData) {
+    //         $room = ExamRoomInformation::findOrFail($roomData['id']);
+    //         $selectedRoom = SelectedRoom::firstOrCreate(['room_id' => $room->id, 'exam_id' => $exam->id]);
+    
+    //         //Log::debug('Selected Room Created', ['selectedRoom' => $selectedRoom]);
+    //         $invalidSeats = json_decode($room->invalid_seats, true) ?? [];
+    
+    //         for ($i = 1; $i <= $room->rows; $i++) {
+    //             for ($j = 1; $j <= $room->columns; $j++) {
+    //                 $seatId = "{$i}-" . chr(64 + $j); // Converts column number to letter
+
+    //                 if (in_array($seatId, $invalidSeats)) {
+    //                     // Skip deactivated seat
+    //                     continue;
+    //                 } 
+    //                 if ($applicantIndex >= $applicants->count()) {
+    //                     //Log::debug('All applicants assigned', ['applicantIndex' => $applicantIndex]);
+    //                     return array_unique($conflictedApplicants);
+    //                 }
+    
+    //                 $seatExists = Seat::where('row', $i)
+    //                                   ->where('column', $j)
+    //                                   ->where('selected_room_id', $selectedRoom->id)
+    //                                   ->exists();
+    
+    //                 //Log::debug('Checking Seat', ['row' => $i, 'column' => $j, 'seatExists' => $seatExists]);
+    
+    //                 if ($isMultiRoomSameTimeSingleExam) { //case multi room ,same time,single exam 
+    //                     $seatOccupiedSameTime = Seat::where('row', $i)
+    //                                                 ->where('column', $j)
+    //                                                 ->whereHas('selectedRoom.exam', function ($query) use ($exam) {
+    //                                                     $query->where('exam_date', $exam->exam_date)
+    //                                                           ->where('exam_start_time', $exam->exam_start_time)
+    //                                                           ->where('exam_end_time', $exam->exam_end_time);
+    //                                                 })
+    //                                                 ->whereIn('selected_room_id', $selectedRoomIds)
+    //                                                 ->exists();
+    //                 } else { //case single room ,same time , multi exam
+    //                     $seatOccupiedSameTime = Seat::where('row', $i)
+    //                                                 ->where('column', $j)
+    //                                                 ->whereIn('selected_room_id', function ($query) use ($selectedRoomIds, $exam) {
+    //                                                     $query->select('selected_rooms.id')
+    //                                                           ->from('selected_rooms')
+    //                                                           ->join('exams', 'selected_rooms.exam_id', '=', 'exams.id')
+    //                                                           ->whereIn('selected_rooms.room_id', $selectedRoomIds)
+    //                                                           ->where('exams.exam_date', $exam->exam_date)
+    //                                                           ->where('exams.exam_start_time', $exam->exam_start_time)
+    //                                                           ->where('exams.exam_end_time', $exam->exam_end_time);
+    //                                                 })
+    //                                                 ->exists();
+    //                 }
+    
+    //                 //Log::debug('Seat Occupied Same Time', ['seatOccupiedSameTime' => $seatOccupiedSameTime]);
+    
+    //                 if (!$seatExists && !$seatOccupiedSameTime) {
+    //                     $applicant = $applicants->values()->get($applicantIndex);
+    
+    //                     // Log::debug('Assigning Applicant', [
+    //                     //     'applicantIndex' => $applicantIndex,
+    //                     //     'applicant' => $applicant
+    //                     // ]);
+    
+    //                     Seat::create([
+    //                         'selected_room_id' => $selectedRoom->id,
+    //                         'applicant_id' => $applicant->id,
+    //                         'row' => $i,
+    //                         'column' => $j,
+    //                     ]);
+    
+    //                     if (!$exam->applicants()->where('applicant_id', $applicant->id)->exists()) {
+    //                         $exam->applicants()->attach($applicant->id, ['status' => 'assigned']);
+    //                     } else {
+    //                         $exam->applicants()->updateExistingPivot($applicant->id, ['status' => 'assigned']);
+    //                     }
+    
+    //                     //Log::debug('Applicant Assigned to Seat', ['applicant' => $applicant]);
+    
+    //                     $applicantIndex++;
+    //                 } else {
+    //                     //Log::debug('Seat is already occupied', ['row' => $i, 'column' => $j, 'room_id' => $room->id]);
+    //                 }
+    //             }
+    //         }
+    //     }
+    
+    //     //Log::debug('Finished assigning applicants to seats');
+    //     return array_unique($conflictedApplicants);
+    // }
+
     public function assignApplicantsToSeats($departmentName, $examPosition, $selectedRooms, $exam)
     {
         // Log::debug('Starting assignApplicantsToSeats', [
@@ -23,9 +164,7 @@ class SeatController extends Controller
         //     'exam' => $exam
         // ]);
     
-        $applicants = Applicant::where('department', $departmentName)
-                               ->where('position', $examPosition)
-                               ->get();
+        $applicants = $exam->applicants()->wherePivot('status', 'not_assigned')->get();
     
         //Log::debug('Applicants retrieved', ['count' => $applicants->count()]);
     
@@ -135,11 +274,7 @@ class SeatController extends Controller
                             'column' => $j,
                         ]);
     
-                        if (!$exam->applicants()->where('applicant_id', $applicant->id)->exists()) {
-                            $exam->applicants()->attach($applicant->id, ['status' => 'assigned']);
-                        } else {
-                            $exam->applicants()->updateExistingPivot($applicant->id, ['status' => 'assigned']);
-                        }
+                        $exam->applicants()->updateExistingPivot($applicant->id, ['status' => 'assigned']);
     
                         //Log::debug('Applicant Assigned to Seat', ['applicant' => $applicant]);
     

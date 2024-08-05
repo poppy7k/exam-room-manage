@@ -43,6 +43,40 @@ class ExamController extends Controller
         return view('pages.exam-manage.exam-list', compact('breadcrumbs','exams','departments', 'positions','applicants', 'totalExams'));
     }
 
+    // public function store(Request $request)
+    // {
+    //     $validatedData = $request->validate([
+    //         'department_name' => 'required|string',
+    //         'exam_position' => 'required|string',
+    //         'exam_date' => 'required|date',
+    //         'exam_start_time' => 'required|date_format:H:i',
+    //         'exam_end_time' => 'required|date_format:H:i',
+    //         'subject' => 'required|string',
+    //     ]);
+    //     $organizations = ["สำนักกองบริหารกลาง"];
+    //     $randomOrganization = $organizations[array_rand($organizations)];
+    //     $applicantCount = Applicant::where('department', $validatedData['department_name'])
+    //                             ->where('position', $validatedData['exam_position'])
+    //                             ->count();
+    
+    //     $exam = Exam::create([
+    //         'department_name' => $validatedData['department_name'],
+    //         'exam_position' => $validatedData['exam_position'],
+    //         'exam_date' => $validatedData['exam_date'],
+    //         'exam_start_time' => $validatedData['exam_date'] . ' ' . $validatedData['exam_start_time'],
+    //         'exam_end_time' => $validatedData['exam_date'] . ' ' . $validatedData['exam_end_time'],
+    //         'organization' => $randomOrganization,
+    //         'exam_takers_quantity' => $applicantCount,
+    //         'status' => 'pending',
+    //         'subject' => $validatedData['subject'],
+    //     ]);
+
+    //     session()->flash('status', 'success');
+    //     session()->flash('message', 'สร้างการสอบสำเร็จ!');
+    
+    //     return redirect()->route('exam-list');
+    // }
+
     public function store(Request $request)
     {
         $validatedData = $request->validate([
@@ -52,12 +86,23 @@ class ExamController extends Controller
             'exam_start_time' => 'required|date_format:H:i',
             'exam_end_time' => 'required|date_format:H:i',
             'subject' => 'required|string',
+            'selected_applicants' => 'nullable|string',
         ]);
+    
         $organizations = ["สำนักกองบริหารกลาง"];
         $randomOrganization = $organizations[array_rand($organizations)];
-        $applicantCount = Applicant::where('department', $validatedData['department_name'])
-                                ->where('position', $validatedData['exam_position'])
-                                ->count();
+    
+        $applicantCount = 0;
+        $selectedApplicants = [];
+    
+        if (!empty($validatedData['selected_applicants'])) {
+            $selectedApplicants = explode(',', $validatedData['selected_applicants']);
+            $applicantCount = count($selectedApplicants);
+        } else {
+            $applicantCount = Applicant::where('department', $validatedData['department_name'])
+                                       ->where('position', $validatedData['exam_position'])
+                                       ->count();
+        }
     
         $exam = Exam::create([
             'department_name' => $validatedData['department_name'],
@@ -70,7 +115,13 @@ class ExamController extends Controller
             'status' => 'pending',
             'subject' => $validatedData['subject'],
         ]);
-
+    
+        if (!empty($selectedApplicants)) {
+            foreach ($selectedApplicants as $applicantId) {
+                $exam->applicants()->attach($applicantId, ['status' => 'not_assigned']);
+            }
+        }
+    
         session()->flash('status', 'success');
         session()->flash('message', 'สร้างการสอบสำเร็จ!');
     
@@ -88,9 +139,11 @@ class ExamController extends Controller
         $positions = Applicant::pluck('position');
         $applicants = Applicant::all();
 
+        $exam_takers_quantity = 0;
+
         session()->flash('sidebar', '3');
 
-        return view('pages.exam-manage.exam-create', compact('breadcrumbs', 'departments', 'positions','applicants'));
+        return view('pages.exam-manage.exam-create', compact('breadcrumbs', 'departments', 'positions','applicants','exam_takers_quantity'));
     }
 
     public function destroy($examId)

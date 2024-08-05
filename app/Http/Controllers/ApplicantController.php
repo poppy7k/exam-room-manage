@@ -11,7 +11,7 @@ use App\Models\Seat;
 
 class ApplicantController extends Controller
 {
-    
+
     public function getApplicantsWithoutSeats($examId, $roomId)
     {
         // Fetch the exam details
@@ -113,5 +113,17 @@ class ApplicantController extends Controller
             return response()->json(['success' => false, 'message' => 'Failed to delete applicants.'], 500);
         }
     }    
+
+    public function fetchApplicants(Request $request)
+    {
+        $department = $request->query('department');
+        $position = $request->query('position');
+    
+        $applicants = Applicant::where('department', $department)
+                               ->where('position', $position)
+                               ->get();
+    
+        return response()->json($applicants);
+    }
 
 }
