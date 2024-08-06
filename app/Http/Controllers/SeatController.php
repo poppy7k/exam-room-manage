@@ -164,6 +164,13 @@ class SeatController extends Controller
         //     'exam' => $exam
         // ]);
     
+        // Reset previous assignments
+        $exam->applicants()->updateExistingPivot(
+            $exam->applicants()->pluck('applicants.id'), ['status' => 'not_assigned']
+        );
+        //Log::debug('Reset previous applicant assignments');
+    
+        // Retrieve applicants that are not assigned
         $applicants = $exam->applicants()->wherePivot('status', 'not_assigned')->get();
     
         //Log::debug('Applicants retrieved', ['count' => $applicants->count()]);
@@ -203,7 +210,7 @@ class SeatController extends Controller
     
         $selectedRoomIds = array_column($selectedRooms, 'id');
         $isMultiRoomSameTimeSingleExam = (count($selectedRoomIds) > 1);
-        //Log::debug("multiroom", ['isMultiRoomSameTimeSingleExam' => $isMultiRoomSameTimeSingleExam]);
+        //Log::debug('Multi-room same time single exam', ['isMultiRoomSameTimeSingleExam' => $isMultiRoomSameTimeSingleExam]);
 
         foreach ($selectedRooms as $roomData) {
             $room = ExamRoomInformation::findOrFail($roomData['id']);
@@ -226,35 +233,35 @@ class SeatController extends Controller
                     }
     
                     $seatExists = Seat::where('row', $i)
-                                      ->where('column', $j)
-                                      ->where('selected_room_id', $selectedRoom->id)
-                                      ->exists();
+                        ->where('column', $j)
+                        ->where('selected_room_id', $selectedRoom->id)
+                        ->exists();
     
                     //Log::debug('Checking Seat', ['row' => $i, 'column' => $j, 'seatExists' => $seatExists]);
     
-                    if ($isMultiRoomSameTimeSingleExam) { //case multi room ,same time,single exam 
+                    if ($isMultiRoomSameTimeSingleExam) { // Case: multiple rooms, same time, single exam
                         $seatOccupiedSameTime = Seat::where('row', $i)
-                                                    ->where('column', $j)
-                                                    ->whereHas('selectedRoom.exam', function ($query) use ($exam) {
-                                                        $query->where('exam_date', $exam->exam_date)
-                                                              ->where('exam_start_time', $exam->exam_start_time)
-                                                              ->where('exam_end_time', $exam->exam_end_time);
-                                                    })
-                                                    ->whereIn('selected_room_id', $selectedRoomIds)
-                                                    ->exists();
-                    } else { //case single room ,same time , multi exam
+                            ->where('column', $j)
+                            ->whereHas('selectedRoom.exam', function ($query) use ($exam) {
+                                $query->where('exam_date', $exam->exam_date)
+                                    ->where('exam_start_time', $exam->exam_start_time)
+                                    ->where('exam_end_time', $exam->exam_end_time);
+                            })
+                            ->whereIn('selected_room_id', $selectedRoomIds)
+                            ->exists();
+                    } else { // Case: single room, same time, multiple exams
                         $seatOccupiedSameTime = Seat::where('row', $i)
-                                                    ->where('column', $j)
-                                                    ->whereIn('selected_room_id', function ($query) use ($selectedRoomIds, $exam) {
-                                                        $query->select('selected_rooms.id')
-                                                              ->from('selected_rooms')
-                                                              ->join('exams', 'selected_rooms.exam_id', '=', 'exams.id')
-                                                              ->whereIn('selected_rooms.room_id', $selectedRoomIds)
-                                                              ->where('exams.exam_date', $exam->exam_date)
-                                                              ->where('exams.exam_start_time', $exam->exam_start_time)
-                                                              ->where('exams.exam_end_time', $exam->exam_end_time);
-                                                    })
-                                                    ->exists();
+                            ->where('column', $j)
+                            ->whereIn('selected_room_id', function ($query) use ($selectedRoomIds, $exam) {
+                                $query->select('selected_rooms.id')
+                                    ->from('selected_rooms')
+                                    ->join('exams', 'selected_rooms.exam_id', '=', 'exams.id')
+                                    ->whereIn('selected_rooms.room_id', $selectedRoomIds)
+                                    ->where('exams.exam_date', $exam->exam_date)
+                                    ->where('exams.exam_start_time', $exam->exam_start_time)
+                                    ->where('exams.exam_end_time', $exam->exam_end_time);
+                            })
+                            ->exists();
                     }
     
                     //Log::debug('Seat Occupied Same Time', ['seatOccupiedSameTime' => $seatOccupiedSameTime]);
