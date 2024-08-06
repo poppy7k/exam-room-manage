@@ -11,13 +11,13 @@
 ])
 
 <div class="building-item relative flex flex-col bg-clip-border w-[260px] rounded-lg bg-white shadow-md mt-6 transition-all duration-500 hover:scale-105 hover:shadow-lg">
-    @if ($valid_seat > 0)
+    @if (($valid_seat - $selected_seat) > 0)
     <a href="{{ route('exam-roomlist',['examId' => $examId , 'buildingId' => $buildingId])}}" class="absolute inset-0 z-0"></a>
     @endif
         <div class="flex justify-end">
-            @if ($valid_seat > 0)
+            @if ($valid_seat - $selected_seat > 0)
             <p class="absolute mx-2 my-2 px-2 py-2 bg-gradient-to-tr from-green-600 to-green-400 rounded-lg text-sm text-white shadow-md">
-                {{ $valid_seat }} ที่นั่ง
+                {{ $valid_seat - $selected_seat }} ที่นั่ง
             </p>
             @else
             <p class="absolute mx-2 my-2 px-2 py-2 bg-gradient-to-tr from-red-600 to-red-400 rounded-lg text-sm text-white shadow-md">

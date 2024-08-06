@@ -164,22 +164,29 @@ class ExamController extends Controller
     {
         $exams = Exam::findOrFail($examId);
         $sort = $request->get('sort', 'alphabet_th');
-    
+
         $buildings = Building::query()
             ->select('buildings.*')
             ->selectSub(
                 ExamRoomInformation::query()
-                    ->selectRaw('SUM(valid_seat) - COALESCE(SUM(selected_rooms.applicant_seat_quantity), 0) as total_valid_seats')
-                    ->leftJoin('selected_rooms', function($join) use ($exams) {
-                        $join->on('exam_room_information.id', '=', 'selected_rooms.room_id')
-                             ->leftJoin('exams', 'selected_rooms.exam_id', '=', 'exams.id')
-                             ->where('exams.exam_date', $exams->exam_date)
-                             ->where('exams.exam_start_time', '<', $exams->exam_end_time)
-                             ->where('exams.exam_end_time', '>', $exams->exam_start_time);
-                    })
+                    ->selectRaw('SUM(valid_seat) as total_valid_seats')
                     ->whereColumn('exam_room_information.building_id', 'buildings.id'),
                 'total_valid_seats'
+            )
+            ->selectSub(
+                ExamRoomInformation::query()
+                    ->selectRaw('COALESCE(SUM(selected_rooms.applicant_seat_quantity), 0)')
+                    ->leftJoin('selected_rooms', function($join) use ($exams) {
+                        $join->on('exam_room_information.id', '=', 'selected_rooms.room_id')
+                            ->leftJoin('exams', 'selected_rooms.exam_id', '=', 'exams.id')
+                            ->where('exams.exam_date', $exams->exam_date)
+                            ->where('exams.exam_start_time', '<', $exams->exam_end_time)
+                            ->where('exams.exam_end_time', '>', $exams->exam_start_time);
+                    })
+                    ->whereColumn('exam_room_information.building_id', 'buildings.id'),
+                'total_applicant_seat_quantity'
             );
+        
             
         switch ($sort) {
             case 'alphabet_th':
