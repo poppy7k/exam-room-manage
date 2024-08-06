@@ -89,12 +89,6 @@
                     เลือกผู้คุมสอบ
                 </x-buttons.primary>
             </div>
-            <!--<div>
-                <x-buttons.primary type="button" class="px-5 py-2 rounded-lg text-white"
-                    onclick="window.location.href = '{{ route('exam-buildinglist', ['examId' => $exam->id]) }}'">
-                    เลือกห้องใหม่
-                </x-buttons.primary>
-            </div> -->
         </div>
     </div>
     <div class="bg-white shadow-md my-3 rounded-lg max-h-screen flex flex-col">
@@ -431,11 +425,42 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 
+function saveApplicantToSeat(seatId, applicantId, roomId, examId) {
+    console.log('Saving applicant to seat:', { seatId, applicantId, roomId, examId });
+    fetch(`/save-applicant-to-seat`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+        body: JSON.stringify({
+            seat_id: seatId,
+            applicant_id: applicantId,
+            room_id: roomId,
+            exam_id: examId
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('Save applicant response:', data);
+        if (data.success) {
+            alert('Applicant assigned to seat successfully.');
+            location.reload();
+        } else {
+            console.error('Server response:', data);
+            alert('Failed to assign applicant to seat.');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while assigning applicant to seat.');
+    });
+}
 
 document.getElementById('save-applicant-to-seat-btn').addEventListener('click', function() {
     const selectedApplicant = document.querySelector('input[name="applicant"]:checked');
     if (selectedApplicant) {
-        saveApplicantToSeat(currentSeatId, selectedApplicant.value, examId);
+        saveApplicantToSeat(currentSeatId, selectedApplicant.value, roomId, examId);
         document.getElementById('applicants-modal').classList.add('hidden');
     } else {
         alert('Please select an applicant.');

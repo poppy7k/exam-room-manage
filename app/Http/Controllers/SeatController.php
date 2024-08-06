@@ -501,9 +501,10 @@ class SeatController extends Controller
                         }
     
                         // Remove the row and column from the seat
-                        $seat->row = null;
-                        $seat->column = null;
-                        $seat->save();
+                        $seat->delete();
+
+                        $selectedRoom->decrement('applicant_seat_quantity');
+                        $selectedRoom->save();
     
                         // Log::info('Applicant removed from seat successfully');
                         return response()->json(['success' => true]);
