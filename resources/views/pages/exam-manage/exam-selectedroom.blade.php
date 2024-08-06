@@ -8,6 +8,9 @@
             <p class="font-normal text-md px-3 mt-1.5">-</p>
             <p class="font-normal text-md mt-1.5">ทั้งหมด {{ count($selectedRooms) }}</p>
         </div> 
+        <button id="show_unassigned_applicants_button" {{ $applicantsWithSeats >= $totalApplicants ? 'disabled' : '' }}>
+            {{ $applicantsWithSeats }} / {{ $totalApplicants }}
+        </button>
         <div class="flex gap-1">
             <x-buttons.info type="button" class="px-5 py-2 rounded-lg text-white" id="delete-applicants-button">
                 ลบผู้เข้าสอบ
@@ -77,6 +80,17 @@
             }
         });
         document.getElementById('empty-state').style.display = hasVisibleItems ? 'none' : 'block';
+    });
+
+    document.getElementById('show_unassigned_applicants_button').addEventListener('click', function() {
+        if (this.hasAttribute('disabled')) {
+            return;
+        }
+        document.getElementById('unassigned_applicants_modal').classList.remove('hidden');
+    });
+
+    document.getElementById('modal_close_button').addEventListener('click', function() {
+        document.getElementById('unassigned_applicants_modal').classList.add('hidden');
     });
 
     document.addEventListener('DOMContentLoaded', function () {
