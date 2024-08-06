@@ -34,6 +34,10 @@ class SelectedRoomController extends Controller
         // ใช้ paginate กับ query ที่สร้าง
         $selectedRooms = $selectedRoomsQuery->paginate(12, ['selected_rooms.*']);
 
+        $applicantsWithSeats = $exams->applicants()->wherePivot('status', 'assigned')->count();
+        $totalApplicants = $exams->applicants()->count();
+        $applicantsWithoutSeats = $exams->applicants()->wherePivot('status', 'not_assigned')->get();
+
         // สร้าง breadcrumbs
         $breadcrumbs = [
             ['url' => '/', 'title' => 'หน้าหลัก'],
@@ -45,6 +49,6 @@ class SelectedRoomController extends Controller
         session()->flash('sidebar', '3');
 
         // ส่งข้อมูลไปยัง view
-        return view('pages.exam-manage.exam-selectedroom', compact('exams', 'selectedRooms', 'breadcrumbs'));
+        return view('pages.exam-manage.exam-selectedroom', compact('exams', 'selectedRooms', 'breadcrumbs', 'applicantsWithSeats', 'totalApplicants', 'applicantsWithoutSeats'));
     }
 }

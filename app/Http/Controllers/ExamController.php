@@ -138,8 +138,8 @@ class ExamController extends Controller
         $positions = Applicant::pluck('position');
         $applicants = Applicant::all();
         
-        Log::info('Departments:', $departments->toArray());
-        Log::info('Positions:', $positions->toArray());
+        //Log::info('Departments:', $departments->toArray());
+        //Log::info('Positions:', $positions->toArray());
 
         $exam_takers_quantity = 0;
 

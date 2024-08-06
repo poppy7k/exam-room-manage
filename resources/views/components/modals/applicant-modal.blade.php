@@ -96,4 +96,5 @@ document.getElementById('close-applicants-modal-btn').addEventListener('click', 
     document.getElementById('applicants-modal').classList.add('hidden');
 });
 
+
 </script>

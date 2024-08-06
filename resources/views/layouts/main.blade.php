@@ -23,6 +23,9 @@
     <div>
         @include('components.modals.applicant-delete')
     </div>
+    {{-- <div>
+        @include('components.modals.applicant-without-seat')
+    </div> --}}
     @include('layouts.navbar')
     <main class="flex flex-grow h-full">
         @include('layouts.sidebar')

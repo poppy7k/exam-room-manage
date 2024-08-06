@@ -38,6 +38,13 @@ class SeatController extends Controller
         //     'exam' => $exam
         // ]);
     
+        // Reset previous assignments
+        $exam->applicants()->updateExistingPivot(
+            $exam->applicants()->pluck('applicants.id'), ['status' => 'not_assigned']
+        );
+        //Log::debug('Reset previous applicant assignments');
+    
+        // Retrieve applicants that are not assigned
         $applicants = $exam->applicants()->wherePivot('status', 'not_assigned')->get();
     
         // Log::debug('Applicants retrieved', ['count' => $applicants->count()]);
@@ -77,7 +84,7 @@ class SeatController extends Controller
     
         $selectedRoomIds = array_column($selectedRooms, 'id');
         $isMultiRoomSameTimeSingleExam = (count($selectedRoomIds) > 1);
-        // Log::debug("multiroom", ['isMultiRoomSameTimeSingleExam' => $isMultiRoomSameTimeSingleExam]);
+        // Log::debug('Multi-room same time single exam', ['isMultiRoomSameTimeSingleExam' => $isMultiRoomSameTimeSingleExam]);
     
         foreach ($selectedRooms as $roomData) {
             $room = ExamRoomInformation::findOrFail($roomData['id']);
@@ -343,9 +350,10 @@ class SeatController extends Controller
                         }
     
                         // Remove the row and column from the seat
-                        $seat->row = null;
-                        $seat->column = null;
-                        $seat->save();
+                        $seat->delete();
+
+                        $selectedRoom->decrement('applicant_seat_quantity');
+                        $selectedRoom->save();
     
                         // Log::info('Applicant removed from seat successfully');
                         return response()->json(['success' => true]);

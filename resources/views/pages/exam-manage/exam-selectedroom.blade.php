@@ -8,6 +8,9 @@
             <p class="font-normal text-md px-3 mt-1.5">-</p>
             <p class="font-normal text-md mt-1.5">ทั้งหมด {{ count($selectedRooms) }}</p>
         </div> 
+        <button id="show_unassigned_applicants_button" {{ $applicantsWithSeats >= $totalApplicants ? 'disabled' : '' }}>
+            {{ $applicantsWithSeats }} / {{ $totalApplicants }}
+        </button>
         <div class="flex gap-2">
             <x-buttons.icon-danger type="button" class="px-[5px] pt-1.5 pb-1 z-40" id="delete-applicants-button">
                 <svg id="Layer_1" height="24" class="w-6 h-6 -mt-1 ml-1" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg" data-name="Layer 1"><path d="m17 24a1 1 0 0 1 -1-1 7 7 0 0 0 -14 0 1 1 0 0 1 -2 0 9 9 0 0 1 18 0 1 1 0 0 1 -1 1zm6-11h-6a1 1 0 0 1 0-2h6a1 1 0 0 1 0 2zm-14-1a6 6 0 1 1 6-6 6.006 6.006 0 0 1 -6 6zm0-10a4 4 0 1 0 4 4 4 4 0 0 0 -4-4z"/></svg>
@@ -63,6 +66,22 @@
     </div>
 </div>
 
+<div id="unassigned_applicants_modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
+    <div class="bg-white w-1/2 p-4 rounded shadow-lg">
+        <h2 class="text-xl font-semibold mb-4">ผู้สมัครที่ยังไม่มีที่นั่ง</h2>
+        <div class="overflow-y-auto max-h-60 mb-4">
+            <ul>
+                @foreach($applicantsWithoutSeats as $applicant)
+                    <li>{{ $applicant->name }} ({{ $applicant->id_card }})</li>
+                @endforeach
+            </ul>
+        </div>
+        <div class="flex justify-end">
+            <button type="button" id="modal_close_button" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-700">ปิด</button>
+        </div>
+    </div>
+</div>
+
 <script>
     document.getElementById('search-input').addEventListener('input', function() {
         var searchQuery = this.value.toLowerCase();
@@ -79,6 +98,17 @@
             }
         });
         document.getElementById('empty-state').style.display = hasVisibleItems ? 'none' : 'block';
+    });
+
+    document.getElementById('show_unassigned_applicants_button').addEventListener('click', function() {
+        if (this.hasAttribute('disabled')) {
+            return;
+        }
+        document.getElementById('unassigned_applicants_modal').classList.remove('hidden');
+    });
+
+    document.getElementById('modal_close_button').addEventListener('click', function() {
+        document.getElementById('unassigned_applicants_modal').classList.add('hidden');
     });
 
     document.addEventListener('DOMContentLoaded', function () {
