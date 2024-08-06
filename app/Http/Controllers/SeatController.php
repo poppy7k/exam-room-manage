@@ -544,43 +544,33 @@ class SeatController extends Controller
             if ($applicantIndex >= count($applicants)) {
                 break;
             }
-    
-            $seatRecord = Seat::where('selected_room_id', $selectedRoom->id)
-                ->where('applicant_id', $applicants[$applicantIndex]->id)
-                ->first();
-    
-            if ($seatRecord) {
-                //Log::info('Found existing seat', ['seatRecord' => $seatRecord]);
-    
-                if ($seatRecord->row === null && $seatRecord->column === null) {
-                    $seatRecord->row = $seat['row'];
-                    $seatRecord->column = $seat['column'];
-                    $seatRecord->save();
-    
-                    //Log::info('Updated existing seat with row and column', ['seatRecord' => $seatRecord]);
-    
-                    // Update the status in the applicant_exam table
-                    $exam->applicants()->updateExistingPivot($applicants[$applicantIndex]->id, ['status' => 'assigned']);
-    
-                    //Log::info('Updated applicant status to assigned', ['applicant_id' => $applicants[$applicantIndex]->id]);
-    
-                    $applicantIndex++;
-                }
-            } else {
-                $newSeat = Seat::create([
+
+            $applicant = $applicants->values()->get($applicantIndex);
+            $seatAvailable = $this->checkSeatAvailability($selectedRoom->id, $applicants[$applicantIndex]->id, $exam->exam_start_time, $exam->exam_end_time, $seat['row'], $seat['column']);
+
+            // Log::debug('Checking Seat Availability', [
+            //     'seatId' => $seatId,
+            //     'seatAvailable' => $seatAvailable
+            // ]);
+            Log::info($seatAvailable);
+
+            if ($seatAvailable) {
+
+                // Log::debug('Assigning Applicant', [
+                //     'applicantIndex' => $applicantIndex,
+                //     'applicant' => $applicant
+                // ]);
+
+                Seat::create([
                     'selected_room_id' => $selectedRoom->id,
                     'applicant_id' => $applicants[$applicantIndex]->id,
                     'row' => $seat['row'],
                     'column' => $seat['column'],
                 ]);
-    
-                //Log::info('Created new seat', ['newSeat' => $newSeat]);
-    
-                // Update the status in the applicant_exam table
-                $exam->applicants()->updateExistingPivot($applicants[$applicantIndex]->id, ['status' => 'assigned']);
+
+                $exam->applicants()->updateExistingPivot($applicant->id, ['status' => 'assigned']);
                 $selectedRoom->increment('applicant_seat_quantity');
-                //Log::info('Updated applicant status to assigned', ['applicant_id' => $applicants[$applicantIndex]->id]);
-    
+
                 $applicantIndex++;
             }
         }
