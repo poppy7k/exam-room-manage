@@ -8,24 +8,26 @@
             <p class="font-normal text-md px-3 mt-1.5">-</p>
             <p class="font-normal text-md mt-1.5">ทั้งหมด {{ count($selectedRooms) }}</p>
         </div> 
-        <div class="flex gap-1">
-            <x-buttons.info type="button" class="px-5 py-2 rounded-lg text-white" id="delete-applicants-button">
-                ลบผู้เข้าสอบ
-            </x-buttons.info>
-            <x-buttons.info type="button" class="px-5 py-2 rounded-lg text-white" id="update-applicants-button">
-                เพิ่มผู้เข้าสอบ
-            </x-buttons.info>
-            <x-buttons.primary type="button" class="px-5 py-2 rounded-lg text-white"
-                onclick="window.location.href = '{{ route('exam-buildinglist', ['examId' => $exams->id]) }}'">
-                เลือกห้องใหม่
-            </x-buttons.primary>
+        <div class="flex gap-2">
+            <x-buttons.icon-danger type="button" class="px-[5px] pt-1.5 pb-1 z-40" id="delete-applicants-button">
+                <svg id="Layer_1" height="24" class="w-6 h-6 -mt-1 ml-1" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg" data-name="Layer 1"><path d="m17 24a1 1 0 0 1 -1-1 7 7 0 0 0 -14 0 1 1 0 0 1 -2 0 9 9 0 0 1 18 0 1 1 0 0 1 -1 1zm6-11h-6a1 1 0 0 1 0-2h6a1 1 0 0 1 0 2zm-14-1a6 6 0 1 1 6-6 6.006 6.006 0 0 1 -6 6zm0-10a4 4 0 1 0 4 4 4 4 0 0 0 -4-4z"/></svg>
+            </x-buttons.icon-danger>
+            <x-buttons.icon-primary type="button" class="px-[5px] pt-1.5 pb-1 z-40" id="update-applicants-button">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 -mt-1 ml-1" id="Outline" viewBox="0 0 24 24" width="24" height="24"><path d="M23,11H21V9a1,1,0,0,0-2,0v2H17a1,1,0,0,0,0,2h2v2a1,1,0,0,0,2,0V13h2a1,1,0,0,0,0-2Z"/><path d="M9,12A6,6,0,1,0,3,6,6.006,6.006,0,0,0,9,12ZM9,2A4,4,0,1,1,5,6,4,4,0,0,1,9,2Z"/><path d="M9,14a9.01,9.01,0,0,0-9,9,1,1,0,0,0,2,0,7,7,0,0,1,14,0,1,1,0,0,0,2,0A9.01,9.01,0,0,0,9,14Z"/></svg>
+            </x-buttons.icon-primary>
             <div x-data="{ showFilterExamSelectedRoom: false }" class="z-40"> 
                 <x-buttons.icon-primary @click="showFilterExamSelectedRoom = !showFilterExamSelectedRoom" id="filter-exam-selected-room" onclick="event.stopPropagation();" class="px-[5px] pt-1.5 pb-1 z-40">
-                    <svg id="Layer_1" class="w-5 h-5" height="512" viewBox="0 0 24 24" width="512" xmlns="http://www.w3.org/2000/svg" data-name="Layer 1"><path d="m14 24a1 1 0 0 1 -.6-.2l-4-3a1 1 0 0 1 -.4-.8v-5.62l-7.016-7.893a3.9 3.9 0 0 1 2.916-6.487h14.2a3.9 3.9 0 0 1 2.913 6.488l-7.013 7.892v8.62a1 1 0 0 1 -1 1zm-3-4.5 2 1.5v-7a1 1 0 0 1 .253-.664l7.268-8.177a1.9 1.9 0 0 0 -1.421-3.159h-14.2a1.9 1.9 0 0 0 -1.421 3.158l7.269 8.178a1 1 0 0 1 .252.664z"/></svg>
+                    <svg id="Layer_1" class="w-6 h-6" height="512" viewBox="0 0 24 24" width="512" xmlns="http://www.w3.org/2000/svg" data-name="Layer 1"><path d="m14 24a1 1 0 0 1 -.6-.2l-4-3a1 1 0 0 1 -.4-.8v-5.62l-7.016-7.893a3.9 3.9 0 0 1 2.916-6.487h14.2a3.9 3.9 0 0 1 2.913 6.488l-7.013 7.892v8.62a1 1 0 0 1 -1 1zm-3-4.5 2 1.5v-7a1 1 0 0 1 .253-.664l7.268-8.177a1.9 1.9 0 0 0 -1.421-3.159h-14.2a1.9 1.9 0 0 0 -1.421 3.158l7.269 8.178a1 1 0 0 1 .252.664z"/></svg>
                     <x-tooltip title="ฟิลเตอร์อาคารสอบ" class="group-hover:-translate-x-11"></x-tooltip>
                 </x-buttons.icon-primary>
                 <x-dropdowns.exam-selected-room.filter :examId="$exams->id"/>
             </div>
+            <x-buttons.icon-info type="button" class="px-[5px] pt-1.5 pb-1 z-40"
+                onclick="window.location.href = '{{ route('exam-buildinglist', ['examId' => $exams->id]) }}'">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 -mt-0.5" id="Outline" viewBox="0 0 24 24" width="20" height="20">
+                    <path d="M22.853,1.148a3.626,3.626,0,0,0-5.124,0L1.465,17.412A4.968,4.968,0,0,0,0,20.947V23a1,1,0,0,0,1,1H3.053a4.966,4.966,0,0,0,3.535-1.464L22.853,6.271A3.626,3.626,0,0,0,22.853,1.148ZM5.174,21.122A3.022,3.022,0,0,1,3.053,22H2V20.947a2.98,2.98,0,0,1,.879-2.121L15.222,6.483l2.3,2.3ZM21.438,4.857,18.932,7.364l-2.3-2.295,2.507-2.507a1.623,1.623,0,1,1,2.295,2.3Z"/>
+                </svg>
+            </x-buttons.icon-info>
             <div class="search-container px-2">
                 <input type="text" id="search-input" placeholder="ค้นหาห้องสอบ" class="w-full px-5 py-2 rounded-full ring-1 shadow-sm ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-green-600 transition-all duration-300 outline-none">
             </div>

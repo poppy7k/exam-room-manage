@@ -13,16 +13,19 @@ use App\Models\Staff;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use App\Http\Controllers\NotificationController;
 
 class ExamController extends Controller
 {
     protected $staffController;
     protected $seatController;
+    protected $notifications;
 
-    public function __construct(StaffController $staffController, SeatController $seatController)
+    public function __construct(StaffController $staffController, SeatController $seatController, NotificationController $notifications)
     {
         $this->staffController = $staffController;
         $this->seatController = $seatController;
+        $this->notifications = $notifications;
     }
 
     public function index() {
@@ -119,8 +122,7 @@ class ExamController extends Controller
             }
         }
     
-        session()->flash('status', 'success');
-        session()->flash('message', 'สร้างการสอบสำเร็จ!');
+        $this->notifications->success('สร้างการสอบเสร็จสิ้น!');
     
         return redirect()->route('exam-list');
     }
