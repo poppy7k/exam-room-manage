@@ -14,7 +14,7 @@
                 <p class="font-normal text- justify-start ml-4 mt-1.5"> ที่นั่งว่าง </p>
                 <p id="validSeatCount" class="font-bold ml-1 mt-1.5 text-green-800"> {{ $room->valid_seat }}</p>
                 <p class="font-normal text- justify-start ml-4 mt-1.5"> ที่นั่งทั้งหมด </p>
-                <p id="totalSeatCount" class="font-bold ml-1 mt-1.5"> {{ $room->total_seat }}</p>
+                <p id="totalSeatCount" class="font-bold ml-1 mt-1.5"> {{ $room->valid_seat }}</p>
                 <p class="font-normal text- justify-start ml-4 mt-1.5"> แถว </p>
                 <p id="row-count" class="font-bold ml-1 mt-1.5 text-black"> {{ $room->rows }}</p>
                 <p class="font-normal text- justify-start ml-4 mt-1.5"> คอลัมน์ </p>
@@ -108,7 +108,7 @@
 
 <script>
 let validSeatCount = {{ $selectedRooms->room->valid_seat }};
-let TotalSeat = {{$selectedRooms->room->total_seat}}
+let TotalSeat = {{$selectedRooms->room->valid_seat}}
 const roomId = {{ $selectedRooms->room->id }};
 const examId = {{ $exam->id }};
 const exam = {!! json_encode($exam) !!};
