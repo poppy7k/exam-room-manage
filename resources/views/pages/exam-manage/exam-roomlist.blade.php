@@ -185,10 +185,20 @@
 
         document.getElementById('submit-form').addEventListener('submit', function (event) {
             const selectedSeats = parseInt(document.getElementById('selected-seats').innerText);
-            const requiredSeats = parseInt(document.getElementById('applicant-quantity').innerText);
+            let requiredSeats = parseInt(document.getElementById('applicant-quantity').innerText); // ใช้ let แทน const เพื่อให้เปลี่ยนค่าได้
 
             selectedRooms.forEach(room => {
-                room.usedSeat = Math.min(room.validSeat, requiredSeats);
+                if (requiredSeats > 0) {
+                    if (requiredSeats <= room.validSeat) {
+                        room.usedSeat = requiredSeats;
+                        requiredSeats = 0; // หากที่นั่งเพียงพอให้ตั้งค่าเป็น 0
+                    } else {
+                        room.usedSeat = room.validSeat;
+                        requiredSeats -= room.validSeat; // ลดจำนวนที่นั่งที่ต้องการลง
+                    }
+                } else {
+                    room.usedSeat = 0; // หากที่นั่งเพียงพอแล้วให้ตั้งค่าเป็น 0
+                }
             });
 
             if (selectedSeats < requiredSeats) {
