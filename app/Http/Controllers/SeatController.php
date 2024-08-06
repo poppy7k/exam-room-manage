@@ -698,47 +698,35 @@ class SeatController extends Controller
     
                 try {
                     // Try to reuse an existing seat record with null row and column
-                    $seatRecord = Seat::where('selected_room_id', $selectedRoomId)
-                        ->whereNull('row')
-                        ->whereNull('column')
-                        ->first();
-    
-                    if ($seatRecord) {
-                        // Update the existing seat record
-                        //Log::debug('Reusing existing seat record', ['seatRecord' => $seatRecord]);
-                        $seatRecord->row = $row;
-                        $seatRecord->column = $col;
-                        $seatRecord->applicant_id = $applicantId;
-                        $seatRecord->save();
-                    } else {
-                        // Create a new seat record if no null row and column record is available
-                        $seatRecord = Seat::where('selected_room_id', $selectedRoomId)
-                            ->where('row', $row)
-                            ->where('column', $col)
-                            ->first();
-                        if ($seatRecord) {
-                            // Update the existing seat record
-                            //Log::debug('Updating existing seat record', ['seatRecord' => $seatRecord]);
-                            $seatRecord->applicant_id = $applicantId;
-                            $seatRecord->save();
-                        } else {
-                            // Create a new seat record if it doesn't exist
-                            //Log::debug('Creating new seat record', ['row' => $row, 'column' => $col, 'applicantId' => $applicantId]);
-                            Seat::create([
-                                'row' => $row,
-                                'column' => $col,
-                                'selected_room_id' => $selectedRoomId,
-                                'applicant_id' => $applicantId
-                            ]);
-                        }
+
+                    $selectedRoom = SelectedRoom::find($selectedRoomId);
+                    $exam = Exam::find($selectedRoom->exam_id);
+                    $seatAvailable = $this->checkSeatAvailability($selectedRoomId, $applicantId, $exam->exam_start_time, $exam->exam_end_time, $seat['row'], $seat['column']);
+
+                    // Log::debug('Checking Seat Availability', [
+                    //     'seatId' => $seatId,
+                    //     'seatAvailable' => $seatAvailable
+                    // ]);
+                    Log::info($seatAvailable);
+
+                    if ($seatAvailable) {
+
+                        // Log::debug('Assigning Applicant', [
+                        //     'applicantIndex' => $applicantIndex,
+                        //     'applicant' => $applicant
+                        // ]);
+
+                        Seat::create([
+                            'selected_room_id' => $selectedRoomId,
+                            'applicant_id' => $applicantId,
+                            'row' => $seat['row'],
+                            'column' => $seat['column'],
+                        ]);
+
+                        $exam->applicants()->updateExistingPivot($applicantId, ['status' => 'assigned']);
+                        $selectedRoom->increment('applicant_seat_quantity');
+                        return;
                     }
-    
-                    //Log::debug('Seat assigned', ['applicantId' => $applicantId, 'row' => $row, 'column' => $col]);
-    
-                    DB::table('applicant_exam')
-                        ->where('applicant_id', $applicantId)
-                        ->update(['status' => 'assigned']);
-                    return;
                 } catch (\Exception $e) {
                     Log::error('Error assigning seat', ['error' => $e->getMessage()]);
                 }

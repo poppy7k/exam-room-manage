@@ -703,6 +703,9 @@ class ExamController extends Controller
         
         // Delete extra seats before creating new seat records
         $this->seatController->deleteExtraSeats($roomId, $newRows, $newColumns);
+
+        $selectedRoom = SelectedRoom::find($selectedRoomId);
+        $selectedRoom->update(['applicant_seat_quantity' => 0]);
     
         // Reassign seats to all applicants
         foreach ($affectedApplicants as $selectedRoomId => $applicants) {
