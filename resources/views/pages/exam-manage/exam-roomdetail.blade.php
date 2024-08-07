@@ -2,15 +2,33 @@
 @extends('layouts.main')
 
 @section('content')
+@php
+    $applicantExamsArray = json_decode(json_encode($applicantExams), true);
+    $groupedApplicants = collect($applicantExams)->groupBy('exam_id')->map(function ($group) use ($applicants) {
+        return $group->map(function ($exam) use ($applicants) {
+            return $applicants->firstWhere('id', $exam->applicant_id);
+        });
+    });
+
+    // Assign colors to exam groups
+    $colors = ['bg-green-500', 'bg-blue-500', 'bg-purple-500', 'bg-pink-500'];
+    $examColors = [];
+    foreach ($groupedApplicants as $examId => $group) {
+        $examColors[$examId] = $colors[count($examColors) % count($colors)];
+    }
+
+    // Log::info('Grouped Applicants:', ['groupedApplicants' => $groupedApplicants]);
+    // Log::info('Exam Colors:', ['examColors' => $examColors]);
+@endphp
 <div class="flex flex-col w-full max-h-full">
     <div class="flex justify-between">
-        <div class="flex flex-col bg-white rounded-lg px-4 py-3 shadow-md overflow-y-auto max-w-2xl max-h-32 mb-3">
+        <div class="flex flex-col bg-white rounded-lg px-4 py-3 shadow-md overflow-y-auto max-h-32 mb-3">
             <div class="flex">
                 <p class="font-semibold align-baseline text-2xl">
                     {{ $room->room }}
                 </p>
-                {{-- <p class="font-normal text-md ml-4 mt-1.5"> ชั้น </p>
-                <p class="font-bold ml-1 mt-1.5"> {{ $room->floor }}</p> --}}
+                <p class="font-normal text-md ml-4 mt-1.5"> ชั้น </p>
+                <p class="font-bold ml-1 mt-1.5"> {{ $room->floor }}</p>
                 <p class="font-normal text- justify-start ml-4 mt-1.5"> ที่นั่งว่าง </p>
                 <p id="validSeatCount" class="font-bold ml-1 mt-1.5 text-green-800"> {{ $room->valid_seat }}</p>
                 <p class="font-normal text- justify-start ml-4 mt-1.5"> ที่นั่งทั้งหมด </p>
@@ -25,26 +43,47 @@
             <div class="flex flex-wrap">
                 <div>
                     @foreach($positions as $position)
+                    @php
+                        //Log::info('Processing position:', ['position' => $position]);
+
+                        // Find the applicant exam entry for the position
+                        $applicantExam = $applicantExams->first(function ($exam) use ($position, $applicants) {
+                            $applicant = $applicants->firstWhere('id', $exam->applicant_id);
+                            return $applicant && $applicant->position === $position;
+                        });
+
+                        // Check for null before accessing properties
+                        if ($applicantExam) {
+                            $examId = $applicantExam->exam_id ?? null;
+                        } else {
+                            $examId = null;
+                        }
+
+                        //Log::info('Position and Applicant Exam:', ['position' => $position, 'applicantExam' => $applicantExam, 'examId' => $examId]);
+
+                        // Determine the color class
+                        $colorClass = $examColors[$examId] ?? 'bg-gray-500';
+                        
+                        //Log::info('Exam ID and Color Assignment:', ['examId' => $examId, 'color' => $colorClass]);
+                    @endphp
                     <span class="flex">ตำแหน่ง
-                            <div class=" w-4 h-4 ml-1 border-2 border-black translate-y-1 rounded-full bg-green-500"></div>
-                            <p class="ml-1 font-bold">{{ $position }}</p>@if(!$loop->last)@endif</span>
+                        <div class="w-4 h-4 ml-1 border-2 border-black translate-y-1 rounded-full {{ $colorClass }}"></div>
+                        <p class="ml-1 font-bold">{{ $position }}</p>@if(!$loop->last)@endif</span>
                     @endforeach
                 </div>
                 <div class="mr-4">
                     <span class="flex">
                     @foreach($departments as $department)
-                            <p class="ml-1 font-semibold">( {{ $department }} )</p>@if(!$loop->last)@endif</span>
+                        <p class="ml-1 font-semibold">( {{ $department }} )</p>@if(!$loop->last)@endif</span>
                     @endforeach
                 </div>
-
             </div>
             <div class="flex flex-wrap">
                 เลขประจำตัวสอบสำหรับกลุ่ม
                 @php
-                    $applicantExamsArray = json_decode(json_encode($applicantExams), true);
-                    $groupedApplicants = collect($applicantExamsArray)->groupBy('exam_id')->map(function ($group) use ($applicants) {
+                    $groupedApplicants = collect($applicantExams)->groupBy('exam_id')->map(function ($group) use ($applicants) {
                         return $group->map(function ($exam) use ($applicants) {
-                            return $applicants->firstWhere('id', $exam['applicant_id']);
+                            return $applicants->firstWhere('id', $exam->applicant_id);
                         });
                     });
                 @endphp
