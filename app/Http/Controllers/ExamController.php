@@ -322,6 +322,7 @@ class ExamController extends Controller
 
         $departments = $applicants->pluck('department')->unique()->toArray();
         $positions = $applicants->pluck('position')->unique()->toArray();
+        $subjects = $exam->pluck('subject')->toArray();
     
         $breadcrumbs = [
             ['url' => '/', 'title' => 'หน้าหลัก'],
@@ -332,7 +333,7 @@ class ExamController extends Controller
     
         session()->flash('sidebar', '3');
     
-        return view('pages.exam-manage.exam-roomdetail', compact('applicantExams','selectedRooms','building','exam', 'room', 'breadcrumbs', 'applicants', 'staffs', 'seats', 'assignedStaffs','departments','positions'));
+        return view('pages.exam-manage.exam-roomdetail', compact('applicantExams','selectedRooms','building','exam', 'room', 'breadcrumbs', 'applicants', 'staffs', 'seats', 'assignedStaffs','departments','positions','subjects'));
     }
     
     public function createExams(Request $request)
