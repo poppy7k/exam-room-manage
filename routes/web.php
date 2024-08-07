@@ -34,7 +34,7 @@ Route::put('/buildings/{buildingId}/ajax', [BuildingController::class, 'updateAj
 
 Route::get('/buildings/{buildingId}/room-list', [ExamRoomInformationController::class, 'showRoomList'])->name('pages.room-list');
 
-Route::get('/buildings/{buildingId}/addinfo/{roomId}/addseat', [ExamRoomInformationController::class, 'addSeat'])->name('addseat');
+Route::get('/buildings/{buildingId}/addinfo/{roomId}/addsReat', [ExamRoomInformationController::class, 'addSeat'])->name('addseat');
 Route::put('/rooms/{roomId}/update', [ExamRoomInformationController::class, 'updateRoom'])->name('examroominfo.update');
 Route::delete('/rooms/{roomId}', [ExamRoomInformationController::class, 'deleteRoom'])->name('rooms.delete');
 
@@ -63,12 +63,17 @@ Route::get('/exams/{examId}/selectedrooms/{selected_room_id}', [ExamController::
 Route::get('/calendar/exams/{date}', [ExamController::class, 'getExamsByDate']);
 
 // Alert //
+Route::post('/set-alert-message', function (Illuminate\Http\Request $request) {
+    session()->flash('status', 'success');
+    session()->flash('message', $request->message);
+});
 Route::post('/notifications', [NotificationController::class, 'show'])->name('notifications.show');
 
 // Calendar //
 Route::get('/calendar', [CalendarController::class, 'index'])->name('pages.calendar.list');
 Route::get('/calendar/exams', [ExamController::class, 'getExam'])->name('exam.getExam');
 
+// Staff //
 Route::get('/staffs', [StaffController::class, 'index'])->name('staffs.index');
 Route::post('/save-staffs', [StaffController::class, 'saveStaffs']);
 
