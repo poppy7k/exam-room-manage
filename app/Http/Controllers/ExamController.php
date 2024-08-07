@@ -784,4 +784,36 @@ class ExamController extends Controller
         // ส่งข้อมูลกลับเป็น JSON
         return response()->json($exams);
     }
+
+    public function hideOrShowRemoveApplicantButton($applicantId,$examId, $roomId)
+    {
+        // Fetch the exam details
+        $exam = Exam::findOrFail($examId);
+
+        // Get all conflicting exams that have the same date, start time, end time, and room
+        $conflictingExams = Exam::where('exam_date', $exam->exam_date)
+            ->where('exam_start_time', '<=', $exam->exam_end_time)
+            ->where('exam_end_time', '>=', $exam->exam_start_time)
+            ->whereHas('selectedRooms', function ($query) use ($roomId) {
+                $query->where('room_id', $roomId);
+            })
+            ->pluck('id');
+
+        //Log::info('Conflicting exams found', ['conflictingExams' => $conflictingExams]);
+
+        // Check if the applicant is in any of the conflicting exams except the current exam
+        $isInConflictingExam = DB::table('applicant_exam')
+            ->where('applicant_id', $applicantId)
+            ->whereIn('exam_id', $conflictingExams)
+            ->where('exam_id', '<>', $examId)
+            ->exists();
+
+        // Log::info('Conflict check result', [
+        //     'applicantId' => $applicantId,
+        //     'isInConflictingExam' => $isInConflictingExam
+        // ]);
+
+        return response()->json(['isInConflictingExam' => $isInConflictingExam]);
+    }
+    
 }
