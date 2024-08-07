@@ -539,11 +539,18 @@ class SeatController extends Controller
     
         $applicantIndex = 0;
         $selectedRoom = SelectedRoom::firstOrCreate(['room_id' => $room->id, 'exam_id' => $exam->id]);
+
+        $invalidSeats = json_decode($room->invalid_seats, true) ?? [];
     
         foreach ($seatsArray as $seat) {
             if ($applicantIndex >= count($applicants)) {
                 break;
             }
+            $seatId = "{$seat['row']}-" . chr(64 + $seat['column']);
+            if (in_array($seatId, $invalidSeats)) {
+                // Skip deactivated seat
+                continue;
+            } 
 
             $applicant = $applicants->values()->get($applicantIndex);
             $seatAvailable = $this->checkSeatAvailability($selectedRoom->id, $applicants[$applicantIndex]->id, $exam->exam_start_time, $exam->exam_end_time, $seat['row'], $seat['column']);
