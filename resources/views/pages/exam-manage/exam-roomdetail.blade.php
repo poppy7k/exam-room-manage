@@ -65,9 +65,15 @@
                         $colorClass = $examColors[$examId] ?? 'bg-gray-500';
                         
                         //Log::info('Exam ID and Color Assignment:', ['examId' => $examId, 'color' => $colorClass]);
+                        $index = $loop->index;
+                        $colorCount = floor($loop->index / 4);
                     @endphp
                     <span class="flex">ตำแหน่ง
-                        <div class="w-4 h-4 ml-1 border-2 border-black translate-y-1 rounded-full {{ $colorClass }}"></div>
+                        <div class="w-4 h-4 ml-1 border-2 border-black translate-y-1 rounded-full {{ $colorClass }}">
+                            @if($colorCount > 0)
+                                <span class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 -mt-px -ml-0.5 text-white text-xs">{{ $colorCount }}</span>
+                            @endif
+                        </div>
                         <p class="ml-1 font-bold">{{ $position }}</p>@if(!$loop->last)@endif</span>
                     @endforeach
                 </div>

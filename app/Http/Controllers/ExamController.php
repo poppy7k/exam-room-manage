@@ -437,11 +437,11 @@ class ExamController extends Controller
                 //     'exam_id' => $exam->id,
                 //     'applicants' => $applicantsWithoutSeats->pluck('id')->toArray()
                 // ]);
-                Log::info('Applicants without seats for exam', [
-                    'exam_id' => $exam->id,
-                    'applicants' => $applicantsWithoutSeats->pluck('id')->toArray(),
-                    'applicants_isnotempty' => $applicantsWithoutSeats->isNotEmpty(),
-                ]);
+                // Log::info('Applicants without seats for exam', [
+                //     'exam_id' => $exam->id,
+                //     'applicants' => $applicantsWithoutSeats->pluck('id')->toArray(),
+                //     'applicants_isnotempty' => $applicantsWithoutSeats->isNotEmpty(),
+                // ]);
 
                 if ($applicantsWithoutSeats->isNotEmpty() && $exam->status !== 'unready') {
                     // Update status to 'unready'

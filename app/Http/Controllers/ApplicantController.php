@@ -53,7 +53,7 @@ class ApplicantController extends Controller
         try {
             // Fetch the exam details
             $exam = Exam::findOrFail($examId);
-            Log::info('Exam details fetched', ['exam' => $exam]);
+            //Log::info('Exam details fetched', ['exam' => $exam]);
     
             /*
             // Get all conflicting exam IDs that have the same date, start time, end time, and room
@@ -85,7 +85,7 @@ class ApplicantController extends Controller
                 });
             })
             ->get();
-            Log::info('Applicants without seats', ['applicantsWithoutSeats' => $applicantsWithoutSeats]);
+            //Log::info('Applicants without seats', ['applicantsWithoutSeats' => $applicantsWithoutSeats]);
     
             if ($applicantsWithoutSeats->isEmpty()) {
                 Log::warning('No applicants found without seats.');
