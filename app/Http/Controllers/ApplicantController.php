@@ -12,40 +12,91 @@ use App\Models\Seat;
 class ApplicantController extends Controller
 {
 
+    // public function getApplicantsWithoutSeats($examId, $roomId)
+    // {
+    //     // Fetch the exam details
+    //     $exam = Exam::findOrFail($examId);
+    //     // Log::info('Exam details fetched', ['exam' => $exam]);
+    
+    //     // Get all conflicting exam IDs that have the same date, start time, end time, and room
+    //     $conflictingExamIds = Exam::where('exam_date', $exam->exam_date)
+    //         ->where('exam_start_time', '<=', $exam->exam_end_time)
+    //         ->where('exam_end_time', '>=', $exam->exam_start_time)
+    //         ->whereHas('selectedRooms', function ($query) use ($roomId) {
+    //             $query->where('room_id', $roomId);
+    //         })
+    //         ->pluck('id');
+    //     // Log::info('Conflicting exam IDs', ['conflictingExamIds' => $conflictingExamIds]);
+    
+    //     if ($conflictingExamIds->isEmpty()) {
+    //         // Log::warning('No conflicting exams found.');
+    //         return response()->json([]);
+    //     }
+    
+    //     // Fetch applicants with status 'not_assigned' from the applicant_exam table for the conflicting exams
+    //     $applicantsWithoutSeats = Applicant::whereHas('exams', function ($query) use ($conflictingExamIds) {
+    //         $query->whereIn('exam_id', $conflictingExamIds)
+    //             ->where('applicant_exam.status', 'not_assigned');
+    //     })->get();
+    //     // Log::info('Applicants without seats', ['applicantsWithoutSeats' => $applicantsWithoutSeats]);
+    
+    //     if ($applicantsWithoutSeats->isEmpty()) {
+    //         // Log::warning('No applicants found without seats.');
+    //         return response()->json([]);
+    //     }
+    
+    //     return response()->json($applicantsWithoutSeats);
+    // }
+
     public function getApplicantsWithoutSeats($examId, $roomId)
     {
-        // Fetch the exam details
-        $exam = Exam::findOrFail($examId);
-        // Log::info('Exam details fetched', ['exam' => $exam]);
+        try {
+            // Fetch the exam details
+            $exam = Exam::findOrFail($examId);
+            Log::info('Exam details fetched', ['exam' => $exam]);
     
-        // Get all conflicting exam IDs that have the same date, start time, end time, and room
-        $conflictingExamIds = Exam::where('exam_date', $exam->exam_date)
-            ->where('exam_start_time', '<=', $exam->exam_end_time)
-            ->where('exam_end_time', '>=', $exam->exam_start_time)
-            ->whereHas('selectedRooms', function ($query) use ($roomId) {
-                $query->where('room_id', $roomId);
+            /*
+            // Get all conflicting exam IDs that have the same date, start time, end time, and room
+            $conflictingExamIds = Exam::where('exam_date', $exam->exam_date)
+                ->where('exam_start_time', '<=', $exam->exam_end_time)
+                ->where('exam_end_time', '>=', $exam->exam_start_time)
+                ->whereHas('selectedRooms', function ($query) use ($roomId) {
+                    $query->where('room_id', $roomId);
+                })
+                ->pluck('id');
+            Log::info('Conflicting exam IDs', ['conflictingExamIds' => $conflictingExamIds]);
+    
+            if ($conflictingExamIds->isEmpty()) {
+                Log::warning('No conflicting exams found.');
+                return response()->json([]);
+            }
+            */
+    
+            // Directly fetch applicants with status 'not_assigned' for the current exam
+            $applicantsWithoutSeats = Applicant::whereHas('exams', function ($query) use ($examId) {
+                $query->where('exam_id', $examId)
+                    ->where('applicant_exam.status', 'not_assigned');
             })
-            ->pluck('id');
-        // Log::info('Conflicting exam IDs', ['conflictingExamIds' => $conflictingExamIds]);
+            ->whereDoesntHave('seats', function ($query) use ($examId) {
+                $query->whereIn('selected_room_id', function ($query) use ($examId) {
+                    $query->select('id')
+                        ->from('selected_rooms')
+                        ->where('exam_id', $examId);
+                });
+            })
+            ->get();
+            Log::info('Applicants without seats', ['applicantsWithoutSeats' => $applicantsWithoutSeats]);
     
-        if ($conflictingExamIds->isEmpty()) {
-            // Log::warning('No conflicting exams found.');
-            return response()->json([]);
+            if ($applicantsWithoutSeats->isEmpty()) {
+                Log::warning('No applicants found without seats.');
+                return response()->json([]);
+            }
+    
+            return response()->json($applicantsWithoutSeats);
+        } catch (\Exception $e) {
+            Log::error('Error fetching applicants without seats', ['exception' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
+            return response()->json(['error' => 'An error occurred while fetching applicants without seats.'], 500);
         }
-    
-        // Fetch applicants with status 'not_assigned' from the applicant_exam table for the conflicting exams
-        $applicantsWithoutSeats = Applicant::whereHas('exams', function ($query) use ($conflictingExamIds) {
-            $query->whereIn('exam_id', $conflictingExamIds)
-                ->where('applicant_exam.status', 'not_assigned');
-        })->get();
-        // Log::info('Applicants without seats', ['applicantsWithoutSeats' => $applicantsWithoutSeats]);
-    
-        if ($applicantsWithoutSeats->isEmpty()) {
-            // Log::warning('No applicants found without seats.');
-            return response()->json([]);
-        }
-    
-        return response()->json($applicantsWithoutSeats);
     }
 
     public function getNewApplicants($examId)

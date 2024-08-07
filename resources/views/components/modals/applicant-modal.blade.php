@@ -34,7 +34,7 @@
 </div>
 
 <script>
-    function showApplicantModal(seatId, seatRecordId, hasApplicant) {
+function showApplicantModal(seatId, seatRecordId, hasApplicant) {
     currentSeatId = seatId;
 
     const modalTitle = document.querySelector('#applicants-modal h3');
@@ -58,8 +58,8 @@
     });
 
     if (hasApplicant) {
-        saveButton.classList.add('hidden'); 
-        modalTitle.textContent = 'นำผู้เข้าสอบออกจากที่นั้ง'; 
+        saveButton.classList.add('hidden');
+        modalTitle.textContent = 'รายละเอียดผู้เข้าสอบ';
 
         const seat = seats.find(seat => seat.row === parseInt(seatId.split('-')[0]) && seat.column === (seatId.split('-')[1].charCodeAt(0) - 64));
         const applicant = applicants.find(applicant => applicant.id === seat.applicant_id);
@@ -78,14 +78,35 @@
             applicantInfo.classList.remove('hidden');
         }
 
-        const removeButton = document.createElement('button');
-        removeButton.textContent = 'Remove Applicant';
-        removeButton.classList.add('px-4', 'py-2', 'bg-red-500', 'text-white', 'rounded', 'mt-4');
-        removeButton.onclick = () => removeApplicantFromSeat(seatRecordId);
-        applicantList.appendChild(removeButton);
+        // Fetch conflicting exams and check if the applicant is part of them
+        //console.log('Fetching conflicting exams for applicantId:', applicant.id, 'examId:', examId, 'and roomId:', roomId);
+        fetch(`/hide-or-show-remove-applicant-button/${applicant.id}/${examId}/${roomId}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                //console.log('Conflict check result:', data);
+                if (data.isInConflictingExam) {
+                    // Hide the remove button if the applicant is in a conflicting exam
+                    //console.log('Applicant is part of a conflicting exam. Hiding remove button.');
+                } else {
+                    //console.log('Applicant is not part of a conflicting exam. Showing remove button.');
+                    const removeButton = document.createElement('button');
+                    removeButton.textContent = 'นำออก';
+                    removeButton.classList.add('px-4', 'py-2', 'bg-red-500', 'text-white', 'rounded', 'mt-4', 'remove-button');
+                    removeButton.onclick = () => removeApplicantFromSeat(seatRecordId);
+                    applicantList.appendChild(removeButton);
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching conflicting exams:', error);
+            });
     } else {
-        saveButton.classList.remove('hidden'); 
-        modalTitle.textContent = 'เลือกผู้เข้าสอบ'; 
+        saveButton.classList.remove('hidden');
+        modalTitle.textContent = 'เลือกผู้เข้าสอบ';
         fetchApplicantsWithoutSeats();
     }
 
