@@ -83,6 +83,12 @@
                         <p class="ml-1 font-semibold">( {{ $department }} )</p>@if(!$loop->last)@endif</span>
                     @endforeach
                 </div>
+                <div class="mr-4">
+                    <span class="flex">
+                    @foreach($subjects as $subject)
+                        <p class="ml-1 font-semibold">( {{ $subject }} )</p>@if(!$loop->last)@endif</span>
+                    @endforeach
+                </div>
             </div>
             <div class="flex flex-wrap">
                 เลขประจำตัวสอบสำหรับกลุ่ม
