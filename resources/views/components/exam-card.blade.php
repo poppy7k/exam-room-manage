@@ -15,7 +15,7 @@
 ])
 
 <div class="room-item relative flex bg-white flex-col bg-clip-border rounded-lg w-[260px] shadow-md mt-6 transition-all duration-500 hover:scale-105 hover:shadow-lg">
-    @if ($status == 'ready')
+    @if ($status == 'ready' || $status == 'inprogress' || $status == 'finished' || $status == 'unready' || $status == 'unfinished')
         <a href="{{ route('exam-selectedroom',['examId' => $examId])}}" class="absolute inset-0 z-0"></a>
     @else
         <a href="{{ route('exam-buildinglist',['examId' => $examId])}}" class="absolute inset-0 z-0"></a>   

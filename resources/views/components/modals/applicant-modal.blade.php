@@ -4,68 +4,73 @@
             <div class="absolute inset-0 bg-gray-500 opacity-75 w-screen h-screen"></div>
         </div>
         <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-        <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+        <div
+            class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
             <div class="bg-white px-4 pb-4 sm:p-6 sm:pb-4">
                 <div class="sm:flex sm:items-start">
                     <div class="mt-3 pt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full mr-4">
                         <div>
-                        <h3 class="text-2xl leading-6 font-medium text-gray-900""></h3>
-                        <div id="applicant-info" class="mb-4 hidden">
-                            <!-- Applicant info will be displayed here -->
-                        </div>
-                        <div id="applicant-list" class="max-h-64 overflow-y-auto">
-                            <!-- Applicant list will be populated here -->
+                            <h3 class="text-2xl leading-6 font-medium text-gray-900""></h3>
+                            <div id="applicant-info" class="mb-4 hidden">
+                                <!-- Applicant info will be displayed here -->
+                            </div>
+                            <div id="applicant-list" class="max-h-64 overflow-y-auto">
+                                <!-- Applicant list will be populated here -->
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="bg-gray-200 px-4 pb-4 sm:px-6 sm:flex sm:flex-row-reverse">
-            <div class="flex pt-4 pr-4 gap-4">
-                <x-buttons.secondary id="close-applicants-modal-btn" type="button" class="hover:scale-105 py-2 w-12 justify-center">
-                    ยกเลิก
-                </x-buttons.secondary>
-                <x-buttons.primary id="save-applicant-to-seat-btn" type="submit" class="hover:scale-105 py-2 px-12 w-12 justify-center">
-                    บันทึก
-                </x-buttons.primary>
+            <div class="bg-gray-200 px-4 pb-4 sm:px-6 sm:flex sm:flex-row-reverse">
+                <div class="flex pt-4 pr-4 gap-4">
+                    <x-buttons.secondary id="close-applicants-modal-btn" type="button"
+                        class="hover:scale-105 py-2 w-12 justify-center">
+                        ยกเลิก
+                    </x-buttons.secondary>
+                    <x-buttons.primary id="save-applicant-to-seat-btn" type="submit"
+                        class="hover:scale-105 py-2 px-12 w-12 justify-center">
+                        บันทึก
+                    </x-buttons.primary>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<script>
-function showApplicantModal(seatId, seatRecordId, hasApplicant) {
-    currentSeatId = seatId;
+    <script>
+        function showApplicantModal(seatId, seatRecordId, hasApplicant) {
+            currentSeatId = seatId;
 
-    const modalTitle = document.querySelector('#applicants-modal h3');
-    const applicantList = document.getElementById('applicant-list');
-    const saveButton = document.getElementById('save-applicant-to-seat-btn');
-    const applicantInfo = document.getElementById('applicant-info');
-    applicantList.innerHTML = '';
-    applicantInfo.innerHTML = '';
-    applicantInfo.classList.add('hidden');
+            const modalTitle = document.querySelector('#applicants-modal h3');
+            const applicantList = document.getElementById('applicant-list');
+            const saveButton = document.getElementById('save-applicant-to-seat-btn');
+            const applicantInfo = document.getElementById('applicant-info');
+            applicantList.innerHTML = '';
+            applicantInfo.innerHTML = '';
+            applicantInfo.classList.add('hidden');
 
-    let availableApplicants = applicants.filter(applicant => !seats.find(seat => seat.applicant_id === applicant.id));
+            let availableApplicants = applicants.filter(applicant => !seats.find(seat => seat.applicant_id === applicant
+                .id));
 
-    availableApplicants.forEach(applicant => {
-        const div = document.createElement('div');
-        div.classList.add('flex', 'items-center', 'gap-2', 'mb-2', 'applicant-item');
-        div.innerHTML = `
+            availableApplicants.forEach(applicant => {
+                const div = document.createElement('div');
+                div.classList.add('flex', 'items-center', 'gap-2', 'mb-2', 'applicant-item');
+                div.innerHTML = `
             <input type="radio" name="applicant" value="${applicant.id}" class="applicant-radio">
             <p>${applicant.name}</p>
         `;
-        applicantList.appendChild(div);
-    });
+                applicantList.appendChild(div);
+            });
 
-    if (hasApplicant) {
-        saveButton.classList.add('hidden');
-        modalTitle.textContent = 'รายละเอียดผู้เข้าสอบ';
+            if (hasApplicant) {
+                saveButton.classList.add('hidden');
+                modalTitle.textContent = 'รายละเอียดผู้เข้าสอบ';
 
-        const seat = seats.find(seat => seat.row === parseInt(seatId.split('-')[0]) && seat.column === (seatId.split('-')[1].charCodeAt(0) - 64));
-        const applicant = applicants.find(applicant => applicant.id === seat.applicant_id);
+                const seat = seats.find(seat => seat.row === parseInt(seatId.split('-')[0]) && seat.column === (seatId
+                    .split('-')[1].charCodeAt(0) - 64));
+                const applicant = applicants.find(applicant => applicant.id === seat.applicant_id);
 
-        if (applicant) {
-            applicantInfo.innerHTML = `
+                if (applicant) {
+                    applicantInfo.innerHTML = `
                 <div>
                     <p><strong>ID Number:</strong> ${applicant.id_number}</p>
                     <p><strong>ID Card:</strong> ${applicant.id_card}</p>
@@ -75,47 +80,46 @@ function showApplicantModal(seatId, seatRecordId, hasApplicant) {
                     <p><strong>Department:</strong> ${applicant.department}</p>
                 </div>
             `;
-            applicantInfo.classList.remove('hidden');
+                    applicantInfo.classList.remove('hidden');
+                }
+
+                // Fetch conflicting exams and check if the applicant is part of them
+                //console.log('Fetching conflicting exams for applicantId:', applicant.id, 'examId:', examId, 'and roomId:', roomId);
+                fetch(`/hide-or-show-remove-applicant-button/${applicant.id}/${examId}/${roomId}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        //console.log('Conflict check result:', data);
+                        if (data.isInConflictingExam) {
+                            // Hide the remove button if the applicant is in a conflicting exam
+                            //console.log('Applicant is part of a conflicting exam. Hiding remove button.');
+                        } else {
+                            //console.log('Applicant is not part of a conflicting exam. Showing remove button.');
+                            const removeButton = document.createElement('button');
+                            removeButton.textContent = 'นำออก';
+                            removeButton.classList.add('px-4', 'py-2', 'bg-red-500', 'text-white', 'rounded', 'mt-4',
+                                'remove-button');
+                            removeButton.onclick = () => removeApplicantFromSeat(seatRecordId);
+                            applicantList.appendChild(removeButton);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching conflicting exams:', error);
+                    });
+            } else {
+                saveButton.classList.remove('hidden');
+                modalTitle.textContent = 'เลือกผู้เข้าสอบ';
+                fetchApplicantsWithoutSeats();
+            }
+
+            document.getElementById('applicants-modal').classList.remove('hidden');
         }
 
-        // Fetch conflicting exams and check if the applicant is part of them
-        //console.log('Fetching conflicting exams for applicantId:', applicant.id, 'examId:', examId, 'and roomId:', roomId);
-        fetch(`/hide-or-show-remove-applicant-button/${applicant.id}/${examId}/${roomId}`)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                //console.log('Conflict check result:', data);
-                if (data.isInConflictingExam) {
-                    // Hide the remove button if the applicant is in a conflicting exam
-                    //console.log('Applicant is part of a conflicting exam. Hiding remove button.');
-                } else {
-                    //console.log('Applicant is not part of a conflicting exam. Showing remove button.');
-                    const removeButton = document.createElement('button');
-                    removeButton.textContent = 'นำออก';
-                    removeButton.classList.add('px-4', 'py-2', 'bg-red-500', 'text-white', 'rounded', 'mt-4', 'remove-button');
-                    removeButton.onclick = () => removeApplicantFromSeat(seatRecordId);
-                    applicantList.appendChild(removeButton);
-                }
-            })
-            .catch(error => {
-                console.error('Error fetching conflicting exams:', error);
-            });
-    } else {
-        saveButton.classList.remove('hidden');
-        modalTitle.textContent = 'เลือกผู้เข้าสอบ';
-        fetchApplicantsWithoutSeats();
-    }
-
-    document.getElementById('applicants-modal').classList.remove('hidden');
-}
-
-document.getElementById('close-applicants-modal-btn').addEventListener('click', function() {
-    document.getElementById('applicants-modal').classList.add('hidden');
-});
-
-
-</script>
+        document.getElementById('close-applicants-modal-btn').addEventListener('click', function() {
+            document.getElementById('applicants-modal').classList.add('hidden');
+        });
+    </script>

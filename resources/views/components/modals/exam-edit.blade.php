@@ -10,8 +10,10 @@
             <div class="absolute inset-0 bg-gray-500 opacity-75 w-screen h-screen"></div>
         </div>
         <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-        <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-            <form id="edit-exam-form" method="POST" action="{{ route('update-exam') }}" onsubmit="return validateForm()">
+        <div
+            class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+            <form id="edit-exam-form" method="POST" action="{{ route('update-exam') }}"
+                onsubmit="return validateForm()">
                 @csrf
                 @method('PUT')
                 <div class="bg-white px-4 pb-4 sm:p-6 sm:pb-4">
@@ -22,13 +24,16 @@
                                 <div>
                                     <input type="hidden" name="exam_id" id="edit-exam-id">
                                     <div class="mb-4">
-                                        <label for="edit-department_name" class="block font-semibold">ชื่อฝ่ายงาน</label>
-                                        <input list="department_list" type="text" id="edit-department_name" name="department_name" required class="w-full my-2 px-3 py-2 rounded ring-1 shadow-sm ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-green-600 transition-all duration-300 outline-none">
+                                        <label for="edit-department_name"
+                                            class="block font-semibold">ชื่อฝ่ายงาน</label>
+                                        <input list="department_list" type="text" id="edit-department_name"
+                                            name="department_name" required
+                                            class="w-full my-2 px-3 py-2 rounded ring-1 shadow-sm ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-green-600 transition-all duration-300 outline-none">
                                         <datalist id="department_list">
                                             @php
                                                 $addedDepartments = [];
                                             @endphp
-                                            @foreach($departments as $department)
+                                            @foreach ($departments as $department)
                                                 @if (!in_array($department, $addedDepartments))
                                                     <option value="{{ $department }}"></option>
                                                     @php
@@ -37,16 +42,19 @@
                                                 @endif
                                             @endforeach
                                         </datalist>
-                                        <span id="edit-department_name_error" class="error-message" style="color: red; display: none;">* กรุณากรอกชื่อฝ่ายงานให้ถูกต้อง</span>
+                                        <span id="edit-department_name_error" class="error-message"
+                                            style="color: red; display: none;">* กรุณากรอกชื่อฝ่ายงานให้ถูกต้อง</span>
                                     </div>
                                     <div class="mb-4">
                                         <label for="edit-exam_position" class="block font-semibold">ตำแหน่งสอบ</label>
-                                        <input type="text" list="exam_position_list" id="edit-exam_position" name="exam_position" required class="w-full my-2 px-3 py-2 rounded ring-1 shadow-sm ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-green-600 transition-all duration-300 outline-none">
+                                        <input type="text" list="exam_position_list" id="edit-exam_position"
+                                            name="exam_position" required
+                                            class="w-full my-2 px-3 py-2 rounded ring-1 shadow-sm ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-green-600 transition-all duration-300 outline-none">
                                         <datalist id="exam_position_list">
                                             @php
                                                 $addedPositions = [];
                                             @endphp
-                                            @foreach($positions as $position)
+                                            @foreach ($positions as $position)
                                                 @if (!in_array($position, $addedPositions))
                                                     <option value="{{ $position }}"></option>
                                                     @php
@@ -55,29 +63,42 @@
                                                 @endif
                                             @endforeach
                                         </datalist>
-                                        <span id="edit-exam_position_error" class="error-message" style="color: red; display: none;">* กรุณากรอกตำแหน่งให้ถูกต้อง</span>
+                                        <span id="edit-exam_position_error" class="error-message"
+                                            style="color: red; display: none;">* กรุณากรอกตำแหน่งให้ถูกต้อง</span>
                                     </div>
                                     <div class="mb-4">
                                         <label for="edit-subject" class="block font-semibold">วิชา</label>
-                                        <input type="text" id="edit-subject" name="subject" required class="w-full my-2 px-3 py-2 rounded ring-1 shadow-sm ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-green-600 transition-all duration-300 outline-none">
-                                        <span id="edit-subject_error" class="error-message" style="color: red; display: none;">* กรุณากรอกวิชาให้ถูกต้อง</span>
+                                        <input type="text" id="edit-subject" name="subject" required
+                                            class="w-full my-2 px-3 py-2 rounded ring-1 shadow-sm ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-green-600 transition-all duration-300 outline-none">
+                                        <span id="edit-subject_error" class="error-message"
+                                            style="color: red; display: none;">* กรุณากรอกวิชาให้ถูกต้อง</span>
                                     </div>
                                 </div>
                                 <div>
                                     <div class="mb-4">
                                         <label for="edit-exam_date" class="block font-semibold">วันที่สอบ</label>
-                                        <input type="date" id="edit-exam_date" name="exam_date" required class="w-full my-2 px-3 py-2 rounded ring-1 shadow-sm ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-green-600 transition-all duration-300 outline-none">
-                                        <span id="edit-exam_date_error" class="error-message" style="color: red; display: none;">* กรุณาเลือกวันที่ที่ถูกต้อง</span>
+                                        <input type="date" id="edit-exam_date" name="exam_date" required
+                                            class="w-full my-2 px-3 py-2 rounded ring-1 shadow-sm ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-green-600 transition-all duration-300 outline-none">
+                                        <span id="edit-exam_date_error" class="error-message"
+                                            style="color: red; display: none;">* กรุณาเลือกวันที่ที่ถูกต้อง</span>
                                     </div>
                                     <div class="mb-4">
-                                        <label for="edit-exam_start_time" class="block font-semibold">เวลาที่เริ่มสอบ</label>
-                                        <input list="time_list" type="text" id="edit-exam_start_time" name="exam_start_time" required class="w-full my-2 px-3 py-2 rounded ring-1 shadow-sm ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-green-600 transition-all duration-300 outline-none">
-                                        <span id="edit-exam_start_time_error" class="error-message" style="color: red; display: none;">* กรุณาเลือกเวลาจากรายการ</span>
+                                        <label for="edit-exam_start_time"
+                                            class="block font-semibold">เวลาที่เริ่มสอบ</label>
+                                        <input list="time_list" type="text" id="edit-exam_start_time"
+                                            name="exam_start_time" required
+                                            class="w-full my-2 px-3 py-2 rounded ring-1 shadow-sm ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-green-600 transition-all duration-300 outline-none">
+                                        <span id="edit-exam_start_time_error" class="error-message"
+                                            style="color: red; display: none;">* กรุณาเลือกเวลาจากรายการ</span>
                                     </div>
                                     <div class="mb-4">
-                                        <label for="edit-exam_end_time" class="block font-semibold">เวลาที่สิ้นสุดสอบ</label>
-                                        <input list="time_list" type="text" id="edit-exam_end_time" name="exam_end_time" required class="w-full my-2 px-3 py-2 rounded ring-1 shadow-sm ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-green-600 transition-all duration-300 outline-none">
-                                        <span id="edit-exam_end_time_error" class="error-message" style="color: red; display: none;">* กรุณาเลือกเวลาจากรายการ</span>
+                                        <label for="edit-exam_end_time"
+                                            class="block font-semibold">เวลาที่สิ้นสุดสอบ</label>
+                                        <input list="time_list" type="text" id="edit-exam_end_time"
+                                            name="exam_end_time" required
+                                            class="w-full my-2 px-3 py-2 rounded ring-1 shadow-sm ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-green-600 transition-all duration-300 outline-none">
+                                        <span id="edit-exam_end_time_error" class="error-message"
+                                            style="color: red; display: none;">* กรุณาเลือกเวลาจากรายการ</span>
                                         <datalist id="time_list">
                                             @for ($hour = 0; $hour < 24; $hour++)
                                                 @for ($minute = 0; $minute < 60; $minute += 30)
@@ -93,10 +114,12 @@
                 </div>
                 <div class="bg-gray-200 px-4 pb-4 sm:px-6 sm:flex sm:flex-row-reverse">
                     <div class="flex pt-4 pr-4 gap-4">
-                        <x-buttons.secondary type="button" class="hover:scale-105 py-2 w-12 justify-center" onclick="closeExamEditModal()">
+                        <x-buttons.secondary type="button" class="hover:scale-105 py-2 w-12 justify-center"
+                            onclick="closeExamEditModal()">
                             Cancel
                         </x-buttons.secondary>
-                        <x-buttons.primary type="submit" class="hover:scale-105 py-2 px-12 w-12 justify-center" onclick="">
+                        <x-buttons.primary type="submit" class="hover:scale-105 py-2 px-12 w-12 justify-center"
+                            onclick="">
                             Save
                         </x-buttons.primary>
                     </div>
@@ -107,9 +130,9 @@
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('.edit-exam-button').forEach(button => {
-            button.addEventListener('click', function () {
+            button.addEventListener('click', function() {
                 const examId = this.dataset.examId;
                 const departmentName = this.dataset.departmentName;
                 const examPosition = this.dataset.examPosition;
@@ -122,8 +145,9 @@
                 document.getElementById('edit-department_name').value = departmentName;
                 document.getElementById('edit-exam_position').value = examPosition;
                 document.getElementById('edit-exam_date').value = examDate;
-                document.getElementById('edit-exam_start_time').value = examStartTime.substr(11, 5);
-                document.getElementById('edit-exam_end_time').value = examEndTime.substr(11, 5); 
+                document.getElementById('edit-exam_start_time').value = examStartTime.substr(11,
+                    5);
+                document.getElementById('edit-exam_end_time').value = examEndTime.substr(11, 5);
                 document.getElementById('edit-subject').value = examSubject;
 
                 document.getElementById('edit-exam-modal').classList.remove('hidden');
@@ -134,12 +158,12 @@
     });
 
     function closeExamEditModal() {
-            document.getElementById('edit-exam-modal').classList.add('hidden');
-        }
+        document.getElementById('edit-exam-modal').classList.add('hidden');
+    }
 
     function validateForm() {
         var isValid = true;
-        
+
         var departmentFound = false;
         var positionFound = false;
 
@@ -160,7 +184,7 @@
 
         var examDate = document.getElementById('edit-exam_date');
         var examDateError = document.getElementById('edit-exam_date_error');
-        
+
         var selectedDate = new Date(examDate.value);
         var today = new Date();
 
@@ -237,8 +261,8 @@
         }
 
         if (departmentFound && positionFound) {
-            var examTakersQuantity = window.applicants.filter(applicant => 
-                applicant.department === departmentName.value && 
+            var examTakersQuantity = window.applicants.filter(applicant =>
+                applicant.department === departmentName.value &&
                 applicant.position === positionName.value
             ).length;
 
@@ -250,8 +274,7 @@
                 departmentNameError.style.display = 'none';
             }
         }
-        
+
         return isValid;
     }
-
 </script>
