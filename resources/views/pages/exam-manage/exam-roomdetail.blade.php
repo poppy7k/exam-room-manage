@@ -20,7 +20,7 @@
     // Log::info('Grouped Applicants:', ['groupedApplicants' => $groupedApplicants]);
     // Log::info('Exam Colors:', ['examColors' => $examColors]);
 @endphp
-<div class="flex flex-col w-full max-h-full">
+<div class="flex flex-col w-full max-h-full" x-data="assignSeats">
     <div class="flex justify-between">
         <div class="flex flex-col bg-white rounded-lg px-4 py-3 shadow-md overflow-y-auto max-h-32 mb-3">
             <div class="flex">
@@ -127,12 +127,90 @@
                 <svg id="Layer_1" height="24" class="w-6 h-6" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg" data-name="Layer 1"><path d="m17 24a1 1 0 0 1 -1-1 7 7 0 0 0 -14 0 1 1 0 0 1 -2 0 9 9 0 0 1 18 0 1 1 0 0 1 -1 1zm6-11h-6a1 1 0 0 1 0-2h6a1 1 0 0 1 0 2zm-14-1a6 6 0 1 1 6-6 6.006 6.006 0 0 1 -6 6zm0-10a4 4 0 1 0 4 4 4 4 0 0 0 -4-4z"/></svg>
                 <x-tooltip title="ลบผู้เข้าสอบออกจากที่นั่ง" class="group-hover:-translate-x-[5.5rem] group-hover:translate-y-8"></x-tooltip>
             </x-buttons.icon-danger>
-            <div x-data="{ showApplicantAdd: false }" class="z-40">
+            <div x-data="{ showApplicantAdd: false, showSeatPopup: false, direction: '', startSeat: '' }" class="z-40">
                 <x-buttons.icon-primary  @click="showApplicantAdd = !showApplicantAdd" id="applicant-add" onclick="event.stopPropagation();" type="button" class="px-[5px] pt-1.5 pb-1 z-40">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" id="Outline" viewBox="0 0 24 24" width="24" height="24"><path d="M23,11H21V9a1,1,0,0,0-2,0v2H17a1,1,0,0,0,0,2h2v2a1,1,0,0,0,2,0V13h2a1,1,0,0,0,0-2Z"/><path d="M9,12A6,6,0,1,0,3,6,6.006,6.006,0,0,0,9,12ZM9,2A4,4,0,1,1,5,6,4,4,0,0,1,9,2Z"/><path d="M9,14a9.01,9.01,0,0,0-9,9,1,1,0,0,0,2,0,7,7,0,0,1,14,0,1,1,0,0,0,2,0A9.01,9.01,0,0,0,9,14Z"/></svg>
                     <x-tooltip title="เพิ่มผู้เข้าสอบลงที่นั่ง" class="group-hover:-translate-x-20 group-hover:translate-y-8"></x-tooltip>
                 </x-buttons.icon-primary>
-                @include('components.dropdowns.exam-room-detail.applicant-add')
+                <div x-show="showApplicantAdd" @click.outside="showApplicantAdd = false" id="ApplicantAdd" class="absolute -translate-x-24 z-40"
+                    x-transition:enter="transition ease-out duration-300"
+                    x-transition:enter-start="opacity-0 -translate-y-16 scale-90"
+                    x-transition:enter-end="opacity-100 -translate-y-0 scale-100"
+                    x-transition:leave="transition ease-in duration-100"
+                    x-transition:leave-start="opacity-100 scale-100 -translate-y-0"
+                    x-transition:leave-end="opacity-0 scale-90 -translate-y-16">
+                    <div class="relative flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                        <div class="align-bottom bg-white border-2 border-gray-800/20 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                            <div class="px-4 pt-2 pb-4">
+                                <p class="my-2 font-semibold text-xl">เลือกวิธีการจัดที่นั่ง</p>
+                                <div class="flex gap-4 justify-center">
+                                    <x-buttons.primary @click="direction = 'left-to-right'; showSeatPopup = true; showApplicantAdd = false" type="button" class="pl-2 py-2 z-10 w-10 h-10 rounded-lg fill-white">
+                                        <div class="absolute -mt-1 ml-0.5">
+                                            <svg xmlns="http://www.w3.org/2000/svg" id="Outline" viewBox="0 0 24 24" width="20" height="20"><path d="M23.12,9.91,19.25,6a1,1,0,0,0-1.42,0h0a1,1,0,0,0,0,1.41L21.39,11H1a1,1,0,0,0-1,1H0a1,1,0,0,0,1,1H21.45l-3.62,3.61a1,1,0,0,0,0,1.42h0a1,1,0,0,0,1.42,0l3.87-3.88A3,3,0,0,0,23.12,9.91Z"/></svg>
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="-mt-1.5" id="Outline" viewBox="0 0 24 24" width="20" height="20"><path d="M23.12,9.91,19.25,6a1,1,0,0,0-1.42,0h0a1,1,0,0,0,0,1.41L21.39,11H1a1,1,0,0,0-1,1H0a1,1,0,0,0,1,1H21.45l-3.62,3.61a1,1,0,0,0,0,1.42h0a1,1,0,0,0,1.42,0l3.87-3.88A3,3,0,0,0,23.12,9.91Z"/></svg>
+                                        </div>
+                                    </x-buttons.primary>
+                                    <x-buttons.primary @click="direction = 'alternate-left-right'; showSeatPopup = true; showApplicantAdd = false" type="button" class="pl-2 py-2 z-10 w-10 h-10 rounded-lg fill-white">
+                                        <div class="absolute -mt-1 ml-0.5">
+                                            <svg xmlns="http://www.w3.org/2000/svg" id="Outline" viewBox="0 0 24 24" width="20" height="20"><path d="M23.12,9.91,19.25,6a1,1,0,0,0-1.42,0h0a1,1,0,0,0,0,1.41L21.39,11H1a1,1,0,0,0-1,1H0a1,1,0,0,0,1,1H21.45l-3.62,3.61a1,1,0,0,0,0,1.42h0a1,1,0,0,0,1.42,0l3.87-3.88A3,3,0,0,0,23.12,9.91Z"/></svg>
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="-mt-1.5 rotate-180" id="Outline" viewBox="0 0 24 24" width="20" height="20"><path d="M23.12,9.91,19.25,6a1,1,0,0,0-1.42,0h0a1,1,0,0,0,0,1.41L21.39,11H1a1,1,0,0,0-1,1H0a1,1,0,0,0,1,1H21.45l-3.62,3.61a1,1,0,0,0,0,1.42h0a1,1,0,0,0,1.42,0l3.87-3.88A3,3,0,0,0,23.12,9.91Z"/></svg>
+                                        </div>
+                                    </x-buttons.primary>
+                                    <x-buttons.primary @click="direction = 'right-to-left'; showSeatPopup = true; showApplicantAdd = false" type="button" class="pl-2 py-2 z-10 w-10 h-10 rounded-lg fill-white">
+                                        <div class="absolute -mt-1 ml-0.5">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="rotate-180" id="Outline" viewBox="0 0 24 24" width="20" height="20"><path d="M23.12,9.91,19.25,6a1,1,0,0,0-1.42,0h0a1,1,0,0,0,0,1.41L21.39,11H1a1,1,0,0,0-1,1H0a1,1,0,0,0,1,1H21.45l-3.62,3.61a1,1,0,0,0,0,1.42h0a1,1,0,0,0,1.42,0l3.87-3.88A3,3,0,0,0,23.12,9.91Z"/></svg>
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="-mt-1.5 rotate-180" id="Outline" viewBox="0 0 24 24" width="20" height="20"><path d="M23.12,9.91,19.25,6a1,1,0,0,0-1.42,0h0a1,1,0,0,0,0,1.41L21.39,11H1a1,1,0,0,0-1,1H0a1,1,0,0,0,1,1H21.45l-3.62,3.61a1,1,0,0,0,0,1.42h0a1,1,0,0,0,1.42,0l3.87-3.88A3,3,0,0,0,23.12,9.91Z"/></svg>
+                                        </div>
+                                    </x-buttons.primary>
+                                    <x-buttons.primary @click="direction = 'alternate-right-left'; showSeatPopup = true; showApplicantAdd = false" type="button" class="pl-2 py-2 z-10 w-10 h-10 rounded-lg fill-white">
+                                        <div class="absolute -mt-1 ml-0.5">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="rotate-180" id="Outline" viewBox="0 0 24 24" width="20" height="20"><path d="M23.12,9.91,19.25,6a1,1,0,0,0-1.42,0h0a1,1,0,0,0,0,1.41L21.39,11H1a1,1,0,0,0-1,1H0a1,1,0,0,0,1,1H21.45l-3.62,3.61a1,1,0,0,0,0,1.42h0a1,1,0,0,0,1.42,0l3.87-3.88A3,3,0,0,0,23.12,9.91Z"/></svg>
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="-mt-1.5" id="Outline" viewBox="0 0 24 24" width="20" height="20"><path d="M23.12,9.91,19.25,6a1,1,0,0,0-1.42,0h0a1,1,0,0,0,0,1.41L21.39,11H1a1,1,0,0,0-1,1H0a1,1,0,0,0,1,1H21.45l-3.62,3.61a1,1,0,0,0,0,1.42h0a1,1,0,0,0,1.42,0l3.87-3.88A3,3,0,0,0,23.12,9.91Z"/></svg>
+                                        </div>
+                                    </x-buttons.primary>
+                                </div>
+                                <div class="flex mt-4 gap-4 justify-center">
+                                    <x-buttons.primary @click="direction = 'top-to-bottom'; showSeatPopup = true; showApplicantAdd = false" type="button" class="pl-2 py-2 z-10 w-10 h-10 rounded-lg fill-white">
+                                        <div class="absolute -ml-1 mt-0.5 flex">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="rotate-90" id="Outline" viewBox="0 0 24 24" width="20" height="20"><path d="M23.12,9.91,19.25,6a1,1,0,0,0-1.42,0h0a1,1,0,0,0,0,1.41L21.39,11H1a1,1,0,0,0-1,1H0a1,1,0,0,0,1,1H21.45l-3.62,3.61a1,1,0,0,0,0,1.42h0a1,1,0,0,0,1.42,0l3.87-3.88A3,3,0,0,0,23.12,9.91Z"/></svg>
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="-ml-1.5 rotate-90" id="Outline" viewBox="0 0 24 24" width="20" height="20"><path d="M23.12,9.91,19.25,6a1,1,0,0,0-1.42,0h0a1,1,0,0,0,0,1.41L21.39,11H1a1,1,0,0,0-1,1H0a1,1,0,0,0,1,1H21.45l-3.62,3.61a1,1,0,0,0,0,1.42h0a1,1,0,0,0,1.42,0l3.87-3.88A3,3,0,0,0,23.12,9.91Z"/></svg>
+                                        </div>
+                                    </x-buttons.primary>
+                                    <x-buttons.primary @click="direction = 'alternate-top-bottom'; showSeatPopup = true; showApplicantAdd = false" type="button" class="pl-2 py-2 z-10 w-10 h-10 rounded-lg fill-white">
+                                        <div class="absolute -ml-1 mt-0.5 flex">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="rotate-90" id="Outline" viewBox="0 0 24 24" width="20" height="20"><path d="M23.12,9.91,19.25,6a1,1,0,0,0-1.42,0h0a1,1,0,0,0,0,1.41L21.39,11H1a1,1,0,0,0-1,1H0a1,1,0,0,0,1,1H21.45l-3.62,3.61a1,1,0,0,0,0,1.42h0a1,1,0,0,0,1.42,0l3.87-3.88A3,3,0,0,0,23.12,9.91Z"/></svg>
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="-ml-1.5 -rotate-90" id="Outline" viewBox="0 0 24 24" width="20" height="20"><path d="M23.12,9.91,19.25,6a1,1,0,0,0-1.42,0h0a1,1,0,0,0,0,1.41L21.39,11H1a1,1,0,0,0-1,1H0a1,1,0,0,0,1,1H21.45l-3.62,3.61a1,1,0,0,0,0,1.42h0a1,1,0,0,0,1.42,0l3.87-3.88A3,3,0,0,0,23.12,9.91Z"/></svg>
+                                        </div>
+                                    </x-buttons.primary>
+                                    <x-buttons.primary @click="direction = 'bottom-to-top'; showSeatPopup = true; showApplicantAdd = false" type="button" class="pl-2 py-2 z-10 w-10 h-10 rounded-lg fill-white">
+                                        <div class="absolute -ml-1 mt-0.5 flex">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="-rotate-90" id="Outline" viewBox="0 0 24 24" width="20" height="20"><path d="M23.12,9.91,19.25,6a1,1,0,0,0-1.42,0h0a1,1,0,0,0,0,1.41L21.39,11H1a1,1,0,0,0-1,1H0a1,1,0,0,0,1,1H21.45l-3.62,3.61a1,1,0,0,0,0,1.42h0a1,1,0,0,0,1.42,0l3.87-3.88A3,3,0,0,0,23.12,9.91Z"/></svg>
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="-ml-1.5 -rotate-90" id="Outline" viewBox="0 0 24 24" width="20" height="20"><path d="M23.12,9.91,19.25,6a1,1,0,0,0-1.42,0h0a1,1,0,0,0,0,1.41L21.39,11H1a1,1,0,0,0-1,1H0a1,1,0,0,0,1,1H21.45l-3.62,3.61a1,1,0,0,0,0,1.42h0a1,1,0,0,0,1.42,0l3.87-3.88A3,3,0,0,0,23.12,9.91Z"/></svg>
+                                        </div>
+                                    </x-buttons.primary>
+                                    <x-buttons.primary @click="direction = 'alternate-bottom-top'; showSeatPopup = true; showApplicantAdd = false" type="button" class="pl-2 py-2 z-10 w-10 h-10 rounded-lg fill-white">
+                                        <div class="absolute -ml-1 mt-0.5 flex">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="-rotate-90" id="Outline" viewBox="0 0 24 24" width="20" height="20"><path d="M23.12,9.91,19.25,6a1,1,0,0,0-1.42,0h0a1,1,0,0,0,0,1.41L21.39,11H1a1,1,0,0,0-1,1H0a1,1,0,0,0,1,1H21.45l-3.62,3.61a1,1,0,0,0,0,1.42h0a1,1,0,0,0,1.42,0l3.87-3.88A3,3,0,0,0,23.12,9.91Z"/></svg>
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="-ml-1.5 rotate-90" id="Outline" viewBox="0 0 24 24" width="20" height="20"><path d="M23.12,9.91,19.25,6a1,1,0,0,0-1.42,0h0a1,1,0,0,0,0,1.41L21.39,11H1a1,1,0,0,0-1,1H0a1,1,0,0,0,1,1H21.45l-3.62,3.61a1,1,0,0,0,0,1.42h0a1,1,0,0,0,1.42,0l3.87-3.88A3,3,0,0,0,23.12,9.91Z"/></svg>
+                                        </div>
+                                    </x-buttons.primary>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Popup for selecting start seat -->
+                <div x-show="showSeatPopup" @click.outside="showSeatPopup = false" class="fixed inset-0 flex items-center justify-center z-50">
+                    <div class="bg-white rounded-lg shadow-lg p-6">
+                        <h3 class="text-lg font-semibold mb-4">เลือกที่นั่งเริ่มต้น</h3>
+                        <input type="text" class="border rounded px-2 py-1 mb-4" placeholder="ที่นั่งเริ่มต้น (เช่น 1-A)" x-model="startSeat">
+                        <div class="flex gap-4 justify-center">
+                            <x-buttons.primary @click="assignAllApplicants()" type="button" class="px-4 py-2">ยืนยัน</x-buttons.primary>
+                            <x-buttons.secondary @click="showSeatPopup = false" type="button" class="px-4 py-2">ยกเลิก</x-buttons.secondary>
+                        </div>
+                    </div>
+                </div>
             </div>
             <x-buttons.primary id="select-examiners-btn" class="px-5 py-2 rounded-lg text-white">
                 เลือกผู้คุมสอบ
@@ -636,9 +714,19 @@ function removeApplicantsFromRoom(selected_room_id) {
 // }
 
 
-function assignAllApplicantsToSeats(direction) {
+function assignAllApplicantsToSeats(direction, startSeat) {
     const examId = {{ $exam->id }};
     const roomId = {{ $selectedRooms->room->id }};
+
+    console.log('Direction:', direction);
+    console.log('Start Seat:', startSeat);
+    console.log('Exam ID:', examId);
+    console.log('Room ID:', roomId);
+
+    if (!startSeat) {
+        alert('กรุณาเลือกที่นั่งเริ่มต้น');
+        return;
+    }
 
     fetch('/assign-all-applicants-to-seats', {
         method: 'POST',
@@ -649,11 +737,16 @@ function assignAllApplicantsToSeats(direction) {
         body: JSON.stringify({
             exam_id: examId,
             room_id: roomId,
-            direction: direction
+            direction: direction,
+            start_seat: startSeat
         })
     })
-    .then(response => response.json())
+    .then(response => {
+        console.log('Fetch response:', response);
+        return response.json();
+    })
     .then(data => {
+        console.log('Response data:', data);
         if (data.success) {
             alert(data.message);
             location.reload();
@@ -667,6 +760,47 @@ function assignAllApplicantsToSeats(direction) {
     });
 }
 
+document.addEventListener('alpine:init', () => {
+    Alpine.data('assignSeats', () => ({
+        showApplicantAdd: false,
+        showSeatPopup: false,
+        direction: '',
+        startSeat: '',
+        assignAllApplicants() {
+            console.log('assignAllApplicants called');
+            const direction = this.direction;
+            const startSeat = this.startSeat;
+            assignAllApplicantsToSeats(direction, startSeat);
+        },
+        fetchFirstAvailableSeat() {
+            const roomId = {{ $selectedRooms->room->id }};
+            console.log('Fetching first available seat for room ID:', roomId);
+            fetch(`/get-first-available-seat/${roomId}`)
+                .then(response => response.json())
+                .then(data => {
+                    console.log('First available seat response:', data);
+                    if (data.success) {
+                        this.startSeat = data.firstAvailableSeat;
+                    } else {
+                        alert('ไม่สามารถดึงที่นั่งที่ว่างได้');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while fetching the first available seat.');
+                });
+        },
+        init() {
+            console.log('Initializing assignSeats component');
+            this.$watch('showApplicantAdd', (value) => {
+                if (value) {
+                    console.log('Applicant add shown, fetching first available seat');
+                    this.fetchFirstAvailableSeat();
+                }
+            });
+        }
+    }));
+});
 
 </script>
 @endsection

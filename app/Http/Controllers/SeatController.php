@@ -475,27 +475,23 @@ class SeatController extends Controller
 
     public function assignAllApplicantsToSeats(Request $request)
     {
-        //Log::info('Starting to assign all applicants to seats', ['request_data' => $request->all()]);
-    
         $validatedData = $request->validate([
             'exam_id' => 'required|exists:exams,id',
             'room_id' => 'required|exists:exam_room_information,id',
-            'direction' => 'required|string|in:left-to-right,right-to-left,alternate-left-right,alternate-right-left,top-to-bottom,bottom-to-top,alternate-top-bottom,alternate-bottom-top'
+            'direction' => 'required|string|in:left-to-right,right-to-left,alternate-left-right,alternate-right-left,top-to-bottom,bottom-to-top,alternate-top-bottom,alternate-bottom-top',
+            'start_seat' => 'required|string'
         ]);
     
         $examId = $validatedData['exam_id'];
         $roomId = $validatedData['room_id'];
         $direction = $validatedData['direction'];
+        $startSeat = $validatedData['start_seat'];
     
         $exam = Exam::findOrFail($examId);
         $room = ExamRoomInformation::findOrFail($roomId);
     
-        //Log::info('Fetched exam and room details', ['exam' => $exam, 'room' => $room]);
-    
         // Fetch all applicants for the exam
         $applicants = $exam->applicants()->wherePivot('status', 'not_assigned')->get();
-    
-        //Log::info('Fetched applicants', ['count' => $applicants->count()]);
     
         if ($applicants->isEmpty()) {
             return response()->json(['success' => false, 'message' => 'No applicants to assign.'], 400);
@@ -508,8 +504,15 @@ class SeatController extends Controller
             }
         }
     
-        //Log::info('Generated seats array', ['seatsArray' => $seatsArray]);
+        // Find the index of the start seat
+        $startSeatRow = intval(explode('-', $startSeat)[0]);
+        $startSeatColumn = ord(explode('-', $startSeat)[1]) - 64;
+        $startSeatIndex = array_search(['row' => $startSeatRow, 'column' => $startSeatColumn], $seatsArray);
     
+        // Reorder the seatsArray to start from the start seat
+        $seatsArray = array_merge(array_slice($seatsArray, $startSeatIndex), array_slice($seatsArray, 0, $startSeatIndex));
+    
+        // Sort seats based on the selected direction
         switch ($direction) {
             case 'right-to-left':
                 $seatsArray = $this->sortSeatsRightToLeft($seatsArray, $room->rows, $room->columns);
@@ -535,11 +538,9 @@ class SeatController extends Controller
             // Default is left-to-right, no need to sort
         }
     
-        //Log::info('Sorted seats array based on direction', ['direction' => $direction, 'seatsArray' => $seatsArray]);
-    
         $applicantIndex = 0;
         $selectedRoom = SelectedRoom::firstOrCreate(['room_id' => $room->id, 'exam_id' => $exam->id]);
-
+    
         $invalidSeats = json_decode($room->invalid_seats, true) ?? [];
     
         foreach ($seatsArray as $seat) {
@@ -551,38 +552,24 @@ class SeatController extends Controller
                 // Skip deactivated seat
                 continue;
             } 
-
+    
             $applicant = $applicants->values()->get($applicantIndex);
-            $seatAvailable = $this->checkSeatAvailability($selectedRoom->id, $applicants[$applicantIndex]->id, $exam->exam_start_time, $exam->exam_end_time, $seat['row'], $seat['column']);
-
-            // Log::debug('Checking Seat Availability', [
-            //     'seatId' => $seatId,
-            //     'seatAvailable' => $seatAvailable
-            // ]);
-            Log::info($seatAvailable);
-
+            $seatAvailable = $this->checkSeatAvailability($selectedRoom->id, $applicant->id, $exam->exam_start_time, $exam->exam_end_time, $seat['row'], $seat['column']);
+    
             if ($seatAvailable) {
-
-                // Log::debug('Assigning Applicant', [
-                //     'applicantIndex' => $applicantIndex,
-                //     'applicant' => $applicant
-                // ]);
-
                 Seat::create([
                     'selected_room_id' => $selectedRoom->id,
-                    'applicant_id' => $applicants[$applicantIndex]->id,
+                    'applicant_id' => $applicant->id,
                     'row' => $seat['row'],
                     'column' => $seat['column'],
                 ]);
-
+    
                 $exam->applicants()->updateExistingPivot($applicant->id, ['status' => 'assigned']);
                 $selectedRoom->increment('applicant_seat_quantity');
-
+    
                 $applicantIndex++;
             }
         }
-    
-        //Log::info('Finished assigning applicants to seats', ['assigned_count' => $applicantIndex]);
     
         return response()->json(['success' => true, 'message' => 'Applicants assigned to seats successfully.']);
     }
@@ -782,5 +769,29 @@ class SeatController extends Controller
         } else {
             //Log::debug('No extra seats to delete');
         }
+    }
+
+    public function getFirstAvailableSeat($roomId)
+    {
+        $room = ExamRoomInformation::findOrFail($roomId);
+        $occupiedSeats = Seat::where('selected_room_id', $roomId)->get(['row', 'column']);
+        $occupiedSeatIds = $occupiedSeats->map(function ($seat) {
+            return "{$seat->row}-" . chr(64 + $seat->column);
+        })->toArray();
+    
+        Log::info('Occupied seats:', $occupiedSeatIds);
+    
+        for ($i = 1; $i <= $room->rows; $i++) {
+            for ($j = 1; $j <= $room->columns; $j++) {
+                $seatId = "{$i}-" . chr(64 + $j);
+                if (!in_array($seatId, $occupiedSeatIds)) {
+                    Log::info('First available seat found:', ['seatId' => $seatId]);
+                    return response()->json(['success' => true, 'firstAvailableSeat' => $seatId]);
+                }
+            }
+        }
+    
+        Log::info('No available seats found');
+        return response()->json(['success' => false, 'message' => 'No available seats found.']);
     }
 }
