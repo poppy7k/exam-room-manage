@@ -322,7 +322,15 @@ class ExamController extends Controller
 
         $departments = $applicants->pluck('department')->unique()->toArray();
         $positions = $applicants->pluck('position')->unique()->toArray();
-        $subjects = $exam->pluck('subject')->toArray();
+        $subjects = Exam::where('exam_date', $exam->exam_date)
+                        ->where('exam_start_time', '<=', $exam->exam_end_time)
+                        ->where('exam_end_time', '>=', $exam->exam_start_time)
+                        ->whereHas('selectedRooms', function ($query) use ($room) {
+                            $query->where('room_id', $room->id);
+                        })
+                        ->pluck('subject')
+                        ->unique()
+                        ->toArray();
     
         $breadcrumbs = [
             ['url' => '/', 'title' => 'หน้าหลัก'],
