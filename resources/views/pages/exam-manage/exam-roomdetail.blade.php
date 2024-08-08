@@ -122,18 +122,16 @@
         <div class="flex gap-2 items-end my-2.5">
             <x-buttons.icon-primary type="button" class="px-[5px] pt-1.5 pb-1 z-40 translate-y-0.5" id="update-applicants-button">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 -translate-y-1" id="Outline" viewBox="0 0 24 24" width="512" height="512"><path d="M9.878,18.122a3,3,0,0,0,4.244,0l3.211-3.211A1,1,0,0,0,15.919,13.5l-2.926,2.927L13,1a1,1,0,0,0-1-1h0a1,1,0,0,0-1,1l-.009,15.408L8.081,13.5a1,1,0,0,0-1.414,1.415Z"/><path d="M23,16h0a1,1,0,0,0-1,1v4a1,1,0,0,1-1,1H3a1,1,0,0,1-1-1V17a1,1,0,0,0-1-1H1a1,1,0,0,0-1,1v4a3,3,0,0,0,3,3H21a3,3,0,0,0,3-3V17A1,1,0,0,0,23,16Z"/></svg>
+                <x-tooltip title="ดาวน์โหลดผังห้อง" class="group-hover:-translate-x-10 group-hover:translate-y-0.5"></x-tooltip>
             </x-buttons.icon-primary>
-            <x-buttons.icon-danger type="button" onclick="removeApplicantsFromRoom('{{ $selectedRooms->id }}')" class="pl-2 py-2 z-10 w-10 h-10">
-                <div class="flex">
-                    <svg id="Layer_1" height="24" class="w-6 h-6" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg" data-name="Layer 1"><path d="m17 24a1 1 0 0 1 -1-1 7 7 0 0 0 -14 0 1 1 0 0 1 -2 0 9 9 0 0 1 18 0 1 1 0 0 1 -1 1zm6-11h-6a1 1 0 0 1 0-2h6a1 1 0 0 1 0 2zm-14-1a6 6 0 1 1 6-6 6.006 6.006 0 0 1 -6 6zm0-10a4 4 0 1 0 4 4 4 4 0 0 0 -4-4z"/></svg>
-                    <svg id="Layer_1" height="24" class="w-6 h-6" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg" data-name="Layer 1"><path d="m17 24a1 1 0 0 1 -1-1 7 7 0 0 0 -14 0 1 1 0 0 1 -2 0 9 9 0 0 1 18 0 1 1 0 0 1 -1 1zm6-11h-6a1 1 0 0 1 0-2h6a1 1 0 0 1 0 2zm-14-1a6 6 0 1 1 6-6 6.006 6.006 0 0 1 -6 6zm0-10a4 4 0 1 0 4 4 4 4 0 0 0 -4-4z"/></svg>
-                </div>
-                <x-tooltip title="ลบผู้เข้าสอบออกจากที่นั่ง" class="group-hover:-translate-x-[5.5rem] group-hover:translate-y-8"></x-tooltip>
+            <x-buttons.icon-danger type="button" onclick="removeApplicantsFromRoom('{{ $selectedRooms->id }}')" class="px-[5px] pt-1.5 pb-1 z-40 translate-y-0.5">
+                <svg id="Layer_1" height="24" class="w-6 h-6 translate-x-0.5 -translate-y-1" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg" data-name="Layer 1"><path d="m17 24a1 1 0 0 1 -1-1 7 7 0 0 0 -14 0 1 1 0 0 1 -2 0 9 9 0 0 1 18 0 1 1 0 0 1 -1 1zm6-11h-6a1 1 0 0 1 0-2h6a1 1 0 0 1 0 2zm-14-1a6 6 0 1 1 6-6 6.006 6.006 0 0 1 -6 6zm0-10a4 4 0 1 0 4 4 4 4 0 0 0 -4-4z"/></svg>
+                <x-tooltip title="ลบผู้เข้าสอบออกจากที่นั่ง" class="group-hover:-translate-x-14 group-hover:translate-y-0.5"></x-tooltip>
             </x-buttons.icon-danger>
-            <div x-data="{ showApplicantAdd: false }" class="z-40">
+            <div x-data="{ showApplicantAdd: false }" class="z-40 translate-y-1">
                 <x-buttons.icon-primary  @click="showApplicantAdd = !showApplicantAdd" id="applicant-add" onclick="event.stopPropagation();" type="button" class="px-[5px] pt-1.5 pb-1 z-40">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" id="Outline" viewBox="0 0 24 24" width="24" height="24"><path d="M23,11H21V9a1,1,0,0,0-2,0v2H17a1,1,0,0,0,0,2h2v2a1,1,0,0,0,2,0V13h2a1,1,0,0,0,0-2Z"/><path d="M9,12A6,6,0,1,0,3,6,6.006,6.006,0,0,0,9,12ZM9,2A4,4,0,1,1,5,6,4,4,0,0,1,9,2Z"/><path d="M9,14a9.01,9.01,0,0,0-9,9,1,1,0,0,0,2,0,7,7,0,0,1,14,0,1,1,0,0,0,2,0A9.01,9.01,0,0,0,9,14Z"/></svg>
-                    <x-tooltip title="เพิ่มผู้เข้าสอบลงที่นั่ง" class="group-hover:-translate-x-20 group-hover:translate-y-8"></x-tooltip>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 translate-x-0.5 -translate-y-0.5" id="Outline" viewBox="0 0 24 24" width="24" height="24"><path d="M23,11H21V9a1,1,0,0,0-2,0v2H17a1,1,0,0,0,0,2h2v2a1,1,0,0,0,2,0V13h2a1,1,0,0,0,0-2Z"/><path d="M9,12A6,6,0,1,0,3,6,6.006,6.006,0,0,0,9,12ZM9,2A4,4,0,1,1,5,6,4,4,0,0,1,9,2Z"/><path d="M9,14a9.01,9.01,0,0,0-9,9,1,1,0,0,0,2,0,7,7,0,0,1,14,0,1,1,0,0,0,2,0A9.01,9.01,0,0,0,9,14Z"/></svg>
+                    <x-tooltip title="เพิ่มผู้เข้าสอบลงที่นั่ง" class="group-hover:-translate-x-10 group-hover:translate-y-0.5"></x-tooltip>
                 </x-buttons.icon-primary>
                 @include('components.dropdowns.exam-room-detail.applicant-add')
             </div>
