@@ -103,3 +103,5 @@ Route::post('/delete-applicants/{examId}', [ApplicantController::class, 'deleteA
 Route::get('/fetch-applicants', [ApplicantController::class, 'fetchApplicants'])->name('fetch.applicants');
 
 Route::get('/hide-or-show-remove-applicant-button/{applicantId}/{examId}/{roomId}', [ExamController::class, 'hideOrShowRemoveApplicantButton']);
+
+Route::get('/get-first-available-seat/{roomId}', [SeatController::class, 'getFirstAvailableSeat']);
