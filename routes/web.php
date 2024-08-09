@@ -105,3 +105,5 @@ Route::get('/fetch-applicants', [ApplicantController::class, 'fetchApplicants'])
 Route::get('/hide-or-show-remove-applicant-button/{applicantId}/{examId}/{roomId}', [ExamController::class, 'hideOrShowRemoveApplicantButton']);
 
 Route::get('/get-first-available-seat/{roomId}', [SeatController::class, 'getFirstAvailableSeat']);
+
+Route::get('/check-seat-occupied/{roomId}/{seatId}', [SeatController::class, 'checkSeatOccupied']);

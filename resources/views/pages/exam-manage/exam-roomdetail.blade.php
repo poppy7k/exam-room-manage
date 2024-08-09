@@ -724,11 +724,6 @@ function assignAllApplicantsToSeats(direction, startSeat) {
     console.log('Exam ID:', examId);
     console.log('Room ID:', roomId);
 
-    if (!startSeat) {
-        alert('กรุณาเลือกที่นั่งเริ่มต้น');
-        return;
-    }
-
     fetch('/assign-all-applicants-to-seats', {
         method: 'POST',
         headers: {
@@ -769,9 +764,11 @@ function fetchFirstAvailableSeat() {
         .then(data => {
             console.log('First available seat response:', data);
             if (data.success) {
-                let startSeatInput = document.getElementById('start-seat-input').value = data.firstAvailableSeat
+                this.startSeat = data.firstAvailableSeat; 
+                document.getElementById('start-seat-input').value = data.firstAvailableSeat;
+                console.log('startSeat set to:', this.startSeat);
             } else {
-                alert('ไม่สามารถดึงที่นั่งที่ว่างได้');
+                alert('ไม่พบที่นั่งที่ว่าง');
             }
         })
     .catch(error => {
@@ -786,12 +783,65 @@ document.addEventListener('alpine:init', () => {
         showSeatPopup: false,
         direction: '',
         startSeat: '',
+        userChangedSeat: false,  // Flag to track if user manually changes the seat
+
+        // Fetch the first available seat and update startSeat if user hasn't changed it
+        fetchFirstAvailableSeat() {
+            const roomId = {{ $selectedRooms->room->id }};
+            console.log('Fetching first available seat for room ID:', roomId);
+
+            if (!this.userChangedSeat) {  // Only fetch and set if the user hasn't manually changed the seat
+                fetch(`/get-first-available-seat/${roomId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('First available seat response:', data);
+                        if (data.success) {
+                            this.startSeat = data.firstAvailableSeat; 
+                            document.getElementById('start-seat-input').value = data.firstAvailableSeat;
+                            console.log('startSeat set to:', this.startSeat);
+                        } else {
+                            alert('ไม่พบที่นั่งที่ว่าง');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('An error occurred while fetching the first available seat.');
+                    });
+            }
+        },
+
+        // Function to assign all applicants to seats
         assignAllApplicants() {
             console.log('assignAllApplicants called');
             const direction = this.direction;
-            const startSeat = this.startSeat;
-            assignAllApplicantsToSeats(direction, startSeat);
+            const startSeat = document.getElementById('start-seat-input').value.trim();
+
+            console.log('Direction:', direction);
+            console.log('Start Seat:', startSeat);
+            console.log('Exam ID:', {{ $exam->id }});
+            console.log('Room ID:', {{ $selectedRooms->room->id }});
+
+            if (!startSeat || startSeat === '') {
+                alert('กรุณาเลือกที่นั่งเริ่มต้น');
+                return;
+            }
+
+            // Check if the startSeat is occupied before proceeding
+            fetch(`/check-seat-occupied/${roomId}/${startSeat}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.success) {
+                        alert('มีผู้เข้าสอบอยู่ที่นั้งดังกล่าว');
+                    } else {
+                        assignAllApplicantsToSeats(direction, startSeat);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while checking the seat availability.');
+                });
         },
+
         init() {
             console.log('Initializing assignSeats component');
             this.$watch('showApplicantAdd', (value) => {
@@ -799,6 +849,11 @@ document.addEventListener('alpine:init', () => {
                     console.log('Applicant add shown, fetching first available seat');
                     this.fetchFirstAvailableSeat();
                 }
+            });
+
+            this.$watch('startSeat', (value) => {
+                console.log('startSeat updated:', value);
+                this.userChangedSeat = true;  // Mark that the user manually changed the seat
             });
         }
     }));

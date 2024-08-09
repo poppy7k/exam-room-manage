@@ -15,14 +15,14 @@ class SeatController extends Controller
 {
     public function checkSeatAvailability($selectedRoomId, $applicantId, $startTime, $endTime, $row, $column)
     {
-        Log::info('Checking seat availability:', [
-            'selected_room_id' => $selectedRoomId,
-            'applicant_id' => $applicantId,
-            'start_time' => $startTime,
-            'end_time' => $endTime,
-            'row' => $row,
-            'column' => $column
-        ]);
+        // Log::info('Checking seat availability:', [
+        //     'selected_room_id' => $selectedRoomId,
+        //     'applicant_id' => $applicantId,
+        //     'start_time' => $startTime,
+        //     'end_time' => $endTime,
+        //     'row' => $row,
+        //     'column' => $column
+        // ]);
 
         $seatAvailable = Seat::isSeatAvaliable($selectedRoomId, $applicantId, $startTime, $endTime, $row, $column);
 
@@ -380,20 +380,20 @@ class SeatController extends Controller
 
     public function removeApplicantsFromRoom(Request $request)
     {
-        Log::info('Starting to remove applicants from all seats in the rooms', ['request_data' => $request->all()]);
+        //Log::info('Starting to remove applicants from all seats in the rooms', ['request_data' => $request->all()]);
         
         try {
             $validatedData = $request->validate([
                 'selectedRoom_id' => 'required|integer'
             ]);
         
-            Log::info('Request data validated successfully', ['validated_data' => $validatedData]);
+            //Log::info('Request data validated successfully', ['validated_data' => $validatedData]);
         
             // Fetch the selected room with matching selectedRoom_id
             $selectedRoom = SelectedRoom::find($validatedData['selectedRoom_id']);
         
             if ($selectedRoom) {
-                Log::info('Selected room found', ['selected_room' => $selectedRoom]);
+                //Log::info('Selected room found', ['selected_room' => $selectedRoom]);
         
                 // Fetch the associated exam
                 $exam = Exam::find($selectedRoom->exam_id);
@@ -403,13 +403,13 @@ class SeatController extends Controller
                 
                 // Fetch all seats in the selected room
                 $seats = Seat::where('selected_room_id', $selectedRoom->id)->get();
-                Log::info('Seats found in the selected room', ['seats' => $seats]);
+                //Log::info('Seats found in the selected room', ['seats' => $seats]);
         
                 // Loop through all seats to remove applicants
                 foreach ($seats as $seat) {
                     // Ensure seat has an applicant assigned
                     if ($seat->row !== null && $seat->column !== null) {
-                        Log::info('Removing applicant from seat', ['seat' => $seat]);
+                        //Log::info('Removing applicant from seat', ['seat' => $seat]);
                         
                         // Update the pivot table to set status to not_assigned
                         $exam->applicants()->updateExistingPivot($seat->applicant_id, ['status' => 'not_assigned']);
@@ -547,12 +547,26 @@ class SeatController extends Controller
             if ($applicantIndex >= count($applicants)) {
                 break;
             }
+    
             $seatId = "{$seat['row']}-" . chr(64 + $seat['column']);
             if (in_array($seatId, $invalidSeats)) {
                 // Skip deactivated seat
                 continue;
             } 
     
+            // Skip rows and columns before the start seat
+            if ($direction === 'top-to-bottom' || $direction === 'bottom-to-top' || $direction === 'alternate-top-bottom' || $direction === 'alternate-bottom-top') {
+                // Handle vertical cases
+                if ($seat['column'] < $startSeatColumn || ($seat['column'] == $startSeatColumn && $seat['row'] < $startSeatRow)) {
+                    continue;
+                }
+            } else {
+                // Handle horizontal cases
+                if ($seat['row'] < $startSeatRow || ($seat['row'] == $startSeatRow && $seat['column'] < $startSeatColumn)) {
+                    continue;
+                }
+            }
+
             $applicant = $applicants->values()->get($applicantIndex);
             $seatAvailable = $this->checkSeatAvailability($selectedRoom->id, $applicant->id, $exam->exam_start_time, $exam->exam_end_time, $seat['row'], $seat['column']);
     
@@ -573,6 +587,7 @@ class SeatController extends Controller
     
         return response()->json(['success' => true, 'message' => 'Applicants assigned to seats successfully.']);
     }
+    
 
     private function sortSeatsRightToLeft($seatsArray, $rows, $columns)
     {
@@ -701,7 +716,7 @@ class SeatController extends Controller
                     //     'seatId' => $seatId,
                     //     'seatAvailable' => $seatAvailable
                     // ]);
-                    Log::info($seatAvailable);
+                    //Log::info($seatAvailable);
 
                     if ($seatAvailable) {
 
@@ -773,25 +788,83 @@ class SeatController extends Controller
 
     public function getFirstAvailableSeat($roomId)
     {
-        $room = ExamRoomInformation::findOrFail($roomId);
-        $occupiedSeats = Seat::where('selected_room_id', $roomId)->get(['row', 'column']);
+        // Fetch the selected room ID that corresponds to the given room ID
+        $selectedRoom = SelectedRoom::where('room_id', $roomId)->first();
+    
+        if (!$selectedRoom) {
+            //Log::info('No selected room found for room ID:', ['roomId' => $roomId]);
+            return response()->json(['success' => false, 'message' => 'No selected room found for the given room ID.']);
+        }
+    
+        // Fetch the exam details for time comparison
+        $exam = Exam::findOrFail($selectedRoom->exam_id);
+    
+        // Fetch the occupied seats considering all exams at the same time in the same room
+        $occupiedSeats = Seat::whereHas('selectedRoom.exam', function ($query) use ($exam, $roomId) {
+            $query->where('room_id', $roomId)
+                  ->where('exam_date', $exam->exam_date)
+                  ->where('exam_start_time', '<=', $exam->exam_end_time)
+                  ->where('exam_end_time', '>=', $exam->exam_start_time);
+        })->get(['row', 'column']);
+    
+        if ($occupiedSeats->isEmpty()) {
+            //Log::info('No occupied seats found in the Seat table for selected room ID:', ['selectedRoomId' => $selectedRoom->id]);
+        } else {
+            //Log::info('Occupied seats found:', $occupiedSeats->toArray());
+        }
+    
+        // Map occupied seats to "row-column" format
         $occupiedSeatIds = $occupiedSeats->map(function ($seat) {
             return "{$seat->row}-" . chr(64 + $seat->column);
         })->toArray();
     
-        Log::info('Occupied seats:', $occupiedSeatIds);
+        //Log::info('Occupied seat IDs:', $occupiedSeatIds);
     
+        // Fetch room details to iterate over rows and columns
+        $room = ExamRoomInformation::findOrFail($roomId);
+    
+        // Iterate through each seat in the room and find the first available one
         for ($i = 1; $i <= $room->rows; $i++) {
             for ($j = 1; $j <= $room->columns; $j++) {
                 $seatId = "{$i}-" . chr(64 + $j);
+                //Log::info('Checking seat:', ['seatId' => $seatId]);
                 if (!in_array($seatId, $occupiedSeatIds)) {
-                    Log::info('First available seat found:', ['seatId' => $seatId]);
+                    //Log::info('First available seat found:', ['seatId' => $seatId]);
                     return response()->json(['success' => true, 'firstAvailableSeat' => $seatId]);
                 }
             }
         }
     
-        Log::info('No available seats found');
+        //Log::info('No available seats found');
         return response()->json(['success' => false, 'message' => 'No available seats found.']);
+    }
+
+    public function checkSeatOccupied($roomId, $seatId)
+    {
+        list($row, $column) = explode('-', $seatId);
+        $column = ord($column) - 64; // Convert column letter to number
+    
+        //Log::info('Checking if seat is occupied:', ['roomId' => $roomId, 'seatId' => $seatId, 'row' => $row, 'column' => $column]);
+    
+        // Fetch the selected room ID corresponding to the roomId
+        $selectedRoom = SelectedRoom::where('room_id', $roomId)->first();
+        if (!$selectedRoom) {
+            //Log::info('No selected room found for room ID:', ['roomId' => $roomId]);
+            return response()->json(['success' => false, 'message' => 'No selected room found for the given room ID.']);
+        }
+    
+        // Check if the seat is occupied in the specific selected room
+        $isOccupied = Seat::where('selected_room_id', $selectedRoom->id)
+                          ->where('row', $row)
+                          ->where('column', $column)
+                          ->exists();
+    
+        if ($isOccupied) {
+            //Log::info('Seat is occupied:', ['seatId' => $seatId, 'roomId' => $roomId]);
+            return response()->json(['success' => false, 'message' => 'Seat is occupied']);
+        }
+    
+        //Log::info('Seat is available:', ['seatId' => $seatId, 'roomId' => $roomId]);
+        return response()->json(['success' => true, 'message' => 'Seat is available']);
     }
 }

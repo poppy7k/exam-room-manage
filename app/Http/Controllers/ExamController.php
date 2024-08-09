@@ -329,7 +329,6 @@ class ExamController extends Controller
                             $query->where('room_id', $room->id);
                         })
                         ->pluck('subject')
-                        ->unique()
                         ->toArray();
     
         $breadcrumbs = [
