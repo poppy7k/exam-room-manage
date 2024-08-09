@@ -170,11 +170,25 @@ class ApplicantController extends Controller
         $department = $request->query('department');
         $position = $request->query('position');
     
+        Log::debug('Department:', ['department' => $department]);
+        Log::debug('Position:', ['position' => $position]);
+    
+        // Fetch applicants by department and position
+        // Include those who either do not have a record in applicant_exam or have a status of 'not_assigned'
         $applicants = Applicant::where('department', $department)
                                ->where('position', $position)
+                               ->where(function ($query) {
+                                   $query->whereDoesntHave('exams')
+                                         ->orWhereHas('exams', function ($subQuery) {
+                                             $subQuery->where('applicant_exam.status', 'not_assigned');
+                                         });
+                               })
                                ->get();
+    
+        Log::debug('Applicants:', ['applicants' => $applicants->toArray()]);
     
         return response()->json($applicants);
     }
+    
 
 }

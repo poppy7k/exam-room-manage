@@ -31,30 +31,22 @@ class SeatController extends Controller
 
     public function assignApplicantsToSeats($departmentName, $examPosition, $selectedRooms, $exam)
     {
-        // Log::debug('Starting assignApplicantsToSeats', [
-        //     'departmentName' => $departmentName,
-        //     'examPosition' => $examPosition,
-        //     'selectedRooms' => $selectedRooms,
-        //     'exam' => $exam
-        // ]);
-    
         // Reset previous assignments
         $exam->applicants()->updateExistingPivot(
             $exam->applicants()->pluck('applicants.id'), ['status' => 'not_assigned']
         );
-        //Log::debug('Reset previous applicant assignments');
     
         // Retrieve applicants that are not assigned
         $applicants = $exam->applicants()->wherePivot('status', 'not_assigned')->get();
     
-        // Log::debug('Applicants retrieved', ['count' => $applicants->count()]);
+        // Log applicants retrieved
+        Log::debug('Applicants retrieved', ['count' => $applicants->count()]);
     
         $applicantIndex = 0;
     
         // Check for conflicts
         $conflictedApplicants = $this->checkApplicantConflicts($applicants, $exam);
-        // Log::debug('Conflicted Applicants', ['count' => count($conflictedApplicants)]);
-    
+        
         if (count($conflictedApplicants) > 0) {
             return $conflictedApplicants;
         }
@@ -64,65 +56,42 @@ class SeatController extends Controller
             return !in_array($applicant->name, $conflictedApplicants);
         });
     
-        // Log::debug('Filtered Applicants', ['count' => $applicants->count()]);
-    
-        $totalSeats = 0;
-        foreach ($selectedRooms as $roomData) {
-            $room = ExamRoomInformation::findOrFail($roomData['id']);
-            $totalSeats += $room->rows * $room->columns;
-        }
-    
-        // Log::debug('Total Seats Available', ['totalSeats' => $totalSeats]);
-    
-        if ($applicants->count() > $totalSeats) {
-            // Log::error('Not enough seats for all applicants', [
-            //     'required_seats' => $applicants->count(),
-            //     'available_seats' => $totalSeats
-            // ]);
-            return array_unique($conflictedApplicants);
-        }
+        // Log filtered applicants
+        Log::debug('Filtered Applicants', ['count' => $applicants->count()]);
     
         $selectedRoomIds = array_column($selectedRooms, 'id');
         $isMultiRoomSameTimeSingleExam = (count($selectedRoomIds) > 1);
-        // Log::debug('Multi-room same time single exam', ['isMultiRoomSameTimeSingleExam' => $isMultiRoomSameTimeSingleExam]);
     
         foreach ($selectedRooms as $roomData) {
             $room = ExamRoomInformation::findOrFail($roomData['id']);
             $selectedRoom = SelectedRoom::firstOrCreate(['room_id' => $room->id, 'exam_id' => $exam->id]);
     
-            // Log::debug('Selected Room Created', ['selectedRoom' => $selectedRoom]);
             $invalidSeats = json_decode($room->invalid_seats, true) ?? [];
     
             for ($i = 1; $i <= $room->rows; $i++) {
                 for ($j = 1; $j <= $room->columns; $j++) {
+                    if ($applicantIndex >= $applicants->count()) {
+                        Log::debug('All available applicants have been assigned.');
+                        break 2; // Exit both loops
+                    }
+    
                     $seatId = "{$i}-" . chr(64 + $j); // Converts column number to letter
     
                     if (in_array($seatId, $invalidSeats)) {
                         // Skip deactivated seat
                         continue;
-                    } 
-                    if ($applicantIndex >= $applicants->count()) {
-                        // Log::debug('All applicants assigned', ['applicantIndex' => $applicantIndex]);
-                        return array_unique($conflictedApplicants);
                     }
     
                     // Use the checkSeatAvailability function
                     $applicant = $applicants->values()->get($applicantIndex);
                     $seatAvailable = $this->checkSeatAvailability($selectedRoom->id, $applicant->id, $exam->exam_start_time, $exam->exam_end_time, $i, $j);
     
-                    // Log::debug('Checking Seat Availability', [
-                    //     'seatId' => $seatId,
-                    //     'seatAvailable' => $seatAvailable
-                    // ]);
-                    Log::info($seatAvailable);
+                    Log::debug('Checking Seat Availability', [
+                        'seatId' => $seatId,
+                        'seatAvailable' => $seatAvailable
+                    ]);
     
                     if ($seatAvailable) {
-    
-                        // Log::debug('Assigning Applicant', [
-                        //     'applicantIndex' => $applicantIndex,
-                        //     'applicant' => $applicant
-                        // ]);
-    
                         Seat::create([
                             'selected_room_id' => $selectedRoom->id,
                             'applicant_id' => $applicant->id,
@@ -131,20 +100,30 @@ class SeatController extends Controller
                         ]);
     
                         $exam->applicants()->updateExistingPivot($applicant->id, ['status' => 'assigned']);
+                        $selectedRoom->increment('applicant_seat_quantity');
     
-                        // Log::debug('Applicant Assigned to Seat', ['applicant' => $applicant]);
+                        Log::debug('Applicant Assigned to Seat', ['applicant' => $applicant]);
     
                         $applicantIndex++;
                     } else {
-                        // Log::debug('Seat is not available', ['row' => $i, 'column' => $j, 'room_id' => $room->id]);
+                        Log::debug('Seat is not available', ['row' => $i, 'column' => $j, 'room_id' => $room->id]);
                     }
                 }
             }
         }
     
-        // Log::debug('Finished assigning applicants to seats');
+        if ($applicantIndex < $applicants->count()) {
+            Log::warning('Not all applicants could be assigned to seats.', [
+                'assigned' => $applicantIndex,
+                'total_applicants' => $applicants->count(),
+                'unassigned_applicants' => $applicants->count() - $applicantIndex
+            ]);
+        }
+    
+        Log::debug('Finished assigning applicants to seats');
         return array_unique($conflictedApplicants);
     }
+    
     
     public function checkApplicantConflicts($applicants, $exam)
     {
